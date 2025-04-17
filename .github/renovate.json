@@ -1,6 +1,6 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "description": "Drachenpapa's default renovate configuration",
+  "description": "Renovate configuration for Wyrmhort.",
   "extends": [
     "config:recommended",
     ":automergePatch",
@@ -12,5 +12,15 @@
     ":semanticCommitTypeAll(build)",
     ":semanticCommitScope(deps)",
     ":timezone(Europe/Berlin)"
+  ],
+  "pip_requirements": {
+    "fileMatch": ["^backend/requirements\\.txt$"],
+  },
+  "packageRules": [
+    {
+      "matchManagers": ["pip_requirements"],
+      "groupName": "backend Python dependencies",
+      "automerge": true
+    }
   ]
 }
