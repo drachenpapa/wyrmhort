@@ -1,7 +1,16 @@
 import pytest
+from unittest.mock import Mock
 from fastapi.testclient import TestClient
 
-from api.routes import app
+from api.routes import app, get_db
+
+
+@pytest.fixture(autouse=True)
+def override_firestore_dependency():
+    mock_db = Mock()
+    app.dependency_overrides[get_db] = lambda: mock_db
+    yield
+    app.dependency_overrides.clear()
 
 
 @pytest.fixture
