@@ -26,4 +26,4 @@ jobs:
           pip install -r requirements.txt
       - name: Run unit tests
         run: |
-          pytest tests --maxfail=1 --disable-warnings -q
+          PYTHONPATH=. pytest tests --maxfail=1 --disable-warnings -q
