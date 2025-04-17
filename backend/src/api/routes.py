@@ -1,15 +1,22 @@
 from datetime import datetime
-
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from pydantic import BaseModel
 
 from expenses.models import Expense
-from expenses.service import create_expense_service, read_expenses_service, update_expense_service, \
+from expenses.service import (
+    create_expense_service,
+    read_expenses_service,
+    update_expense_service,
     delete_expense_service
+)
 from firestore.client import init_firestore
 
 app = FastAPI()
-db = init_firestore()
+
+
+# Dependency function
+def get_db():
+    return init_firestore()
 
 
 class ExpenseRequest(BaseModel):
@@ -24,7 +31,10 @@ class ExpenseRequest(BaseModel):
 
 
 @app.post("/expenses/")
-async def create_expense(expense: ExpenseRequest):
+async def create_expense(
+    expense: ExpenseRequest,
+    db=Depends(get_db)
+):
     expense_obj = Expense(
         amount=expense.amount,
         quantity=expense.quantity,
@@ -40,14 +50,23 @@ async def create_expense(expense: ExpenseRequest):
 
 
 @app.get("/expenses/")
-async def read_expenses(category: str = None, marketplace: str = None, start_date: datetime = None,
-                        end_date: datetime = None):
+async def read_expenses(
+    category: str = None,
+    marketplace: str = None,
+    start_date: datetime = None,
+    end_date: datetime = None,
+    db=Depends(get_db)
+):
     expenses = read_expenses_service(db, category, marketplace, start_date, end_date)
     return {"expenses": expenses}
 
 
 @app.put("/expenses/{expense_id}")
-async def update_expense(expense_id: str, expense: ExpenseRequest):
+async def update_expense(
+    expense_id: str,
+    expense: ExpenseRequest,
+    db=Depends(get_db)
+):
     updated_expense = Expense(
         amount=expense.amount,
         quantity=expense.quantity,
@@ -63,6 +82,9 @@ async def update_expense(expense_id: str, expense: ExpenseRequest):
 
 
 @app.delete("/expenses/{expense_id}")
-async def delete_expense(expense_id: str):
+async def delete_expense(
+    expense_id: str,
+    db=Depends(get_db)
+):
     delete_expense_service(db, expense_id)
     return {"message": f"Expense with ID {expense_id} deleted."}
