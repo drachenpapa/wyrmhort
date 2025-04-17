@@ -1,53 +1,68 @@
-from unittest.mock import patch, MagicMock
+import pytest
+from unittest.mock import Mock
 from fastapi.testclient import TestClient
-from api.main import app
 
-client = TestClient(app)
-
-mock_expense = {
-    "id": "test-id",
-    "date": "2025-04-15T10:00:00",
-    "amount": 4.99,
-    "quantity": 1,
-    "marketplace": "Cardmarket",
-    "seller": "Louis",
-    "product": "Pokémon TCG",
-    "item_type": "Booster",
-    "series": "Scarlet & Violet",
-}
-
-@patch("api.routes.get_db", return_value=MagicMock())
-@patch("api.routes.create_expense_service")
-def test_create_expense(mock_create_service, mock_get_db):
-    mock_create_service.return_value = mock_expense
-    response = client.post("/expenses/", json=mock_expense)
-    assert response.status_code == 201
-    assert response.json() == mock_expense
+from api.routes import app, get_db
 
 
-@patch("api.routes.get_db", return_value=MagicMock())
-@patch("api.routes.read_expense_service")
-def test_read_expense(mock_read_service, mock_get_db):
-    mock_read_service.return_value = mock_expense
-    response = client.get("/expenses/test-id")
+@pytest.fixture(autouse=True)
+def override_firestore_dependency():
+    mock_db = Mock()
+    app.dependency_overrides[get_db] = lambda: mock_db
+    yield
+    app.dependency_overrides.clear()
+
+
+@pytest.fixture
+def client():
+    return TestClient(app)
+
+
+def test_create_expense(client):
+    expense_data = {
+        "date": "2025-04-15T10:00:00",
+        "amount": 4.99,
+        "quantity": 1,
+        "marketplace": "Cardmarket",
+        "seller": "Louis",
+        "product": "Pokémon TCG",
+        "item_type": "Booster",
+        "series": "Scarlet & Violet"
+    }
+
+    response = client.post("/expenses/", json=expense_data)
+
     assert response.status_code == 200
-    assert response.json() == mock_expense
+    assert response.json() == {"message": "Expense added successfully"}
 
 
-@patch("api.routes.get_db", return_value=MagicMock())
-@patch("api.routes.update_expense_service")
-def test_update_expense(mock_update_service, mock_get_db):
-    updated_expense = {**mock_expense, "amount": 9.99}
-    mock_update_service.return_value = updated_expense
-    response = client.put("/expenses/test-id", json=updated_expense)
+def test_read_expenses(client):
+    response = client.get("/expenses/")
     assert response.status_code == 200
-    assert response.json() == updated_expense
+    assert "expenses" in response.json()
 
 
-@patch("api.routes.get_db", return_value=MagicMock())
-@patch("api.routes.delete_expense_service")
-def test_delete_expense(mock_delete_service, mock_get_db):
-    mock_delete_service.return_value = {"message": "Expense deleted"}
-    response = client.delete("/expenses/test-id")
+def test_update_expense(client):
+    expense_id = "mocked_id"
+    updated_data = {
+        "date": "2025-04-16T15:30:00",
+        "amount": 9.99,
+        "quantity": 2,
+        "marketplace": "eBay",
+        "seller": "Anna",
+        "product": "Yu-Gi-Oh!",
+        "item_type": "Display",
+        "series": "Pharaoh's Legacy"
+    }
+
+    response = client.put(f"/expenses/{expense_id}", json=updated_data)
     assert response.status_code == 200
-    assert response.json() == {"message": "Expense deleted"}
+    assert response.json() == {"message": f"Expense with ID {expense_id} updated."}
+
+
+def test_delete_expense(client):
+    expense_id = "mocked_id"
+
+    response = client.delete(f"/expenses/{expense_id}")
+    assert response.status_code == 200
+    assert response.json() == {"message": f"Expense with ID {expense_id} deleted."}
