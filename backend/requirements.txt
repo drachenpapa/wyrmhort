@@ -1,6 +1,5 @@
 fastapi
 firebase-admin
+httpx
 python-dotenv
 uvicorn[standard]
-pytest
-httpx
