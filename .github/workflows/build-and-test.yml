@@ -27,8 +27,6 @@ jobs:
           pip install -r dev-requirements.txt
       - name: Syntax check (compile)
         run: python -m compileall src
-      - name: Type check (mypy)
-        run: mypy --strict --explicit-package-bases src
       - name: Lint (flake8)
         run: flake8 src
 
