@@ -14,7 +14,8 @@ jobs:
       run:
         working-directory: backend
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout codebase
+        uses: actions/checkout@v4
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -27,7 +28,7 @@ jobs:
       - name: Syntax check (compile)
         run: python -m compileall src
       - name: Type check (mypy)
-        run: mypy --strict src
+        run: mypy --strict --explicit-package-bases src
       - name: Lint (flake8)
         run: flake8 src
 
@@ -39,7 +40,8 @@ jobs:
         working-directory: backend
     needs: lint-and-compile
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout codebase
+        uses: actions/checkout@v4
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -60,7 +62,8 @@ jobs:
       run:
         working-directory: backend
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout codebase
+        uses: actions/checkout@v4
       - name: Set up Docker
         uses: docker/setup-buildx-action@v2
       - name: Build Docker image
