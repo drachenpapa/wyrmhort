@@ -1,4 +1,5 @@
 from datetime import datetime
+
 from fastapi import FastAPI, Depends
 from pydantic import BaseModel
 
@@ -14,7 +15,6 @@ from firestore.client import init_firestore
 app = FastAPI()
 
 
-# Dependency function
 def get_db():
     return init_firestore()
 
