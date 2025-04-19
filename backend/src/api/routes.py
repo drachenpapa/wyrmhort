@@ -32,8 +32,8 @@ class ExpenseRequest(BaseModel):
 
 @app.post("/expenses/")
 async def create_expense(
-    expense: ExpenseRequest,
-    db=Depends(get_db)
+        expense: ExpenseRequest,
+        db=Depends(get_db)
 ):
     expense_obj = Expense(
         amount=expense.amount,
@@ -51,11 +51,11 @@ async def create_expense(
 
 @app.get("/expenses/")
 async def read_expenses(
-    category: str = None,
-    marketplace: str = None,
-    start_date: datetime = None,
-    end_date: datetime = None,
-    db=Depends(get_db)
+        category: str = None,
+        marketplace: str = None,
+        start_date: datetime = None,
+        end_date: datetime = None,
+        db=Depends(get_db)
 ):
     expenses = read_expenses_service(db, category, marketplace, start_date, end_date)
     return {"expenses": expenses}
@@ -63,9 +63,9 @@ async def read_expenses(
 
 @app.put("/expenses/{expense_id}")
 async def update_expense(
-    expense_id: str,
-    expense: ExpenseRequest,
-    db=Depends(get_db)
+        expense_id: str,
+        expense: ExpenseRequest,
+        db=Depends(get_db)
 ):
     updated_expense = Expense(
         amount=expense.amount,
@@ -83,8 +83,8 @@ async def update_expense(
 
 @app.delete("/expenses/{expense_id}")
 async def delete_expense(
-    expense_id: str,
-    db=Depends(get_db)
+        expense_id: str,
+        db=Depends(get_db)
 ):
     delete_expense_service(db, expense_id)
     return {"message": f"Expense with ID {expense_id} deleted."}

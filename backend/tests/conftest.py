@@ -19,6 +19,7 @@ def sample_expense_data():
         "series": "Scarlet & Violet"
     }
 
+
 @pytest.fixture
 def expense_factory(sample_expense_data):
     def _factory(overrides=None):
@@ -35,7 +36,9 @@ def expense_factory(sample_expense_data):
             item_type=data["item_type"],
             series=data["series"],
         )
+
     return _factory
+
 
 @pytest.fixture
 def mock_db():

@@ -25,9 +25,9 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install -r dev-requirements.txt
-      - name: Syntax check (compile)
+      - name: Syntax check
         run: python -m compileall src
-      - name: Lint (flake8)
+      - name: Lint
         run: flake8 src
 
   unit-test:

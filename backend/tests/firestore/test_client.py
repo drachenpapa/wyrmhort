@@ -16,13 +16,16 @@ def test_get_expenses(mock_db, sample_expense_data):
     assert len(expenses) == 1
     assert expenses[0].product == "Pokémon TCG"
 
+
 def test_add_expense(mock_db, expense_factory):
     add_expense(mock_db, expense_factory())
     mock_db.collection().document().set.assert_called_once()
 
+
 def test_update_expense(mock_db, expense_factory):
     update_expense(mock_db, "some-id", expense_factory())
     mock_db.collection().document().update.assert_called_once()
+
 
 def test_delete_expense(mock_db):
     delete_expense(mock_db, "some-id")
