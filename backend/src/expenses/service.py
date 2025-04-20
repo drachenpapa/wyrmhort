@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from datetime import datetime
 
 from expenses.models import Expense
@@ -8,8 +10,13 @@ def create_expense_service(db, expense: Expense):
     add_expense(db, expense)
 
 
-def read_expenses_service(db, category: str = None, marketplace: str = None, start_date: datetime = None,
-                          end_date: datetime = None):
+def read_expenses_service(
+        db,
+        category: str | None = None,
+        marketplace: str | None = None,
+        start_date: datetime | None = None,
+        end_date: datetime | None = None
+):
     return get_expenses(db, category, marketplace, start_date, end_date)
 
 

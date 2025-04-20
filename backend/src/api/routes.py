@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from datetime import datetime
 
 from fastapi import FastAPI, Depends
@@ -51,10 +53,10 @@ async def create_expense(
 
 @app.get("/expenses/")
 async def read_expenses(
-        category: str = None,
-        marketplace: str = None,
-        start_date: datetime = None,
-        end_date: datetime = None,
+        category: str | None = None,
+        marketplace: str | None = None,
+        start_date: datetime | None = None,
+        end_date: datetime | None = None,
         db=Depends(get_db)
 ):
     expenses = read_expenses_service(db, category, marketplace, start_date, end_date)

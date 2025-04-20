@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import os
 from datetime import datetime
 
@@ -14,8 +16,13 @@ def init_firestore():
     return firestore.client()
 
 
-def get_expenses(db: firestore.Client, category: str = None, marketplace: str = None, start_date: datetime = None,
-                 end_date: datetime = None):
+def get_expenses(
+        db: firestore.Client,
+        category: str | None = None,
+        marketplace: str | None = None,
+        start_date: datetime | None = None,
+        end_date: datetime | None = None
+):
     expenses_ref = db.collection("expenses")
 
     if start_date and end_date:
