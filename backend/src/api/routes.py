@@ -12,7 +12,7 @@ from expenses.service import (
     update_expense_service,
     delete_expense_service
 )
-from firestore.client import init_firestore
+from firebase import init_firestore, get_current_user_uid
 
 app = FastAPI()
 
@@ -35,19 +35,20 @@ class ExpenseRequest(BaseModel):
 @app.post("/expenses/")
 async def create_expense(
         expense: ExpenseRequest,
-        db=Depends(get_db)
+        db=Depends(get_db),
+        uid=Depends(get_current_user_uid)
 ):
     expense_obj = Expense(
+        date=expense.date,
         amount=expense.amount,
         quantity=expense.quantity,
         marketplace=expense.marketplace,
         seller=expense.seller,
         product=expense.product,
         item_type=expense.item_type,
-        series=expense.series,
-        date=expense.date
+        series=expense.series
     )
-    create_expense_service(db, expense_obj)
+    create_expense_service(db, uid, expense_obj)
     return {"message": "Expense added successfully"}
 
 
@@ -57,9 +58,10 @@ async def read_expenses(
         marketplace: str | None = None,
         start_date: datetime | None = None,
         end_date: datetime | None = None,
-        db=Depends(get_db)
+        db=Depends(get_db),
+        uid=Depends(get_current_user_uid)
 ):
-    expenses = read_expenses_service(db, category, marketplace, start_date, end_date)
+    expenses = read_expenses_service(db, uid, category, marketplace, start_date, end_date)
     return {"expenses": expenses}
 
 
@@ -67,26 +69,28 @@ async def read_expenses(
 async def update_expense(
         expense_id: str,
         expense: ExpenseRequest,
-        db=Depends(get_db)
+        db=Depends(get_db),
+        uid=Depends(get_current_user_uid)
 ):
     updated_expense = Expense(
+        date=expense.date,
         amount=expense.amount,
         quantity=expense.quantity,
         marketplace=expense.marketplace,
         seller=expense.seller,
         product=expense.product,
         item_type=expense.item_type,
-        series=expense.series,
-        date=expense.date
+        series=expense.series
     )
-    update_expense_service(db, expense_id, updated_expense)
+    update_expense_service(db, uid, expense_id, updated_expense)
     return {"message": f"Expense with ID {expense_id} updated."}
 
 
 @app.delete("/expenses/{expense_id}")
 async def delete_expense(
         expense_id: str,
-        db=Depends(get_db)
+        db=Depends(get_db),
+        uid=Depends(get_current_user_uid)
 ):
-    delete_expense_service(db, expense_id)
+    delete_expense_service(db, uid, expense_id)
     return {"message": f"Expense with ID {expense_id} deleted."}

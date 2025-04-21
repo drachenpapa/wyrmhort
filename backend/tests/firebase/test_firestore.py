@@ -1,11 +1,6 @@
 from unittest.mock import MagicMock
 
-from firestore.client import (
-    get_expenses,
-    add_expense,
-    update_expense,
-    delete_expense
-)
+from firebase.firestore import get_expenses, add_expense, update_expense, delete_expense
 
 
 def test_get_expenses(mock_db, sample_expense_data):
