@@ -12,7 +12,8 @@ from expenses.service import (
     update_expense_service,
     delete_expense_service
 )
-from firebase import init_firestore, get_current_user_uid
+from firebase.auth import get_current_user_uid
+from firebase.firestore import init_firestore
 
 app = FastAPI()
 

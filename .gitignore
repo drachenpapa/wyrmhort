@@ -1,4 +1,4 @@
-# Python
+# === Python / Backend ===
 __pycache__/
 *.py[cod]
 *.pyo
@@ -10,31 +10,45 @@ __pycache__/
 venv/
 .venv/
 
-# IntelliJ IDEA
+# === Node.js / Frontend ===
+node_modules/
+dist/
+dist-ssr/
+*.local
+
+# Logs
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# === IDEs / Editoren ===
 .idea/
 *.iml
 out/
-
-# VS Code
 .vscode/
+!.vscode/extensions.json
 
-# macOS
+# === macOS ===
 .DS_Store
 .AppleDouble
 .LSOverride
 Icon?
 ._*
 
-# Windows
+# === Windows ===
 Thumbs.db
 ehthumbs.db
 Desktop.ini
 $RECYCLE.BIN/
 
-# Temp & swap
+# === Temp & swap ===
 *.swp
 *.tmp
 *~
 
-# Secrets
+# === Secrets ===
 secrets/
+.env

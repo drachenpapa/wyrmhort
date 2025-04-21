@@ -3,7 +3,9 @@ from unittest.mock import MagicMock
 
 import pytest
 
+from api.routes import get_db, app
 from expenses.models import Expense
+from firebase.auth import get_current_user_uid
 
 
 @pytest.fixture
@@ -47,3 +49,11 @@ def mock_db():
     collection.document.return_value = MagicMock()
     collection.where.return_value = MagicMock()
     return db
+
+
+@pytest.fixture(autouse=True)
+def override_dependencies(mock_db):
+    app.dependency_overrides[get_db] = lambda: mock_db
+    app.dependency_overrides[get_current_user_uid] = lambda: "mock-user-123"
+    yield
+    app.dependency_overrides.clear()
