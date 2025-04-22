@@ -16,4 +16,5 @@ runs:
       with:
         node-version: ${{ inputs.node-version }}
     - name: Install dependencies
+      shell: bash
       run: npm ci
