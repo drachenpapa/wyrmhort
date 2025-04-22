@@ -76,7 +76,7 @@ export default function ExpenseDialog({ open, onClose, onSave, initialData }: Pr
                                 type={field === 'date' ? 'date' : field === 'amount' || field === 'quantity' ? 'number' : 'text'}
                                 id={field}
                                 name={field}
-                                value={(form as any)[field]}
+                                value={form[field as keyof Expense]}
                                 onChange={handleChange}
                                 style={{ width: '100%' }}
                             />

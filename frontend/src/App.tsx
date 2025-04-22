@@ -1,17 +1,17 @@
-import { useEffect, useState } from 'react';
-import { onAuthStateChanged, signInWithPopup, signOut } from 'firebase/auth';
-import { auth, provider } from './firebase';
+import {useEffect, useState} from 'react';
+import {onAuthStateChanged, signInWithPopup, signOut, User} from 'firebase/auth';
+import {auth, provider} from './firebase';
 import ExpenseTable from './components/ExpenseTable';
 import ExpenseDialog from './components/ExpenseDialog';
 import useFirestoreExpenses from './hooks/useFirestoreExpenses';
-import { Expense } from './types/Expense';
+import {Expense} from './types/Expense';
 
 function App() {
-    const [user, setUser] = useState<any>(null);
+    const [user, setUser] = useState<User | null>(null);
     const [, setEditingExpense] = useState<Expense | null>(null);
     const [dialogOpen, setDialogOpen] = useState(false);
 
-    const { expenses, addExpense, updateExpense, deleteExpense } = useFirestoreExpenses(user);
+    const {expenses, addExpense, updateExpense, deleteExpense} = useFirestoreExpenses(user);
 
     useEffect(() => {
         onAuthStateChanged(auth, (user) => {
@@ -52,7 +52,7 @@ function App() {
     };
 
     return (
-        <div style={{ padding: '2rem' }}>
+        <div style={{padding: '2rem'}}>
             {user ? (
                 <>
                     <h2>Hi, {user.displayName}</h2>

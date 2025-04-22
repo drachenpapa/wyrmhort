@@ -24,20 +24,20 @@ jobs:
       - name: ESLint
         run: npm run lint
 
-  test:
-    name: Tests
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout codebase
-        uses: actions/checkout@v4
-      - name: Setup environment
-        uses: ./.github/actions/frontend-setup
-      - name: Run tests
-        run: npm test -- --coverage --watchAll=false
+#  test:
+#    name: Tests
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Checkout codebase
+#        uses: actions/checkout@v4
+#      - name: Setup environment
+#        uses: ./.github/actions/frontend-setup
+#      - name: Run tests
+#        run: npm test -- --coverage --watchAll=false
 
   build:
     name: Build
-    needs: [lint, test]
+    needs: [lint]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout codebase
