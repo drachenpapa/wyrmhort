@@ -1,0 +1,18 @@
+{
+  "expenses": "Ausgaben",
+  "add_expense": "Ausgabe hinzufügen",
+  "edit_expense": "Ausgabe bearbeiten",
+  "edit": "Bearbeiten",
+  "delete": "Löschen",
+  "confirm_delete": "Möchtest du diese Ausgabe wirklich löschen?",
+  "save": "Speichern",
+  "date": "Datum",
+  "amount": "Betrag",
+  "quantity": "Menge",
+  "product": "Produkt",
+  "marketplace": "Marktplatz",
+  "seller": "Verkäufer",
+  "item_type": "Produkttyp",
+  "series": "Serie",
+  "actions": "Aktionen"
+}
