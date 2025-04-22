@@ -7,8 +7,7 @@ COPY ./secrets /secrets
 COPY ./src /app
 COPY ./tests /app/tests
 
-RUN pip install --no-cache-dir -r requirements.txt
-RUN pip install --no-cache-dir "uvicorn[standard]"
+RUN pip install --no-cache-dir -r requirements.txt "uvicorn[standard]"
 
 EXPOSE 8080
 
