@@ -1,0 +1,19 @@
+name: 'Frontend Setup'
+
+inputs:
+  node-version:
+    description: 'Node version to use'
+    required: false
+    default: '18'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Checkout codebase
+      uses: actions/checkout@v4
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ inputs.node-version }}
+    - name: Install dependencies
+      run: npm ci
