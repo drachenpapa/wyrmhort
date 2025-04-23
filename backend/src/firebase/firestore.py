@@ -10,10 +10,13 @@ from expenses.models import Expense
 
 
 def init_firestore():
-    if not firebase_admin._apps:
+    try:
+        firebase_admin.get_app()
+    except ValueError:
         key_path = os.path.join(os.path.dirname(__file__), '..', '..', 'secrets', 'firebase-key.json')
         cred = credentials.Certificate(os.path.abspath(key_path))
         firebase_admin.initialize_app(cred)
+
     return firestore.client()
 
 
