@@ -39,18 +39,22 @@ async def create_expense(
         db=Depends(get_db),
         uid=Depends(get_current_user_uid)
 ):
-    expense_obj = Expense(
-        date=expense.date,
-        amount=expense.amount,
-        quantity=expense.quantity,
-        marketplace=expense.marketplace,
-        seller=expense.seller,
-        product=expense.product,
-        item_type=expense.item_type,
-        series=expense.series
-    )
-    create_expense_service(db, uid, expense_obj)
-    return {"message": "Expense added successfully"}
+    try:
+        expense_obj = Expense(
+            date=expense.date,
+            amount=expense.amount,
+            quantity=expense.quantity,
+            marketplace=expense.marketplace,
+            seller=expense.seller,
+            product=expense.product,
+            item_type=expense.item_type,
+            series=expense.series
+        )
+        create_expense_service(db, uid, expense_obj)
+        return {"message": "Expense added successfully"}
+    except Exception as e:
+        print(">>> ERROR:", e)
+        raise
 
 
 @app.get("/api/expenses/")
@@ -62,8 +66,12 @@ async def read_expenses(
         db=Depends(get_db),
         uid=Depends(get_current_user_uid)
 ):
-    expenses = read_expenses_service(db, uid, category, marketplace, start_date, end_date)
-    return {"expenses": expenses}
+    try:
+        expenses = read_expenses_service(db, uid, category, marketplace, start_date, end_date)
+        return {"expenses": expenses}
+    except Exception as e:
+        print(">>> ERROR:", e)
+        raise
 
 
 @app.put("/api/expenses/{expense_id}")
@@ -73,18 +81,22 @@ async def update_expense(
         db=Depends(get_db),
         uid=Depends(get_current_user_uid)
 ):
-    updated_expense = Expense(
-        date=expense.date,
-        amount=expense.amount,
-        quantity=expense.quantity,
-        marketplace=expense.marketplace,
-        seller=expense.seller,
-        product=expense.product,
-        item_type=expense.item_type,
-        series=expense.series
-    )
-    update_expense_service(db, uid, expense_id, updated_expense)
-    return {"message": f"Expense with ID {expense_id} updated."}
+    try:
+        updated_expense = Expense(
+            date=expense.date,
+            amount=expense.amount,
+            quantity=expense.quantity,
+            marketplace=expense.marketplace,
+            seller=expense.seller,
+            product=expense.product,
+            item_type=expense.item_type,
+            series=expense.series
+        )
+        update_expense_service(db, uid, expense_id, updated_expense)
+        return {"message": f"Expense with ID {expense_id} updated."}
+    except Exception as e:
+        print(">>> ERROR:", e)
+        raise
 
 
 @app.delete("/api/expenses/{expense_id}")
@@ -93,5 +105,9 @@ async def delete_expense(
         db=Depends(get_db),
         uid=Depends(get_current_user_uid)
 ):
-    delete_expense_service(db, uid, expense_id)
-    return {"message": f"Expense with ID {expense_id} deleted."}
+    try:
+        delete_expense_service(db, uid, expense_id)
+        return {"message": f"Expense with ID {expense_id} deleted."}
+    except Exception as e:
+        print(">>> ERROR:", e)
+        raise
