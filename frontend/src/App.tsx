@@ -3,7 +3,7 @@ import {onAuthStateChanged, signInWithPopup, signOut, User} from 'firebase/auth'
 import {auth, provider} from './firebase';
 import ExpenseTable from './components/ExpenseTable';
 import ExpenseDialog from './components/ExpenseDialog';
-import useFirestoreExpenses from './hooks/useFirestoreExpenses';
+import useApiExpenses from './hooks/useApiExpenses.ts';
 import {Expense} from './types/Expense';
 
 function App() {
@@ -11,7 +11,7 @@ function App() {
     const [, setEditingExpense] = useState<Expense | null>(null);
     const [dialogOpen, setDialogOpen] = useState(false);
 
-    const {expenses, addExpense, updateExpense, deleteExpense} = useFirestoreExpenses(user);
+    const {expenses, addExpense, updateExpense, deleteExpense} = useApiExpenses(user);
 
     useEffect(() => {
         onAuthStateChanged(auth, (user) => {
