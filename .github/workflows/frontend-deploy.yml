@@ -25,6 +25,6 @@ jobs:
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: '${{ secrets.GITHUB_TOKEN }}'
-          firebaseServiceAccount: '${{ secrets.FIREBASE_CREDENTIALS }}'
+          firebaseServiceAccount: '${{ secrets.GCP_SA_KEY }}'
           channelId: live
           projectId: wyrmhort
