@@ -28,6 +28,8 @@ jobs:
         run: |
           mkdir -p backend/secrets
           printf "%s" "${{ secrets.FIREBASE_CREDENTIALS }}" > backend/secrets/firebase-key.json
+          echo "--- Parsed JSON:"
+          jq . backend/secrets/firebase-key.json
       - name: Validate JSON
         run: |
           cat backend/secrets/firebase-key.json | jq .
