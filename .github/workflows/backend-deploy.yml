@@ -27,7 +27,8 @@ jobs:
       - name: Create firebase key file
         run: |
           mkdir -p backend/secrets
-          printf "%s" "${{ secrets.FIREBASE_CREDENTIALS }}" > backend/secrets/firebase-key.json
+          echo "${{ secrets.FIREBASE_CREDENTIALS_B64 }}" \
+          | base64 --decode > backend/secrets/firebase-key.json
           echo "--- Parsed JSON:"
           jq . backend/secrets/firebase-key.json
       - name: Validate JSON
