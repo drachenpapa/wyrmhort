@@ -3,6 +3,8 @@ import logging
 from fastapi import Request, HTTPException, status
 from firebase_admin import auth
 
+logging.basicConfig(level=logging.INFO)
+
 
 async def get_current_user_uid(request: Request) -> str:
     auth_header = request.headers.get("Authorization")

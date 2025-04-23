@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from datetime import datetime
 
 from fastapi import FastAPI, Depends
@@ -16,6 +17,7 @@ from firebase.auth import get_current_user_uid
 from firebase.firestore import init_firestore
 
 app = FastAPI()
+logging.basicConfig(level=logging.INFO)
 
 
 def get_db():
