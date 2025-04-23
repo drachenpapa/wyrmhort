@@ -11,7 +11,7 @@ jobs:
     env:
       PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
       REGION: europe-west1
-      SERVICE_NAME: fastapi-backend
+      SERVICE_NAME: wyrmhort-backend
 
     steps:
       - name: Checkout codebase
