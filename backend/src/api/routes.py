@@ -33,7 +33,7 @@ class ExpenseRequest(BaseModel):
     series: str
 
 
-@app.post("/expenses/")
+@app.post("/api/expenses/")
 async def create_expense(
         expense: ExpenseRequest,
         db=Depends(get_db),
@@ -53,7 +53,7 @@ async def create_expense(
     return {"message": "Expense added successfully"}
 
 
-@app.get("/expenses/")
+@app.get("/api/expenses/")
 async def read_expenses(
         category: str | None = None,
         marketplace: str | None = None,
@@ -66,7 +66,7 @@ async def read_expenses(
     return {"expenses": expenses}
 
 
-@app.put("/expenses/{expense_id}")
+@app.put("/api/expenses/{expense_id}")
 async def update_expense(
         expense_id: str,
         expense: ExpenseRequest,
@@ -87,7 +87,7 @@ async def update_expense(
     return {"message": f"Expense with ID {expense_id} updated."}
 
 
-@app.delete("/expenses/{expense_id}")
+@app.delete("/api/expenses/{expense_id}")
 async def delete_expense(
         expense_id: str,
         db=Depends(get_db),
