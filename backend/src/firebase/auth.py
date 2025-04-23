@@ -15,7 +15,7 @@ async def get_current_user_uid(request: Request) -> str:
         decoded_token = auth.verify_id_token(id_token)
         uid = decoded_token["uid"]
         logging.info(f"Token verified for uid: {uid}")
-    except Exception:
+    except Exception as e:
         logging.error(f"Token verification failed: {e}")
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token verification failed")
 
