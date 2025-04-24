@@ -9,8 +9,6 @@ inputs:
 runs:
   using: 'composite'
   steps:
-    - name: Checkout codebase
-      uses: actions/checkout@v4
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
@@ -19,5 +17,5 @@ runs:
       shell: bash
       run: |
         python -m pip install --upgrade pip
-        pip install -r backend/requirements.txt
-        pip install -r backend/dev-requirements.txt
+        pip install -r requirements.txt
+        pip install -r dev-requirements.txt
