@@ -9,6 +9,8 @@ inputs:
 runs:
   using: 'composite'
   steps:
+    - name: Checkout codebase
+      uses: actions/checkout@v4
     - name: Set up Node.js
       uses: actions/setup-node@v4
       with:
