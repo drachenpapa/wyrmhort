@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
-import { Expense } from '../types/Expense';
-import { useTranslation } from 'react-i18next';
+import {useEffect, useState} from 'react';
+import {Expense} from '../types/Expense';
+import {useTranslation} from 'react-i18next';
 
 type Props = {
     open: boolean;
@@ -9,8 +9,8 @@ type Props = {
     initialData?: Expense;
 };
 
-export default function ExpenseDialog({ open, onClose, onSave, initialData }: Props) {
-    const { t } = useTranslation();
+export default function ExpenseDialog({open, onClose, onSave, initialData}: Props) {
+    const {t} = useTranslation();
     const [form, setForm] = useState<Expense>({
         date: '',
         amount: 0,
@@ -29,15 +29,30 @@ export default function ExpenseDialog({ open, onClose, onSave, initialData }: Pr
     }, [initialData]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
+        const {name, value} = e.target;
         setForm((prev: Expense) => ({
             ...prev,
             [name]: name === 'amount' || name === 'quantity' ? Number(value) : value,
         }));
     };
 
+    const isValid =
+        !!form.date &&
+        form.amount > 0 &&
+        form.quantity > 0 &&
+        form.seller.trim() !== '' &&
+        form.product.trim() !== '' &&
+        form.item_type.trim() !== '';
+
+    const cleanOptionalFields = (value: string) => value.trim() === '' ? undefined : value;
+
     const handleSubmit = () => {
-        onSave(form);
+        onSave({
+            ...form,
+            date: new Date(form.date).toISOString(),
+            series: cleanOptionalFields(form.series),
+            marketplace: cleanOptionalFields(form.marketplace),
+        });
         onClose();
     };
 
@@ -57,7 +72,7 @@ export default function ExpenseDialog({ open, onClose, onSave, initialData }: Pr
                 justifyContent: 'center',
             }}
         >
-            <div style={{ background: '#fff', padding: '2rem', borderRadius: '8px', width: '500px' }}>
+            <div style={{background: '#fff', padding: '2rem', borderRadius: '8px', width: '500px'}}>
                 <h3>{t('add_expense')}</h3>
                 <form onSubmit={(e) => e.preventDefault()}>
                     {[
@@ -70,23 +85,23 @@ export default function ExpenseDialog({ open, onClose, onSave, initialData }: Pr
                         'item_type',
                         'series',
                     ].map((field) => (
-                        <div key={field} style={{ marginBottom: '1rem' }}>
-                            <label htmlFor={field}>{t(field)}</label><br />
+                        <div key={field} style={{marginBottom: '1rem'}}>
+                            <label htmlFor={field}>{t(field)}</label><br/>
                             <input
                                 type={field === 'date' ? 'date' : field === 'amount' || field === 'quantity' ? 'number' : 'text'}
                                 id={field}
                                 name={field}
                                 value={form[field as keyof Expense]}
                                 onChange={handleChange}
-                                style={{ width: '100%' }}
+                                style={{width: '100%'}}
                             />
                         </div>
                     ))}
-                    <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>
+                    <div style={{display: 'flex', justifyContent: 'flex-end', gap: '1rem'}}>
                         <button type="button" onClick={onClose}>
                             Cancel
                         </button>
-                        <button type="button" onClick={handleSubmit}>
+                        <button type="button" onClick={handleSubmit} disabled={!isValid}>
                             {t('save')}
                         </button>
                     </div>

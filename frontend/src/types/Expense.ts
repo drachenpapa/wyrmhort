@@ -7,5 +7,5 @@ export type Expense = {
     seller: string;
     product: string;
     item_type: string;
-    series: string;
+    series?: string;
 };
