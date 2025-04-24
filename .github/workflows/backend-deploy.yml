@@ -29,11 +29,6 @@ jobs:
           mkdir -p backend/secrets
           echo "${{ secrets.FIREBASE_CREDENTIALS_B64 }}" \
           | base64 --decode > backend/secrets/firebase-key.json
-          echo "--- Parsed JSON:"
-          jq . backend/secrets/firebase-key.json
-      - name: Validate JSON
-        run: |
-          cat backend/secrets/firebase-key.json | jq .
       - name: Build and Deploy to Cloud Run
         run: |
           gcloud run deploy $SERVICE_NAME \

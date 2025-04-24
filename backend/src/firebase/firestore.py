@@ -20,13 +20,22 @@ def init_firestore():
     return firestore.client()
 
 
-def get_expenses(db, uid, category=None, marketplace=None, start_date=None, end_date=None):
+def get_expenses(db, uid, product=None, item_type=None, series=None,
+                 seller=None, marketplace=None, start_date=None, end_date=None):
     expenses_ref = db.collection("users").document(uid).collection("expenses")
 
-    if start_date and end_date:
-        expenses_ref = expenses_ref.where("date", ">=", start_date).where("date", "<=", end_date)
-    if category:
-        expenses_ref = expenses_ref.where("product", "==", category)
+    if start_date:
+        expenses_ref = expenses_ref.where("date", ">=", start_date.isoformat())
+    if end_date:
+        expenses_ref = expenses_ref.where("date", "<=", end_date.isoformat())
+    if product:
+        expenses_ref = expenses_ref.where("product", "==", product)
+    if item_type:
+        expenses_ref = expenses_ref.where("item_type", "==", item_type)
+    if series:
+        expenses_ref = expenses_ref.where("series", "==", series)
+    if seller:
+        expenses_ref = expenses_ref.where("seller", "==", seller)
     if marketplace:
         expenses_ref = expenses_ref.where("marketplace", "==", marketplace)
 
@@ -35,14 +44,14 @@ def get_expenses(db, uid, category=None, marketplace=None, start_date=None, end_
     for doc in expenses:
         data = doc.to_dict()
         result.append(Expense(
+            date=datetime.fromisoformat(data["date"]),
             amount=data["amount"],
-            quantity=data["quantity"],
-            marketplace=data.get("marketplace"),
-            seller=data["seller"],
             product=data["product"],
             item_type=data["item_type"],
             series=data["series"],
-            date=datetime.fromisoformat(data["date"])
+            quantity=data["quantity"],
+            seller=data["seller"],
+            marketplace=data.get("marketplace")
         ))
     return result
 
@@ -52,12 +61,12 @@ def add_expense(db, uid, expense):
     doc_ref.set({
         "date": expense.date.isoformat(),
         "amount": expense.amount,
-        "quantity": expense.quantity,
-        "marketplace": expense.marketplace,
-        "seller": expense.seller,
         "product": expense.product,
         "item_type": expense.item_type,
-        "series": expense.series
+        "series": expense.series,
+        "quantity": expense.quantity,
+        "seller": expense.seller,
+        "marketplace": expense.marketplace
     })
     print(f"Expense added with ID: {doc_ref.id}")
 
@@ -65,14 +74,14 @@ def add_expense(db, uid, expense):
 def update_expense(db, uid, expense_id, updated_expense):
     doc_ref = db.collection("users").document(uid).collection("expenses").document(expense_id)
     doc_ref.update({
+        "date": updated_expense.date.isoformat(),
         "amount": updated_expense.amount,
-        "quantity": updated_expense.quantity,
-        "marketplace": updated_expense.marketplace,
-        "seller": updated_expense.seller,
         "product": updated_expense.product,
         "item_type": updated_expense.item_type,
         "series": updated_expense.series,
-        "date": updated_expense.date.isoformat()
+        "quantity": updated_expense.quantity,
+        "seller": updated_expense.seller,
+        "marketplace": updated_expense.marketplace
     })
     print(f"Expense with ID: {expense_id} updated.")
 

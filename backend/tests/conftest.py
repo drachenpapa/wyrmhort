@@ -13,12 +13,12 @@ def sample_expense_data():
     return {
         "date": "2025-04-15T10:00:00",
         "amount": 4.99,
-        "quantity": 1,
-        "marketplace": "Cardmarket",
-        "seller": "Louis",
         "product": "Pokémon TCG",
         "item_type": "Booster",
-        "series": "Scarlet & Violet"
+        "series": "Scarlet & Violet",
+        "quantity": 1,
+        "seller": "Louis",
+        "marketplace": "Cardmarket"
     }
 
 
@@ -31,12 +31,12 @@ def expense_factory(sample_expense_data):
         return Expense(
             date=datetime.fromisoformat(data["date"]),
             amount=data["amount"],
-            quantity=data["quantity"],
-            marketplace=data["marketplace"],
-            seller=data["seller"],
             product=data["product"],
             item_type=data["item_type"],
             series=data["series"],
+            quantity=data["quantity"],
+            seller=data["seller"],
+            marketplace=data["marketplace"]
         )
 
     return _factory

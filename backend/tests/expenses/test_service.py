@@ -13,7 +13,7 @@ def test_create_expense_service(mock_db, expense_factory):
 
 def test_read_expenses_service(mock_db):
     mock_db.collection().where().stream.return_value = []
-    read_expenses_service(mock_db, "mock-uid", category="Pokémon")
+    read_expenses_service(mock_db, "mock-uid", product="Pokémon")
 
 
 def test_update_expense_service(mock_db, expense_factory):

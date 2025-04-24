@@ -6,9 +6,9 @@ from datetime import datetime
 class Expense:
     date: datetime
     amount: float
-    quantity: int
-    marketplace: str | None
-    seller: str
     product: str
     item_type: str
-    series: str
+    series: str | None
+    quantity: int
+    seller: str
+    marketplace: str | None

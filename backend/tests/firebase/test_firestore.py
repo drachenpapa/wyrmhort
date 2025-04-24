@@ -13,7 +13,7 @@ def test_get_expenses(mock_db, sample_expense_data):
 
     mock_db.collection.return_value.document.return_value.collection.return_value = mock_expenses_ref
 
-    expenses = get_expenses(mock_db, "mock-uid", category="Pokémon TCG")
+    expenses = get_expenses(mock_db, "mock-uid", product="Pokémon TCG")
     assert isinstance(expenses, list)
     assert len(expenses) > 0
     assert expenses[0].product == "Pokémon TCG"
@@ -29,3 +29,8 @@ def test_update_expense(mock_db, expense_factory):
 
 def test_delete_expense(mock_db):
     delete_expense(mock_db, "mock-uid", "some-id")
+
+
+def test_add_expense_without_marketplace(mock_db, expense_factory):
+    expense = expense_factory({"marketplace": None})
+    add_expense(mock_db, "mock-uid", expense)
