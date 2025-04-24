@@ -14,7 +14,7 @@
     ":timezone(Europe/Berlin)"
   ],
   "pip_requirements": {
-    "fileMatch": ["^backend/requirements\\.txt$"],
+    "fileMatch": ["^backend/requirements\\.txt$"]
   },
   "packageRules": [
     {
