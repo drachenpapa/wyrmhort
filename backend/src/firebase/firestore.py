@@ -69,6 +69,7 @@ def add_expense(db, uid, expense):
         "marketplace": expense.marketplace
     })
     print(f"Expense added with ID: {doc_ref.id}")
+    return doc_ref.id
 
 
 def update_expense(db, uid, expense_id, updated_expense):

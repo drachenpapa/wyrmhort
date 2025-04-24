@@ -9,9 +9,9 @@ from expenses.schemas import ExpenseRequest
 from firebase.firestore import add_expense, get_expenses, update_expense, delete_expense
 
 
-def create_expense_service(db: Client, uid: str, expense: ExpenseRequest) -> None:
+def create_expense_service(db: Client, uid: str, expense: ExpenseRequest) -> str:
     expense_obj = __convert(expense)
-    add_expense(db, uid, expense_obj)
+    return add_expense(db, uid, expense_obj)
 
 
 def read_expenses_service(

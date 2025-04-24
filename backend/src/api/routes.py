@@ -27,8 +27,11 @@ async def create_expense(
         db=Depends(get_db),
         uid=Depends(get_current_user_uid)
 ):
-    create_expense_service(db, uid, expense)
-    return {"message": "Expense added successfully"}
+    """
+    Add a new expense to the user's collection.
+    """
+    expense_id = create_expense_service(db, uid, expense)
+    return {"message": "Expense added successfully", "id": expense_id}
 
 
 @app.get("/api/expenses/")
@@ -43,6 +46,9 @@ async def read_expenses(
         db=Depends(get_db),
         uid=Depends(get_current_user_uid)
 ):
+    """
+    Retrieve all expenses for the user, optionally filtered by product, type, or series.
+    """
     expenses = read_expenses_service(
         db,
         uid,
@@ -64,6 +70,9 @@ async def update_expense(
         db=Depends(get_db),
         uid=Depends(get_current_user_uid)
 ):
+    """
+    Modify an existing expense.
+    """
     update_expense_service(db, uid, expense_id, expense)
     return {"message": f"Expense with ID {expense_id} updated."}
 
@@ -74,5 +83,8 @@ async def delete_expense(
         db=Depends(get_db),
         uid=Depends(get_current_user_uid)
 ):
+    """
+    Remove a specific expense entry.
+    """
     delete_expense_service(db, uid, expense_id)
     return {"message": f"Expense with ID {expense_id} deleted."}

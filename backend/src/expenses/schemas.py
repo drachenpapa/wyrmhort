@@ -6,14 +6,14 @@ from pydantic import BaseModel, Field, field_validator
 
 
 class ExpenseRequest(BaseModel):
-    date: datetime
-    amount: Decimal = Field(..., gt=0, description="Amount must be greater than 0")
-    product: str
-    item_type: str
-    series: Optional[str] = None
-    quantity: int = Field(..., ge=1, description="Quantity must be at least 1")
-    seller: str
-    marketplace: Optional[str] = None
+    date: datetime = Field(..., description="Purchase date (ISO 8601)")
+    amount: Decimal = Field(..., gt=0, description="Total amount paid")
+    product: str = Field(..., description="Product name")
+    item_type: str = Field(..., description="Type of item, e.g. Booster, Display")
+    series: Optional[str] = Field(None, description="Product series or edition")
+    quantity: int = Field(..., ge=1, description="Number of items purchased")
+    seller: str = Field(..., description="Name of the seller or store")
+    marketplace: Optional[str] = Field(None, description="Platform or marketplace, if any")
 
     @field_validator("seller", "product", "item_type", mode="before")
     def validate_non_empty_strings(v, info):
