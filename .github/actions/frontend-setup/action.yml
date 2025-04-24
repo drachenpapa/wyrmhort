@@ -4,7 +4,7 @@ inputs:
   node-version:
     description: 'Node version to use'
     required: false
-    default: '20'
+    default: '22'
 
 runs:
   using: 'composite'
@@ -18,4 +18,6 @@ runs:
     - name: Install dependencies
       shell: bash
       working-directory: frontend
-      run: npm ci
+      run: |
+        rm -rf node_modules package-lock.json
+        npm install
