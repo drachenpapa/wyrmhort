@@ -89,6 +89,13 @@ export default function PivotOverview() {
                                                             <span
                                                                 className="pivot-toggle">{openGroups[serieKey] ? "-" : "+"}</span>
                                                             <span className="pivot-title">{serie}</span>
+                                                            <span className="pivot-date">
+                                                                {items.length > 0 &&
+                                                                    new Date(items[0].date).toLocaleDateString("de-DE", {
+                                                                        year: "numeric",
+                                                                        month: "long",
+                                                                    })}
+                                                            </span>
                                                             <span
                                                                 className="pivot-total">{serieTotal.toFixed(2)} €</span>
                                                         </div>
@@ -97,11 +104,9 @@ export default function PivotOverview() {
                                                             className={`pivot-subgroup ${openGroups[serieKey] ? "open" : ""}`}>
                                                             {items.map((item) => (
                                                                 <div key={item.id} className="pivot-item">
-                                                                    <span
-                                                                        className="pivot-item-title">{item.seller}</span>
                                                                     <span className="pivot-item-amount">
-                                    {item.amount.toFixed(2)} €
-                                  </span>
+                                                                        {item.amount.toFixed(2)} €
+                                                                    </span>
                                                                 </div>
                                                             ))}
                                                         </div>

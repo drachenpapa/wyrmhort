@@ -257,3 +257,10 @@ tr:hover {
     font-size: 16px;
     text-align: right;
 }
+
+.pivot-date {
+    margin-left: auto;
+    font-style: italic;
+    color: #888;
+    font-size: 0.9em;
+}
