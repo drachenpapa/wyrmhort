@@ -252,9 +252,8 @@ tr:hover {
 }
 
 .pivot-grand-total {
-    margin-top: 20px;
+    margin-top: 1.5rem;
     font-weight: bold;
-    font-size: 16px;
     text-align: right;
 }
 
@@ -263,4 +262,19 @@ tr:hover {
     font-style: italic;
     color: #888;
     font-size: 0.9em;
+}
+
+.pivot-series-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 1rem;
+    border-bottom: 1px solid #ddd;
+}
+
+.pivot-series-title {
+    font-weight: 500;
+}
+
+.pivot-series-total {
+    font-style: italic;
 }
