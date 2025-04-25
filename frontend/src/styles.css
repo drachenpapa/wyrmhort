@@ -1,7 +1,16 @@
+:root {
+    --primary: #ff6b00;
+    --bg-light: #f8f9fa;
+    --bg-table-head: #f8f8f8;
+    --text: #333;
+    --text-muted: #555;
+    --hover-bg: #f1f1f1;
+}
+
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f8f9fa;
-    color: #333;
+    background-color: var(--bg-light);
+    color: var(--text);
     margin: 2rem;
 }
 
@@ -25,7 +34,7 @@ h1 {
 
 .tab {
     padding: 0.5rem 1rem;
-    color: #333;
+    color: var(--text);
     text-decoration: none;
     border-bottom: 2px solid transparent;
     display: flex;
@@ -33,9 +42,9 @@ h1 {
 }
 
 .tab.active {
-    border-color: #007bff;
+    border-color: var(--primary);
     font-weight: bold;
-    color: #007bff;
+    color: var(--primary);
 }
 
 .tab-icon {
@@ -56,8 +65,12 @@ th, td {
     border: 1px solid #ddd;
 }
 
+th {
+    background: var(--bg-table-head);
+}
+
 tr:hover {
-    background-color: #f1f1f1;
+    background-color: var(--hover-bg);
 }
 
 .actions button {
@@ -69,11 +82,11 @@ tr:hover {
 
 .actions i {
     font-size: 1rem;
-    color: #555;
+    color: var(--text-muted);
 }
 
 .actions i:hover {
-    color: #d9534f;
+    color: var(--primary);
 }
 
 .dialog-overlay {
@@ -130,18 +143,30 @@ tr:hover {
 }
 
 .btn.primary {
-    background-color: #007bff;
+    background-color: var(--primary);
     color: #fff;
 }
 
 .btn.secondary {
-    background-color: #f0f0f0;
-    color: #333;
+    background-color: var(--bg-table-head);
+    color: var(--text);
 }
 
 .btn:disabled {
     opacity: 0.6;
     cursor: not-allowed;
+}
+
+.icon-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0.25rem;
+    color: var(--primary);
+}
+
+.icon-btn:hover {
+    color: #e65c00;
 }
 
 .expense-table {
@@ -158,17 +183,5 @@ tr:hover {
 }
 
 .expense-table th {
-    background: #f8f8f8;
-}
-
-.icon-btn {
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    padding: 0.25rem;
-    color: #007bff;
-}
-
-.icon-btn:hover {
-    color: #0056b3;
+    background: var(--bg-table-head);
 }

@@ -43,7 +43,7 @@ export default function ExpenseTable({expenses, onEdit, onDelete}: Props) {
                 <tbody>
                 {expenses.map((exp) => (
                     <tr key={exp.id}>
-                        <td>{new Date(exp.date).toLocaleDateString()}</td>
+                        <td>{new Date(exp.date).toLocaleDateString('de-DE')}</td>
                         <td>{exp.amount}</td>
                         <td>{exp.quantity}</td>
                         <td>{exp.product}</td>
