@@ -23,6 +23,7 @@ def init_firestore():
 def get_expenses(db, uid, product=None, item_type=None, series=None,
                  seller=None, marketplace=None, start_date=None, end_date=None):
     expenses_ref = db.collection("users").document(uid).collection("expenses")
+    expenses_ref = expenses_ref.order_by("date")
 
     if start_date:
         expenses_ref = expenses_ref.where("date", ">=", start_date.isoformat())
@@ -39,7 +40,6 @@ def get_expenses(db, uid, product=None, item_type=None, series=None,
     if marketplace:
         expenses_ref = expenses_ref.where("marketplace", "==", marketplace)
 
-    expenses_ref = expenses_ref.order_by("date", direction=firestore.Query.ASCENDING)
     expenses = expenses_ref.stream()
 
     result = []

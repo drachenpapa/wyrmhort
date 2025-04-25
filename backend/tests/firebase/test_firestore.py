@@ -8,6 +8,7 @@ def test_get_expenses(mock_db, sample_expense_data):
     mock_doc = MagicMock()
     mock_doc.to_dict.return_value = sample_expense_data
 
+    mock_expenses_ref.order_by.return_value = mock_expenses_ref
     mock_expenses_ref.where.return_value = mock_expenses_ref
     mock_expenses_ref.stream.return_value = [mock_doc]
 
