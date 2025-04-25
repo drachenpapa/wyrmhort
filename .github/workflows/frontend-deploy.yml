@@ -25,9 +25,11 @@ jobs:
           EOF
       - name: Setup environment
         uses: ./.github/actions/frontend-setup
+      - name: Debug env file
+        run: cat .env.production
       - name: Build frontend
         run: |
-          npm run build
+          npm run build -- -mode production
       - name: Deploy to Firebase Hosting
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
