@@ -67,12 +67,12 @@ export default function ExpenseDialog({open, onClose, onSave, initialData}: Prop
                     {[
                         'date',
                         'amount',
-                        'quantity',
-                        'marketplace',
-                        'seller',
                         'product',
                         'item_type',
                         'series',
+                        'quantity',
+                        'seller',
+                        'marketplace'
                     ].map((field) => (
                         <div key={field} style={{marginBottom: '1rem'}}>
                             <label htmlFor={field}>{t(field)}</label><br/>

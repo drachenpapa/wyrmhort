@@ -31,26 +31,26 @@ export default function ExpenseTable({expenses, onEdit, onDelete}: Props) {
                 <tr>
                     <th>{t('date')}</th>
                     <th>{t('amount')}</th>
-                    <th>{t('quantity')}</th>
                     <th>{t('product')}</th>
-                    <th>{t('marketplace')}</th>
-                    <th>{t('seller')}</th>
                     <th>{t('item_type')}</th>
                     <th>{t('series')}</th>
-                    <th>Aktionen</th>
+                    <th>{t('quantity')}</th>
+                    <th>{t('seller')}</th>
+                    <th>{t('marketplace')}</th>
+                    <th></th>
                 </tr>
                 </thead>
                 <tbody>
                 {expenses.map((exp) => (
                     <tr key={exp.id}>
                         <td>{new Date(exp.date).toLocaleDateString('de-DE')}</td>
-                        <td>{exp.amount}</td>
-                        <td>{exp.quantity}</td>
+                        <td>{exp.amount.toLocaleString('de-DE', {style: 'currency', currency: 'EUR'})}</td>
                         <td>{exp.product}</td>
-                        <td>{exp.marketplace}</td>
-                        <td>{exp.seller}</td>
                         <td>{exp.item_type}</td>
                         <td>{exp.series}</td>
+                        <td>{exp.quantity}</td>
+                        <td>{exp.seller}</td>
+                        <td>{exp.marketplace}</td>
                         <td>
                             <button className="icon-btn" onClick={() => handleEditClick(exp)} title={t('edit')}>
                                 <Pencil size={16}/>
