@@ -1,82 +1,35 @@
-import {useEffect, useState} from 'react';
-import {onAuthStateChanged, signInWithPopup, signOut, User} from 'firebase/auth';
-import {auth, provider} from './firebase';
-import ExpenseTable from './components/ExpenseTable';
-import ExpenseDialog from './components/ExpenseDialog';
-import useApiExpenses from './hooks/useApiExpenses.ts';
-import {Expense} from './types/Expense';
+import {Route, Routes} from 'react-router-dom';
+import Tabs from './components/Tabs';
+import Dashboard from './pages/Dashboard';
+import Overview from './pages/Overview';
+import Login from './pages/Login';
+import {useAuth} from './hooks/useAuth';
+import {LogOut} from 'lucide-react';
 
-function App() {
-    const [user, setUser] = useState<User | null>(null);
-    const [, setEditingExpense] = useState<Expense | null>(null);
-    const [dialogOpen, setDialogOpen] = useState(false);
-
-    const {expenses, addExpense, updateExpense, deleteExpense} = useApiExpenses(user);
-
-    useEffect(() => {
-        onAuthStateChanged(auth, (user) => {
-            setUser(user);
-        });
-    }, []);
-
-    const handleLogin = async () => {
-        await signInWithPopup(auth, provider);
-    };
-
-    const handleLogout = async () => {
-        await signOut(auth);
-    };
-
-    const openCreateDialog = () => {
-        setEditingExpense(null);
-        setDialogOpen(true);
-    };
-
-    const openEditDialog = (expense: Expense) => {
-        setEditingExpense(expense);
-        setDialogOpen(true);
-    };
-
-    const closeDialog = () => {
-        setDialogOpen(false);
-        setEditingExpense(null);
-    };
-
-    const handleSaveExpense = (expense: Expense) => {
-        if (expense.id) {
-            updateExpense(expense.id, expense);
-        } else {
-            addExpense(expense);
-        }
-        closeDialog();
-    };
+export default function App() {
+    const {user, login, logout} = useAuth();
 
     return (
-        <div style={{padding: '2rem'}}>
+        <div className="container">
+            <h1>Wyrmhort</h1>
             {user ? (
                 <>
-                    <h2>Hi, {user.displayName}</h2>
-                    <button onClick={handleLogout}>Logout</button>
-
-                    <ExpenseDialog
-                        open={dialogOpen}
-                        onClose={closeDialog}
-                        onSave={handleSaveExpense}
-                    />
-
-                    <ExpenseTable
-                        expenses={expenses}
-                        onEdit={openEditDialog}
-                        onDelete={(id) => deleteExpense(id)}
-                    />
-
-                    <button onClick={openCreateDialog}>Add Expense</button>
+                    <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '1rem'}}>
+                        <h2>Hi, {user.displayName}!</h2>
+                        <button className="btn secondary" onClick={logout}>
+                            <LogOut size={18}/>
+                            Logout
+                        </button>
+                    </div>
+                    <Tabs/>
+                    <Routes>
+                        <Route path="/dashboard" element={<Dashboard/>}/>
+                        <Route path="/overview" element={<Overview/>}/>
+                    </Routes>
                 </>
             ) : (
-                <button onClick={handleLogin}>Login mit Google</button>
+                <Login onLogin={login}/>
             )}
         </div>
     );
 }
-
-export default App;

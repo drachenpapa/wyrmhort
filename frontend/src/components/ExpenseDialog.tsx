@@ -60,20 +60,8 @@ export default function ExpenseDialog({open, onClose, onSave, initialData}: Prop
     if (!open) return null;
 
     return (
-        <div
-            style={{
-                position: 'fixed',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                background: 'rgba(0,0,0,0.5)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-            }}
-        >
-            <div style={{background: '#fff', padding: '2rem', borderRadius: '8px', width: '500px'}}>
+        <div className="dialog-overlay">
+            <div className="dialog">
                 <h3>{t('add_expense')}</h3>
                 <form onSubmit={(e) => e.preventDefault()}>
                     {[
@@ -98,11 +86,11 @@ export default function ExpenseDialog({open, onClose, onSave, initialData}: Prop
                             />
                         </div>
                     ))}
-                    <div style={{display: 'flex', justifyContent: 'flex-end', gap: '1rem'}}>
-                        <button type="button" onClick={onClose}>
-                            Cancel
+                    <div className="dialog-actions">
+                        <button type="button" className="btn secondary" onClick={onClose}>
+                            {t('cancel')}
                         </button>
-                        <button type="button" onClick={handleSubmit} disabled={!isValid}>
+                        <button type="button" className="btn primary" onClick={handleSubmit} disabled={!isValid}>
                             {t('save')}
                         </button>
                     </div>

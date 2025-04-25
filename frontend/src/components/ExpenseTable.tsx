@@ -1,7 +1,8 @@
-import { useState } from 'react';
-import { Expense } from '../types/Expense';
-import { useTranslation } from 'react-i18next';
+import {useState} from 'react';
+import {Expense} from '../types/Expense';
+import {useTranslation} from 'react-i18next';
 import ExpenseDialog from './ExpenseDialog';
+import {Pencil, Trash2} from 'lucide-react';
 
 type Props = {
     expenses: Expense[];
@@ -9,8 +10,8 @@ type Props = {
     onDelete: (id: string) => void;
 };
 
-export default function ExpenseTable({ expenses, onEdit, onDelete }: Props) {
-    const { t } = useTranslation();
+export default function ExpenseTable({expenses, onEdit, onDelete}: Props) {
+    const {t} = useTranslation();
     const [editExpense, setEditExpense] = useState<Expense | null>(null);
 
     const handleEditClick = (expense: Expense) => {
@@ -23,9 +24,9 @@ export default function ExpenseTable({ expenses, onEdit, onDelete }: Props) {
     };
 
     return (
-        <div style={{ marginTop: '2rem' }}>
+        <div className="container">
             <h3>{t('expenses')}</h3>
-            <table border={1} cellPadding={8}>
+            <table className="expense-table">
                 <thead>
                 <tr>
                     <th>{t('date')}</th>
@@ -51,8 +52,16 @@ export default function ExpenseTable({ expenses, onEdit, onDelete }: Props) {
                         <td>{exp.item_type}</td>
                         <td>{exp.series}</td>
                         <td>
-                            <button onClick={() => handleEditClick(exp)}>Edit</button>{' '}
-                            <button onClick={() => exp.id && onDelete(exp.id)}>Delete</button>
+                            <button className="icon-btn" onClick={() => handleEditClick(exp)} title={t('edit')}>
+                                <Pencil size={16}/>
+                            </button>
+                            <button
+                                className="icon-btn"
+                                onClick={() => exp.id && onDelete(exp.id)}
+                                title={t('delete')}
+                            >
+                                <Trash2 size={16}/>
+                            </button>
                         </td>
                     </tr>
                 ))}
@@ -61,7 +70,7 @@ export default function ExpenseTable({ expenses, onEdit, onDelete }: Props) {
 
             {editExpense && (
                 <ExpenseDialog
-                    open={true}
+                    open
                     onClose={() => setEditExpense(null)}
                     onSave={handleDialogSave}
                     initialData={editExpense}
