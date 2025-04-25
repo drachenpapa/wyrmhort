@@ -39,7 +39,9 @@ def get_expenses(db, uid, product=None, item_type=None, series=None,
     if marketplace:
         expenses_ref = expenses_ref.where("marketplace", "==", marketplace)
 
+    expenses_ref = expenses_ref.order_by("date", direction=firestore.Query.ASCENDING)
     expenses = expenses_ref.stream()
+
     result = []
     for doc in expenses:
         data = doc.to_dict()
