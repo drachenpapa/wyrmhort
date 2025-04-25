@@ -1,7 +1,7 @@
 import {Route, Routes} from 'react-router-dom';
 import Tabs from './components/Tabs';
 import Dashboard from './pages/Dashboard';
-import Overview from './pages/Overview';
+import PivotOverview from './pages/PivotOverview.tsx';
 import Login from './pages/Login';
 import {useAuth} from './hooks/useAuth';
 import {LogOut} from 'lucide-react';
@@ -24,7 +24,7 @@ export default function App() {
                     <Tabs/>
                     <Routes>
                         <Route path="/dashboard" element={<Dashboard/>}/>
-                        <Route path="/overview" element={<Overview/>}/>
+                        <Route path="/overview" element={<PivotOverview/>}/>
                     </Routes>
                 </>
             ) : (

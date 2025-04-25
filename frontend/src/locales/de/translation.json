@@ -15,5 +15,10 @@
   "item_type": "Produkttyp",
   "series": "Serie",
   "cancel": "Abbrechen",
+  "loading": "Lade Daten...",
+  "error_loading_data": "Fehler beim Laden der Daten.",
+  "no_data": "Keine Daten vorhanden.",
+  "unknown": "Unbekannt",
+  "grand_total": "Gesamtsumme",
   "actions": "Aktionen"
 }

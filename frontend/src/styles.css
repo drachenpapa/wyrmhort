@@ -185,3 +185,75 @@ tr:hover {
 .expense-table th {
     background: var(--bg-table-head);
 }
+.pivot-overview {
+    width: 100%;
+    font-size: 14px;
+}
+
+.pivot-group {
+    border-bottom: 1px solid #ddd;
+    margin-bottom: 8px;
+}
+
+.pivot-group-header {
+    display: flex;
+    align-items: center;
+    padding: 8px 4px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.pivot-toggle {
+    width: 20px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.pivot-title {
+    flex: 1;
+    margin-left: 8px;
+    font-weight: 600;
+}
+
+.pivot-total {
+    margin-left: auto;
+    font-weight: 500;
+}
+
+.pivot-subgroup {
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.3s ease, padding 0.3s ease;
+    padding: 0 0;
+}
+
+.pivot-subgroup.open {
+    max-height: 1000px;
+    padding: 8px 0 8px 28px;
+}
+
+.pivot-items {
+    margin-left: 56px;
+    margin-top: 4px;
+}
+
+.pivot-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 2px 0;
+}
+
+.pivot-item-title {
+    flex: 1;
+}
+
+.pivot-item-amount {
+    margin-left: auto;
+}
+
+.pivot-grand-total {
+    margin-top: 20px;
+    font-weight: bold;
+    font-size: 16px;
+    text-align: right;
+}
