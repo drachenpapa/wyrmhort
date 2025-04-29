@@ -3,14 +3,17 @@ import {Expense} from '../types/Expense';
 import {useTranslation} from 'react-i18next';
 import ExpenseDialog from './ExpenseDialog';
 import {Pencil, Trash2} from 'lucide-react';
+import {LoadingSpinner} from "./LoadingSpinner.tsx";
 
 type Props = {
     expenses: Expense[];
     onEdit: (expense: Expense) => void;
     onDelete: (id: string) => void;
+    loading: boolean;
+    error: string | null;
 };
 
-export default function ExpenseTable({expenses, onEdit, onDelete}: Props) {
+export default function ExpenseTable({expenses, onEdit, onDelete, loading, error}: Props) {
     const {t} = useTranslation();
     const [editExpense, setEditExpense] = useState<Expense | null>(null);
 
@@ -41,30 +44,43 @@ export default function ExpenseTable({expenses, onEdit, onDelete}: Props) {
                 </tr>
                 </thead>
                 <tbody>
-                {expenses.map((exp) => (
-                    <tr key={exp.id}>
-                        <td>{new Date(exp.date).toLocaleDateString('de-DE')}</td>
-                        <td>{exp.amount.toLocaleString('de-DE', {style: 'currency', currency: 'EUR'})}</td>
-                        <td>{exp.product}</td>
-                        <td>{exp.item_type}</td>
-                        <td>{exp.series}</td>
-                        <td>{exp.quantity}</td>
-                        <td>{exp.seller}</td>
-                        <td>{exp.marketplace}</td>
-                        <td>
-                            <button className="icon-btn" onClick={() => handleEditClick(exp)} title={t('edit')}>
-                                <Pencil size={16}/>
-                            </button>
-                            <button
-                                className="icon-btn"
-                                onClick={() => exp.id && onDelete(exp.id)}
-                                title={t('delete')}
-                            >
-                                <Trash2 size={16}/>
-                            </button>
+                {loading ? (
+                    <tr>
+                        <td colSpan={9}>
+                            <LoadingSpinner/>
                         </td>
                     </tr>
-                ))}
+                ) : error ? (
+                    <tr>
+                        <td colSpan={9} className="error-message">
+                            <p>{t('error_loading_data')}</p>
+                        </td>
+                    </tr>
+                ) : (
+                    expenses.map((exp) => (
+                        <tr key={exp.id}>
+                            <td>{new Date(exp.date).toLocaleDateString('de-DE')}</td>
+                            <td>{exp.amount.toLocaleString('de-DE', {style: 'currency', currency: 'EUR'})}</td>
+                            <td>{exp.product}</td>
+                            <td>{exp.item_type}</td>
+                            <td>{exp.series}</td>
+                            <td>{exp.quantity}</td>
+                            <td>{exp.seller}</td>
+                            <td>{exp.marketplace}</td>
+                            <td>
+                                <button className="icon-btn" onClick={() => handleEditClick(exp)} title={t('edit')}>
+                                    <Pencil size={16}/>
+                                </button>
+                                <button
+                                    className="icon-btn"
+                                    onClick={() => exp.id && onDelete(exp.id)}
+                                    title={t('delete')}
+                                >
+                                    <Trash2 size={16}/>
+                                </button>
+                            </td>
+                        </tr>
+                    )))}
                 </tbody>
             </table>
 
