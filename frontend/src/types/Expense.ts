@@ -4,7 +4,7 @@ export type Expense = {
     amount: number;
     product: string;
     item_type: string;
-    series?: string;
+    series: string;
     quantity: number;
     seller: string;
     marketplace?: string;

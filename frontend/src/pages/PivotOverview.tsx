@@ -14,6 +14,10 @@ interface GroupedExpenses {
     };
 }
 
+const safeKey = (key: string): string =>
+    key.replace(/[^a-zA-Z0-9-_ äöüÄÖÜß]/g, "_");
+
+
 export default function PivotOverview() {
     const {user} = useAuth();
     const {expenses, loading, error} = useApiExpenses(user);
@@ -25,13 +29,13 @@ export default function PivotOverview() {
     if (!expenses || expenses.length === 0) return <div>{t("no_expenses_found")}</div>;
 
     const grouped = expenses.reduce<GroupedExpenses>((acc, expense) => {
-        const product = expense.product || t("unknown");
-        const itemType = expense.item_type || t("unknown");
-        const serie = expense.series || t("unknown");
+        const product = safeKey(expense.product || t("unknown"));
+        const itemType = safeKey(expense.item_type || t("unknown"));
+        const serie = safeKey(expense.series || t("unknown"));
 
-        if (!acc[product]) acc[product] = {};
-        if (!acc[product][itemType]) acc[product][itemType] = {};
-        if (!acc[product][itemType][serie]) acc[product][itemType][serie] = [];
+        acc[product] ??= {};
+        acc[product][itemType] ??= {};
+        acc[product][itemType][serie] ??= [];
 
         acc[product][itemType][serie].push(expense);
         return acc;
@@ -52,13 +56,13 @@ export default function PivotOverview() {
     return (
         <div className="pivot-overview">
             {Object.entries(grouped).map(([product, itemTypes]) => {
-                const productKey = `product-${product}`;
+                const productKey = safeKey(`product-${product}`);
                 const productTotal = Object.values(itemTypes)
                     .flatMap((series) => Object.values(series).flat())
                     .reduce((sum, item) => sum + (item.amount || 0), 0);
 
                 return (
-                    <div key={product} className="pivot-group">
+                    <div key={productKey} className="pivot-group">
                         <div className="pivot-group-header" onClick={() => toggle(productKey)}>
                             <span className="pivot-toggle">{openGroups[productKey] ? "-" : "+"}</span>
                             <span className="pivot-title">{product}</span>
@@ -67,13 +71,13 @@ export default function PivotOverview() {
 
                         <div className={`pivot-subgroup ${openGroups[productKey] ? "open" : ""}`}>
                             {Object.entries(itemTypes).map(([itemType, series]) => {
-                                const itemTypeKey = `${productKey}-itemType-${itemType}`;
+                                const itemTypeKey = safeKey(`${productKey}-itemType-${itemType}`);
                                 const itemTypeTotal = Object.values(series)
                                     .flat()
                                     .reduce((sum, item) => sum + (item.amount || 0), 0);
 
                                 return (
-                                    <div key={itemType} className="pivot-group">
+                                    <div key={itemTypeKey} className="pivot-group">
                                         <div className="pivot-group-header" onClick={() => toggle(itemTypeKey)}>
                                             <span className="pivot-toggle">{openGroups[itemTypeKey] ? "-" : "+"}</span>
                                             <span className="pivot-title">{itemType}</span>
@@ -82,23 +86,13 @@ export default function PivotOverview() {
 
                                         <div className={`pivot-subgroup ${openGroups[itemTypeKey] ? "open" : ""}`}>
                                             {Object.entries(series).map(([serie, items]) => {
-                                                const serieKey = `${itemTypeKey}-serie-${serie}`;
+                                                const serieKey = safeKey(`${itemTypeKey}-serie-${serie}`);
                                                 const serieTotal = calculateTotal(items);
 
                                                 return (
-                                                    <div key={serie} className="pivot-group">
-                                                        <div className="pivot-group-header"
-                                                             onClick={() => toggle(serieKey)}>
-                                                            <span
-                                                                className="pivot-toggle">{openGroups[serieKey] ? "-" : "+"}</span>
+                                                    <div key={serieKey} className="pivot-group">
+                                                        <div className="pivot-group-header">
                                                             <span className="pivot-title">{serie}</span>
-                                                            <span className="pivot-date">
-                                                                {items.length > 0 &&
-                                                                    new Date(items[0].date).toLocaleDateString("de-DE", {
-                                                                        year: "numeric",
-                                                                        month: "long",
-                                                                    })}
-                                                            </span>
                                                             <span
                                                                 className="pivot-total">{serieTotal.toFixed(2)} €</span>
                                                         </div>

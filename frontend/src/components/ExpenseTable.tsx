@@ -59,7 +59,11 @@ export default function ExpenseTable({expenses, onEdit, onDelete, loading, error
                 ) : (
                     expenses.map((exp) => (
                         <tr key={exp.id}>
-                            <td>{new Date(exp.date).toLocaleDateString('de-DE')}</td>
+                            <td>{new Date(exp.date).toLocaleDateString('de-DE', {
+                                day: '2-digit',
+                                month: '2-digit',
+                                year: 'numeric'
+                            })}</td>
                             <td>{exp.amount.toLocaleString('de-DE', {style: 'currency', currency: 'EUR'})}</td>
                             <td>{exp.product}</td>
                             <td>{exp.item_type}</td>
