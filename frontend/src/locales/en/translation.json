@@ -15,5 +15,7 @@
   "item_type": "Item Type",
   "series": "Series",
   "cancel": "Cancel",
+  "loading": "Loading...",
+  "error_loading_data": "Error while loading data.",
   "actions": "Actions"
 }

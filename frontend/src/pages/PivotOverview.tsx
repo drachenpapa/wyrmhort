@@ -4,6 +4,7 @@ import {useTranslation} from "react-i18next";
 import "../styles.css";
 import {Expense} from "../types/Expense";
 import {useAuth} from "../hooks/useAuth.ts";
+import {LoadingSpinner} from "../components/LoadingSpinner.tsx";
 
 interface GroupedExpenses {
     [product: string]: {
@@ -15,11 +16,13 @@ interface GroupedExpenses {
 
 export default function PivotOverview() {
     const {user} = useAuth();
-    const {expenses} = useApiExpenses(user);
+    const {expenses, loading, error} = useApiExpenses(user);
     const {t} = useTranslation();
     const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({});
 
-    if (!expenses) return <div>{t("no_data")}</div>;
+    if (loading) return <LoadingSpinner/>;
+    if (error) return <div className="error-message"><p>{t('error_loading_data')}</p></div>;
+    if (!expenses || expenses.length === 0) return <div>{t("no_expenses_found")}</div>;
 
     const grouped = expenses.reduce<GroupedExpenses>((acc, expense) => {
         const product = expense.product || t("unknown");

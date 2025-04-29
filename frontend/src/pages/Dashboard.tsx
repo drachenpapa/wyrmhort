@@ -1,16 +1,19 @@
 import ExpenseTable from '../components/ExpenseTable';
 import ExpenseDialog from '../components/ExpenseDialog';
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import {Expense} from '../types/Expense';
 import useApiExpenses from '../hooks/useApiExpenses';
-import {useAuth} from '../hooks/useAuth'; // kommt gleich!
+import {useAuth} from '../hooks/useAuth';
 
 export default function Dashboard() {
     const {user} = useAuth();
     const [dialogOpen, setDialogOpen] = useState(false);
     const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
+    const {expenses, addExpense, updateExpense, deleteExpense, loading, error} = useApiExpenses(user);
 
-    const {expenses, addExpense, updateExpense, deleteExpense} = useApiExpenses(user);
+    useEffect(() => {
+
+    }, [user]);
 
     const handleSaveExpense = (expense: Expense) => {
         if (expense.id) {
@@ -45,6 +48,8 @@ export default function Dashboard() {
                     setDialogOpen(true);
                 }}
                 onDelete={deleteExpense}
+                loading={loading}
+                error={error}
             />
         </div>
     );
