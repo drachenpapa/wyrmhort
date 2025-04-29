@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime
 
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, Query
 
 from expenses.schemas import ExpenseRequest
 from expenses.service import (
@@ -43,6 +43,7 @@ async def read_expenses(
         marketplace: str | None = None,
         start_date: datetime | None = None,
         end_date: datetime | None = None,
+        sort: str = Query("-date"),
         db=Depends(get_db),
         uid=Depends(get_current_user_uid)
 ):
@@ -58,7 +59,8 @@ async def read_expenses(
         seller=seller,
         marketplace=marketplace,
         start_date=start_date,
-        end_date=end_date
+        end_date=end_date,
+        sort=sort
     )
     return {"expenses": expenses}
 

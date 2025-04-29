@@ -8,6 +8,8 @@ from expenses.models import Expense
 from expenses.schemas import ExpenseRequest
 from firebase.firestore import add_expense, get_expenses, update_expense, delete_expense
 
+ALLOWED_SORT_FIELDS = {"date", "amount", "product", "item_type", "series", "seller", "marketplace"}
+
 
 def create_expense_service(db: Client, uid: str, expense: ExpenseRequest) -> str:
     expense_obj = __convert(expense)
@@ -23,8 +25,19 @@ def read_expenses_service(
         seller: str | None = None,
         marketplace: str | None = None,
         start_date: datetime | None = None,
-        end_date: datetime | None = None
+        end_date: datetime | None = None,
+        sort: str = "-date"
 ) -> list[Expense]:
+    if sort.startswith("-"):
+        order_by = sort[1:]
+        ascending = False
+    else:
+        order_by = sort
+        ascending = True
+    if order_by not in ALLOWED_SORT_FIELDS:
+        order_by = "date"
+        ascending = False
+
     return get_expenses(
         db,
         uid,
@@ -34,7 +47,9 @@ def read_expenses_service(
         seller=seller,
         marketplace=marketplace,
         start_date=start_date,
-        end_date=end_date
+        end_date=end_date,
+        order_by=order_by,
+        ascending=ascending
     )
 
 
