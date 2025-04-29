@@ -15,8 +15,7 @@ interface GroupedExpenses {
 }
 
 const safeKey = (key: string): string =>
-    key.replace(/[^a-zA-Z0-9-_ äöüÄÖÜß]/g, "_");
-
+    key.replace(/[\\/:*?"<>|#%]/g, "_").trim();
 
 export default function PivotOverview() {
     const {user} = useAuth();
