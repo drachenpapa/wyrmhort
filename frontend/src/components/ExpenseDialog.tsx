@@ -56,7 +56,7 @@ export default function ExpenseDialog({open, onClose, onSave, initialData}: Prop
         form.seller.trim() !== '' &&
         form.product.trim() !== '' &&
         form.item_type.trim() !== '' &&
-        form.series.trim() !== '' &&;
+        form.series.trim() !== '';
 
     const cleanOptionalFields = (value?: string): string | undefined =>
         value?.trim() === '' ? undefined : value?.trim();
