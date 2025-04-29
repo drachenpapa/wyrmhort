@@ -23,10 +23,23 @@ export default function ExpenseDialog({open, onClose, onSave, initialData}: Prop
     });
 
     useEffect(() => {
-        if (initialData) {
-            setForm(initialData);
+        if (open) {
+            if (initialData) {
+                setForm(initialData);
+            } else {
+                setForm({
+                    date: '',
+                    amount: 0,
+                    quantity: 1,
+                    marketplace: '',
+                    seller: '',
+                    product: '',
+                    item_type: '',
+                    series: '',
+                });
+            }
         }
-    }, [initialData]);
+    }, [initialData, open]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const {name, value} = e.target;
