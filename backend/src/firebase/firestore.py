@@ -20,42 +20,43 @@ def init_firestore():
     return firestore.client()
 
 
-def get_expenses(db, uid, product=None, item_type=None, series=None,
-                 seller=None, marketplace=None, start_date=None, end_date=None):
+def get_expenses(db, uid, **filters):
+    order_by = filters.pop("order_by", "date")
+    ascending = filters.pop("ascending", False)
+
+    start_date = filters.pop("start_date", None)
+    end_date = filters.pop("end_date", None)
+
     expenses_ref = db.collection("users").document(uid).collection("expenses")
-    expenses_ref = expenses_ref.order_by("date")
 
     if start_date:
         expenses_ref = expenses_ref.where("date", ">=", start_date.isoformat())
     if end_date:
         expenses_ref = expenses_ref.where("date", "<=", end_date.isoformat())
-    if product:
-        expenses_ref = expenses_ref.where("product", "==", product)
-    if item_type:
-        expenses_ref = expenses_ref.where("item_type", "==", item_type)
-    if series:
-        expenses_ref = expenses_ref.where("series", "==", series)
-    if seller:
-        expenses_ref = expenses_ref.where("seller", "==", seller)
-    if marketplace:
-        expenses_ref = expenses_ref.where("marketplace", "==", marketplace)
 
-    expenses = expenses_ref.stream()
+    for key, value in filters.items():
+        if value is not None:
+            expenses_ref = expenses_ref.where(key, "==", value)
 
-    result = []
-    for doc in expenses:
+    expenses_ref = expenses_ref.order_by(order_by, direction="ASCENDING" if ascending else "DESCENDING")
+
+    docs = expenses_ref.stream()
+
+    results = []
+    for doc in docs:
         data = doc.to_dict()
-        result.append(Expense(
+        results.append(Expense(
             date=datetime.fromisoformat(data["date"]),
             amount=data["amount"],
+            quantity=data["quantity"],
             product=data["product"],
             item_type=data["item_type"],
             series=data["series"],
-            quantity=data["quantity"],
             seller=data["seller"],
-            marketplace=data.get("marketplace")
+            marketplace=data.get("marketplace"),
         ))
-    return result
+
+    return results
 
 
 def add_expense(db, uid, expense):
