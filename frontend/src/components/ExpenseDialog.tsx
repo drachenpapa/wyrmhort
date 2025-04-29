@@ -55,7 +55,8 @@ export default function ExpenseDialog({open, onClose, onSave, initialData}: Prop
         form.quantity > 0 &&
         form.seller.trim() !== '' &&
         form.product.trim() !== '' &&
-        form.item_type.trim() !== '';
+        form.item_type.trim() !== '' &&
+        form.series.trim() !== '' &&;
 
     const cleanOptionalFields = (value?: string): string | undefined =>
         value?.trim() === '' ? undefined : value?.trim();
@@ -64,7 +65,6 @@ export default function ExpenseDialog({open, onClose, onSave, initialData}: Prop
         onSave({
             ...form,
             date: new Date(form.date).toISOString(),
-            series: cleanOptionalFields(form.series),
             marketplace: cleanOptionalFields(form.marketplace),
         });
         onClose();
