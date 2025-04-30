@@ -15,11 +15,11 @@ export default function Dashboard() {
 
     }, [user]);
 
-    const handleSaveExpense = (expense: Expense) => {
+    const handleSaveExpense = async (expense: Expense) => {
         if (expense.id) {
-            updateExpense(expense.id, expense);
+            await updateExpense(expense.id, expense);
         } else {
-            addExpense(expense);
+            await addExpense(expense);
         }
         setDialogOpen(false);
         setEditingExpense(null);
