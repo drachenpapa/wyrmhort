@@ -306,3 +306,22 @@ tr:hover {
 .retry-button:hover {
     background-color: #ff1a1a;
 }
+
+.btn-spinner {
+    display: inline-block;
+    width: 1rem;
+    height: 1rem;
+    border: 2px solid #fff;
+    border-top: 2px solid transparent;
+    border-radius: 50%;
+    animation: btn-spin 0.8s linear infinite;
+}
+
+@keyframes btn-spin {
+    to { transform: rotate(360deg); }
+}
+
+.required {
+    color: red;
+    margin-left: 0.25rem;
+}

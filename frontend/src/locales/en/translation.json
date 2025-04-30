@@ -16,6 +16,7 @@
   "series": "Series",
   "cancel": "Cancel",
   "loading": "Loading...",
+  "required_field_hint": "Required",
   "error_loading_data": "Error while loading data.",
   "actions": "Actions"
 }
