@@ -21,7 +21,7 @@ export default function ExpenseTable({expenses, onEdit, onDelete, loading, error
         setEditExpense(expense);
     };
 
-    const handleDialogSave = (updated: Expense) => {
+    const handleDialogSave = async (updated: Expense) => {
         onEdit(updated);
         setEditExpense(null);
     };
