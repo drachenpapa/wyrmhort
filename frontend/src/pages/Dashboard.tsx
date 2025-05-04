@@ -9,11 +9,11 @@ export default function Dashboard() {
     const {user} = useAuth();
     const [dialogOpen, setDialogOpen] = useState(false);
     const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
-    const {expenses, addExpense, updateExpense, deleteExpense, loading, error} = useApiExpenses(user);
+    const {expenses, fetchExpenses, addExpense, updateExpense, deleteExpense, loading, error} = useApiExpenses(user);
 
     useEffect(() => {
-
-    }, [user]);
+        fetchExpenses();
+    }, [user, fetchExpenses]);
 
     const handleSaveExpense = async (expense: Expense) => {
         if (expense.id) {

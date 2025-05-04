@@ -23,13 +23,12 @@ export default function ExpenseDialog({open, onClose, onSave, initialData}: Prop
     });
     const [saving, setSaving] = useState(false);
 
-    const today = new Date().toISOString().split("T")[0];
-
     useEffect(() => {
         if (open) {
             if (initialData) {
                 setForm(initialData);
             } else {
+                const today = new Date().toISOString().split("T")[0];
                 setForm({
                     date: today,
                     amount: 0,

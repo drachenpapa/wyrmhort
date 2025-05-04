@@ -1,10 +1,11 @@
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import useApiExpenses from "../hooks/useApiExpenses";
 import {useTranslation} from "react-i18next";
 import "../styles.css";
 import {Expense} from "../types/Expense";
 import {useAuth} from "../hooks/useAuth.ts";
 import {LoadingSpinner} from "../components/LoadingSpinner.tsx";
+import {ExpenseFilters} from "../types/ExpenseFilters";
 
 interface GroupedExpenses {
     [product: string]: {
@@ -19,9 +20,18 @@ const safeKey = (key: string): string =>
 
 export default function PivotOverview() {
     const {user} = useAuth();
-    const {expenses, loading, error} = useApiExpenses(user);
+    const {expenses, fetchExpenses, loading, error} = useApiExpenses(user);
     const {t} = useTranslation();
     const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({});
+    const [filters, setFilters] = useState<ExpenseFilters>({
+        start_date: '', end_date: ''
+    });
+
+    useEffect(() => {
+        if (user) {
+            fetchExpenses(filters);
+        }
+    }, [user, fetchExpenses, filters]);
 
     if (loading) return <LoadingSpinner/>;
     if (error) return <div className="error-message"><p>{t('error_loading_data')}</p></div>;
@@ -52,8 +62,28 @@ export default function PivotOverview() {
 
     const grandTotal = expenses.reduce((sum, item) => sum + (item.amount || 0), 0);
 
+    const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const {name, value} = e.target;
+        setFilters(prev => ({...prev, [name]: value}));
+    };
+
+    const handleApplyFilters = () => {
+        fetchExpenses(filters);
+    };
+
     return (
         <div className="pivot-overview">
+            <div className="filters">
+                <label>
+                    {t('start_date')}: <input type="date" name="start_date" value={filters.start_date}
+                                              onChange={handleFilterChange}/>
+                </label>
+                <label>
+                    {t('end_date')}: <input type="date" name="end_date" value={filters.end_date}
+                                            onChange={handleFilterChange}/>
+                </label>
+                <button onClick={handleApplyFilters}>{t('apply_filters')}</button>
+            </div>
             {Object.entries(grouped).map(([product, itemTypes]) => {
                 const productKey = safeKey(`product-${product}`);
                 const productTotal = Object.values(itemTypes)

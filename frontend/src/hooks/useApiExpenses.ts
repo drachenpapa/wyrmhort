@@ -1,6 +1,15 @@
-import {useEffect, useState} from 'react';
+import {useCallback, useEffect, useState} from 'react';
 import {Expense} from '../types/Expense';
 import {User} from 'firebase/auth';
+import {ExpenseFilters} from "../types/ExpenseFilters.ts";
+
+function buildQueryParams(filters: ExpenseFilters = {}) {
+    const params = new URLSearchParams();
+    Object.entries(filters).forEach(([key, value]) => {
+        if (value) params.append(key, value);
+    });
+    return params.toString();
+}
 
 export default function useApiExpenses(user: User | null) {
     const [expenses, setExpenses] = useState<Expense[]>([]);
@@ -14,34 +23,34 @@ export default function useApiExpenses(user: User | null) {
         setError(null);
     }, [user]);
 
-    useEffect(() => {
+    const fetchExpenses = useCallback(async (filters?: ExpenseFilters) => {
         if (!token) return;
 
-        const fetchExpenses = async () => {
-            setLoading(true);
-            setError(null);
-            try {
-                const res = await fetch('/api/expenses/', {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
-                if (!res.ok) {
-                    throw new Error('Failed to fetch expenses');
-                }
-                const data = await res.json();
-                setExpenses(data.expenses);
-            } catch (err: unknown) {
-                if (err instanceof Error) {
-                    setError(err.message);
-                } else {
-                    setError('Unknown error occurred');
-                }
-            } finally {
-                setLoading(false);
+        setLoading(true);
+        setError(null);
+
+        try {
+            const query = filters ? buildQueryParams(filters) : '';
+            const url = query ? `/api/expenses/?${query}` : '/api/expenses/';
+            const res = await fetch(url, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            if (!res.ok) {
+                throw new Error('Failed to fetch expenses');
             }
-        };
-        fetchExpenses();
+            const data = await res.json();
+            setExpenses(data.expenses);
+        } catch (err: unknown) {
+            if (err instanceof Error) {
+                setError(err.message);
+            } else {
+                setError('Unknown error occurred');
+            }
+        } finally {
+            setLoading(false);
+        }
     }, [token]);
 
     const addExpense = async (expense: Omit<Expense, 'id'>) => {
@@ -137,5 +146,5 @@ export default function useApiExpenses(user: User | null) {
         }
     };
 
-    return {expenses, addExpense, updateExpense, deleteExpense, loading, error};
+    return {expenses, fetchExpenses, addExpense, updateExpense, deleteExpense, loading, error};
 }
