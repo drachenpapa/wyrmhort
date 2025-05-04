@@ -29,13 +29,9 @@ export default function PivotOverview() {
 
     useEffect(() => {
         if (user) {
-            fetchExpenses(filters);
+            fetchExpenses();
         }
-    }, [user, fetchExpenses, filters]);
-
-    if (loading) return <LoadingSpinner/>;
-    if (error) return <div className="error-message"><p>{t('error_loading_data')}</p></div>;
-    if (!expenses || expenses.length === 0) return <div>{t("no_expenses_found")}</div>;
+    }, [user, fetchExpenses]);
 
     const grouped = expenses.reduce<GroupedExpenses>((acc, expense) => {
         const product = safeKey(expense.product || t("unknown"));
@@ -84,69 +80,76 @@ export default function PivotOverview() {
                 </label>
                 <button onClick={handleApplyFilters}>{t('apply_filters')}</button>
             </div>
-            {Object.entries(grouped).map(([product, itemTypes]) => {
-                const productKey = safeKey(`product-${product}`);
-                const productTotal = Object.values(itemTypes)
-                    .flatMap((series) => Object.values(series).flat())
-                    .reduce((sum, item) => sum + (item.amount || 0), 0);
+            {loading && <LoadingSpinner/>}
+            {error && <div className="error-message"><p>{t("error_loading_data")}</p></div>}
+            {!loading && !error && expenses.length === 0 && (
+                <div>{t("no_expenses_found")}</div>
+            )}
+            {!loading && !error && expenses.length > 0 && (
+                Object.entries(grouped).map(([product, itemTypes]) => {
+                    const productKey = safeKey(`product-${product}`);
+                    const productTotal = Object.values(itemTypes)
+                        .flatMap((series) => Object.values(series).flat())
+                        .reduce((sum, item) => sum + (item.amount || 0), 0);
 
-                return (
-                    <div key={productKey} className="pivot-group">
-                        <div className="pivot-group-header" onClick={() => toggle(productKey)}>
-                            <span className="pivot-toggle">{openGroups[productKey] ? "-" : "+"}</span>
-                            <span className="pivot-title">{product}</span>
-                            <span className="pivot-total">{productTotal.toFixed(2)} €</span>
-                        </div>
+                    return (
+                        <div key={productKey} className="pivot-group">
+                            <div className="pivot-group-header" onClick={() => toggle(productKey)}>
+                                <span className="pivot-toggle">{openGroups[productKey] ? "-" : "+"}</span>
+                                <span className="pivot-title">{product}</span>
+                                <span className="pivot-total">{productTotal.toFixed(2)} €</span>
+                            </div>
 
-                        <div className={`pivot-subgroup ${openGroups[productKey] ? "open" : ""}`}>
-                            {Object.entries(itemTypes).map(([itemType, series]) => {
-                                const itemTypeKey = safeKey(`${productKey}-itemType-${itemType}`);
-                                const itemTypeTotal = Object.values(series)
-                                    .flat()
-                                    .reduce((sum, item) => sum + (item.amount || 0), 0);
+                            <div className={`pivot-subgroup ${openGroups[productKey] ? "open" : ""}`}>
+                                {Object.entries(itemTypes).map(([itemType, series]) => {
+                                    const itemTypeKey = safeKey(`${productKey}-itemType-${itemType}`);
+                                    const itemTypeTotal = Object.values(series)
+                                        .flat()
+                                        .reduce((sum, item) => sum + (item.amount || 0), 0);
 
-                                return (
-                                    <div key={itemTypeKey} className="pivot-group">
-                                        <div className="pivot-group-header" onClick={() => toggle(itemTypeKey)}>
-                                            <span className="pivot-toggle">{openGroups[itemTypeKey] ? "-" : "+"}</span>
-                                            <span className="pivot-title">{itemType}</span>
-                                            <span className="pivot-total">{itemTypeTotal.toFixed(2)} €</span>
-                                        </div>
+                                    return (
+                                        <div key={itemTypeKey} className="pivot-group">
+                                            <div className="pivot-group-header" onClick={() => toggle(itemTypeKey)}>
+                                                <span
+                                                    className="pivot-toggle">{openGroups[itemTypeKey] ? "-" : "+"}</span>
+                                                <span className="pivot-title">{itemType}</span>
+                                                <span className="pivot-total">{itemTypeTotal.toFixed(2)} €</span>
+                                            </div>
 
-                                        <div className={`pivot-subgroup ${openGroups[itemTypeKey] ? "open" : ""}`}>
-                                            {Object.entries(series).map(([serie, items]) => {
-                                                const serieKey = safeKey(`${itemTypeKey}-serie-${serie}`);
-                                                const serieTotal = calculateTotal(items);
+                                            <div className={`pivot-subgroup ${openGroups[itemTypeKey] ? "open" : ""}`}>
+                                                {Object.entries(series).map(([serie, items]) => {
+                                                    const serieKey = safeKey(`${itemTypeKey}-serie-${serie}`);
+                                                    const serieTotal = calculateTotal(items);
 
-                                                return (
-                                                    <div key={serieKey} className="pivot-group">
-                                                        <div className="pivot-group-header">
-                                                            <span className="pivot-title">{serie}</span>
-                                                            <span
-                                                                className="pivot-total">{serieTotal.toFixed(2)} €</span>
-                                                        </div>
+                                                    return (
+                                                        <div key={serieKey} className="pivot-group">
+                                                            <div className="pivot-group-header">
+                                                                <span className="pivot-title">{serie}</span>
+                                                                <span
+                                                                    className="pivot-total">{serieTotal.toFixed(2)} €</span>
+                                                            </div>
 
-                                                        <div
-                                                            className={`pivot-subgroup ${openGroups[serieKey] ? "open" : ""}`}>
-                                                            {items.map((item) => (
-                                                                <div key={item.id} className="pivot-item">
+                                                            <div
+                                                                className={`pivot-subgroup ${openGroups[serieKey] ? "open" : ""}`}>
+                                                                {items.map((item) => (
+                                                                    <div key={item.id} className="pivot-item">
                                                                     <span className="pivot-item-amount">
                                                                         {item.amount.toFixed(2)} €
                                                                     </span>
-                                                                </div>
-                                                            ))}
+                                                                    </div>
+                                                                ))}
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                );
-                                            })}
+                                                    );
+                                                })}
+                                            </div>
                                         </div>
-                                    </div>
-                                );
-                            })}
+                                    );
+                                })}
+                            </div>
                         </div>
-                    </div>
-                );
-            })}
+                    );
+                }))}
 
             <div className="pivot-grand-total">
                 {t("grand_total")}: {grandTotal.toFixed(2)} €
