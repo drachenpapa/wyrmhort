@@ -3,8 +3,8 @@ import useApiExpenses from "../hooks/useApiExpenses";
 import {useTranslation} from "react-i18next";
 import "../styles.css";
 import {Expense} from "../types/Expense";
-import {useAuth} from "../hooks/useAuth.ts";
-import {LoadingSpinner} from "../components/LoadingSpinner.tsx";
+import {useAuth} from "../hooks/useAuth";
+import {LoadingSpinner} from "../components/LoadingSpinner";
 import {ExpenseFilters} from "../types/ExpenseFilters";
 
 interface GroupedExpenses {
