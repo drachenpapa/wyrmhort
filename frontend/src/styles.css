@@ -185,6 +185,7 @@ tr:hover {
 .expense-table th {
     background: var(--bg-table-head);
 }
+
 .pivot-overview {
     width: 100%;
     font-size: 14px;
@@ -284,8 +285,12 @@ tr:hover {
 }
 
 @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
 }
 
 .error-message {
@@ -318,10 +323,17 @@ tr:hover {
 }
 
 @keyframes btn-spin {
-    to { transform: rotate(360deg); }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 .required {
     color: red;
     margin-left: 0.25rem;
+}
+
+.tab.active {
+    font-weight: bold;
+    border-bottom: 2px solid #333;
 }

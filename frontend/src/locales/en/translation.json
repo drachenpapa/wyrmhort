@@ -1,12 +1,17 @@
 {
+  "greeting": "Hi, {{name}}!",
+  "pivot": "Pivot",
   "expenses": "Expenses",
-  "add_expense": "Add Expense",
+  "add_expense": "+ Add Expense",
   "edit_expense": "Edit Expense",
+  "access_denied": "Access Denied",
   "edit": "Edit",
   "delete": "Delete",
   "confirm_delete": "Are you sure you want to delete this expense?",
   "save": "Save",
   "date": "Date",
+  "login": "Login",
+  "logout": "Logout",
   "amount": "Amount",
   "quantity": "Quantity",
   "product": "Product",
@@ -18,5 +23,8 @@
   "loading": "Loading...",
   "required_field_hint": "Required",
   "error_loading_data": "Error while loading data.",
+  "start_date": "Start",
+  "end_date": "End",
+  "apply_filters": "Filter",
   "actions": "Actions"
 }

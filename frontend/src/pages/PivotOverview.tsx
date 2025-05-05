@@ -1,11 +1,12 @@
-import {useEffect, useState} from "react";
-import useApiExpenses from "../hooks/useApiExpenses";
-import {useTranslation} from "react-i18next";
-import "../styles.css";
-import {Expense} from "../types/Expense";
-import {useAuth} from "../hooks/useAuth";
-import {LoadingSpinner} from "../components/LoadingSpinner";
-import {ExpenseFilters} from "../types/ExpenseFilters";
+import React, {useEffect, useState} from 'react';
+import {useTranslation} from 'react-i18next';
+
+import {LoadingSpinner} from '../components/LoadingSpinner';
+import useApiExpenses from '../hooks/useApiExpenses';
+import '../styles.css';
+import {useAuth} from '../hooks/useAuth';
+import {Expense} from '../types/Expense';
+import {ExpenseFilters} from '../types/ExpenseFilters';
 
 interface GroupedExpenses {
     [product: string]: {
@@ -29,7 +30,9 @@ export default function PivotOverview() {
 
     useEffect(() => {
         if (user) {
-            fetchExpenses();
+            fetchExpenses().catch((err) => {
+                console.error('Error fetching expenses:', err);
+            });
         }
     }, [user, fetchExpenses]);
 
@@ -64,7 +67,9 @@ export default function PivotOverview() {
     };
 
     const handleApplyFilters = () => {
-        fetchExpenses(filters);
+        fetchExpenses(filters).catch((err) => {
+            console.error('Error fetching expenses:', err);
+        });
     };
 
     return (

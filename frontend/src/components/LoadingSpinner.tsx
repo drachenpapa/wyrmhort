@@ -1,11 +1,11 @@
-import { useTranslation } from 'react-i18next'
+import {useTranslation} from 'react-i18next'
 
 export function LoadingSpinner() {
-    const { t } = useTranslation()
+    const {t} = useTranslation()
 
     return (
-        <div className="spinner-container">
-            <div className="spinner" />
+        <div className="spinner-container" role="status" aria-live="polite">
+            <div className="spinner"/>
             <div>{t('loading')}</div>
         </div>
     )

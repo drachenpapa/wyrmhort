@@ -1,7 +1,8 @@
-import {useCallback, useEffect, useState} from 'react';
-import {Expense} from '../types/Expense';
 import {User} from 'firebase/auth';
-import {ExpenseFilters} from "../types/ExpenseFilters.ts";
+import {useCallback, useEffect, useState} from 'react';
+
+import {Expense} from '../types/Expense';
+import {ExpenseFilters} from '../types/ExpenseFilters';
 
 function buildQueryParams(filters: ExpenseFilters = {}) {
     const params = new URLSearchParams();
@@ -23,15 +24,26 @@ export default function useApiExpenses(user: User | null) {
         setError(null);
     }, [user]);
 
+    const request = async <T>(fetchFn: () => Promise<T>): Promise<T | null> => {
+        setLoading(true);
+        setError(null);
+        try {
+            return await fetchFn();
+        } catch (e) {
+            setError(e instanceof Error ? e.message : 'Unknown error');
+            return null;
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const fetchExpenses = useCallback(async (filters?: ExpenseFilters) => {
         if (!token) return;
 
-        setLoading(true);
-        setError(null);
+        const query = filters ? buildQueryParams(filters) : '';
+        const url = query ? `/api/expenses/?${query}` : '/api/expenses/';
 
-        try {
-            const query = filters ? buildQueryParams(filters) : '';
-            const url = query ? `/api/expenses/?${query}` : '/api/expenses/';
+        const data = await request(async () => {
             const res = await fetch(url, {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -40,25 +52,18 @@ export default function useApiExpenses(user: User | null) {
             if (!res.ok) {
                 throw new Error('Failed to fetch expenses');
             }
-            const data = await res.json();
+            return res.json();
+        });
+
+        if (data) {
             setExpenses(data.expenses);
-        } catch (err: unknown) {
-            if (err instanceof Error) {
-                setError(err.message);
-            } else {
-                setError('Unknown error occurred');
-            }
-        } finally {
-            setLoading(false);
         }
     }, [token]);
 
     const addExpense = async (expense: Omit<Expense, 'id'>) => {
         if (!token) return;
 
-        setLoading(true);
-        setError(null);
-        try {
+        const newExpense = await request(async () => {
             const res = await fetch('/api/expenses/', {
                 method: 'POST',
                 headers: {
@@ -70,26 +75,18 @@ export default function useApiExpenses(user: User | null) {
             if (!res.ok) {
                 throw new Error('Failed to add expense');
             }
+            return res.json();
+        });
 
-            const newExpense = await res.json();
+        if (newExpense) {
             setExpenses((prev) => [...prev, {...expense, id: newExpense.id}]);
-        } catch (err: unknown) {
-            if (err instanceof Error) {
-                setError(err.message);
-            } else {
-                setError('Unknown error occurred');
-            }
-        } finally {
-            setLoading(false);
         }
     };
 
     const updateExpense = async (id: string, updated: Partial<Expense>) => {
         if (!token) return;
 
-        setLoading(true);
-        setError(null);
-        try {
+        const success = await request(async () => {
             const res = await fetch(`/api/expenses/${id}`, {
                 method: 'PUT',
                 headers: {
@@ -98,51 +95,35 @@ export default function useApiExpenses(user: User | null) {
                 },
                 body: JSON.stringify(updated),
             });
-
             if (!res.ok) {
                 throw new Error('Failed to update expense');
             }
+        });
 
+        if (success !== null) {
             setExpenses((prev) =>
                 prev.map((e) => (e.id === id ? {...e, ...updated} : e))
             );
-        } catch (err: unknown) {
-            if (err instanceof Error) {
-                setError(err.message);
-            } else {
-                setError('Unknown error occurred');
-            }
-        } finally {
-            setLoading(false);
         }
     };
 
     const deleteExpense = async (id: string) => {
         if (!token) return;
 
-        setLoading(true);
-        setError(null);
-        try {
+        const success = await request(async () => {
             const res = await fetch(`/api/expenses/${id}`, {
                 method: 'DELETE',
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
             });
-
             if (!res.ok) {
                 throw new Error('Failed to delete expense');
             }
+        });
 
+        if (success !== null) {
             setExpenses((prev) => prev.filter((e) => e.id !== id));
-        } catch (err: unknown) {
-            if (err instanceof Error) {
-                setError(err.message);
-            } else {
-                setError('Unknown error occurred');
-            }
-        } finally {
-            setLoading(false);
         }
     };
 

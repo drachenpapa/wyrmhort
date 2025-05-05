@@ -1,12 +1,17 @@
 {
+  "greeting": "Hi, {{name}}!",
+  "pivot": "Pivot",
   "expenses": "Ausgaben",
-  "add_expense": "Ausgabe hinzufügen",
+  "add_expense": "+ Add Expense",
   "edit_expense": "Ausgabe bearbeiten",
+  "access_denied": "Zugriff verweigert",
   "edit": "Bearbeiten",
   "delete": "Löschen",
   "confirm_delete": "Möchtest du diese Ausgabe wirklich löschen?",
   "save": "Speichern",
   "date": "Datum",
+  "login": "Login",
+  "logout": "Logout",
   "amount": "Betrag",
   "quantity": "Menge",
   "product": "Produkt",
@@ -21,5 +26,8 @@
   "unknown": "Unbekannt",
   "required_field_hint": "Pflichtfelder",
   "grand_total": "Gesamtsumme",
+  "start_date": "Startdatum",
+  "end_date": "Enddatum",
+  "apply_filters": "Filtern",
   "actions": "Aktionen"
 }

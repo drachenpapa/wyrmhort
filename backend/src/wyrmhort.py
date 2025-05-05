@@ -1,6 +1,9 @@
 import uvicorn
+from dotenv import load_dotenv
 
 from api.routes import app
+
+load_dotenv()
 
 
 def main():
