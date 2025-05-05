@@ -1,6 +1,7 @@
-import {useEffect, useState} from 'react';
-import {Expense} from '../types/Expense';
+import React, {useCallback, useEffect, useState} from 'react';
 import {useTranslation} from 'react-i18next';
+
+import {Expense} from '../types/Expense';
 
 type Props = {
     open: boolean;
@@ -9,61 +10,41 @@ type Props = {
     initialData?: Expense;
 };
 
-export default function ExpenseDialog({open, onClose, onSave, initialData}: Props) {
+const emptyExpense: Expense = {
+    date: new Date().toISOString().slice(0, 10),
+    amount: 0,
+    product: '',
+    item_type: '',
+    series: '',
+    quantity: 1,
+    seller: '',
+    marketplace: undefined
+};
+
+export default function ExpenseDialog({open, onClose, onSave, initialData = emptyExpense}: Props) {
     const {t} = useTranslation();
-    const [form, setForm] = useState<Expense>({
-        date: '',
-        amount: 0,
-        quantity: 1,
-        marketplace: '',
-        seller: '',
-        product: '',
-        item_type: '',
-        series: '',
-    });
+    const [form, setForm] = useState<Expense>(initialData);
     const [saving, setSaving] = useState(false);
 
     useEffect(() => {
         if (open) {
-            if (initialData) {
-                setForm(initialData);
-            } else {
-                const today = new Date().toISOString().split("T")[0];
-                setForm({
-                    date: today,
-                    amount: 0,
-                    quantity: 1,
-                    marketplace: '',
-                    seller: '',
-                    product: '',
-                    item_type: '',
-                    series: '',
-                });
-            }
+            setForm(initialData);
+            document.getElementById('date')?.focus();
         }
-    }, [initialData, open]);
+    }, [open, initialData]);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         const {name, value} = e.target;
         setForm((prev: Expense) => ({
             ...prev,
             [name]: name === 'amount' || name === 'quantity' ? Number(value) : value,
         }));
-    };
-
-    const isValid =
-        !!form.date &&
-        form.amount > 0 &&
-        form.quantity > 0 &&
-        form.seller.trim() !== '' &&
-        form.product.trim() !== '' &&
-        form.item_type.trim() !== '' &&
-        form.series.trim() !== '';
+    }, []);
 
     const cleanOptionalFields = (value?: string): string | undefined =>
         value?.trim() === '' ? undefined : value?.trim();
 
-    const handleSubmit = async () => {
+    const handleSubmit = useCallback(async () => {
         setSaving(true);
         try {
             await onSave({
@@ -72,16 +53,18 @@ export default function ExpenseDialog({open, onClose, onSave, initialData}: Prop
                 marketplace: cleanOptionalFields(form.marketplace),
             });
             onClose();
+        } catch (error) {
+            console.error(error);
         } finally {
             setSaving(false);
         }
-    };
+    }, [form, onSave, onClose]);
 
     if (!open) return null;
 
     return (
-        <div className="dialog-overlay">
-            <div className="dialog">
+        <div className="dialog-overlay" role="dialog" aria-modal="true">
+            <div className="dialog" aria-labelledby="dialog-title">
                 <h3>{t('add_expense')}</h3>
                 <form onSubmit={(e) => e.preventDefault()}>
                     {[
@@ -95,8 +78,9 @@ export default function ExpenseDialog({open, onClose, onSave, initialData}: Prop
                         'marketplace'
                     ].map((field) => (
                         <div key={field} style={{marginBottom: '1rem'}}>
-                            <label htmlFor={field}>{t(field)}{field !== 'marketplace' &&
-                                <span className="required">*</span>}</label><br/>
+                            <label htmlFor={field}>
+                                {t(field)}{field !== 'marketplace' && <span className="required">*</span>}
+                            </label>
                             <input
                                 type={field === 'date' ? 'date' : field === 'amount' || field === 'quantity' ? 'number' : 'text'}
                                 id={field}
@@ -116,7 +100,15 @@ export default function ExpenseDialog({open, onClose, onSave, initialData}: Prop
                             {t('cancel')}
                         </button>
                         <button type="button" className="btn primary" onClick={handleSubmit}
-                                disabled={!isValid || saving}>
+                                disabled={
+                                    !form.date ||
+                                    form.amount <= 0 ||
+                                    form.quantity <= 0 ||
+                                    form.seller.trim() === '' ||
+                                    form.product.trim() === '' ||
+                                    form.item_type.trim() === '' ||
+                                    form.series.trim() === '' ||
+                                    saving}>
                             {saving ? <span className="btn-spinner"/> : t('save')}
                         </button>
                     </div>

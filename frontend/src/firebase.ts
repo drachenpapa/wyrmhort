@@ -12,10 +12,8 @@ const firebaseConfig = {
     measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENTS_ID
 };
 
-console.log("Firebase-Konfiguration zur Laufzeit:", firebaseConfig);
-
 const app = initializeApp(firebaseConfig);
 
 export const auth = getAuth(app);
 export const provider = new GoogleAuthProvider();
-export const db = getFirestore(app);
+getFirestore(app);

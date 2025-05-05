@@ -1,9 +1,11 @@
-import {useState} from 'react';
-import {Expense} from '../types/Expense';
-import {useTranslation} from 'react-i18next';
-import ExpenseDialog from './ExpenseDialog';
 import {Pencil, Trash2} from 'lucide-react';
-import {LoadingSpinner} from "./LoadingSpinner.tsx";
+import {useCallback, useState} from 'react';
+import {useTranslation} from 'react-i18next';
+
+import {Expense} from '../types/Expense';
+
+import ExpenseDialog from './ExpenseDialog';
+import {LoadingSpinner} from './LoadingSpinner';
 
 type Props = {
     expenses: Expense[];
@@ -16,10 +18,20 @@ type Props = {
 export default function ExpenseTable({expenses, onEdit, onDelete, loading, error}: Props) {
     const {t} = useTranslation();
     const [editExpense, setEditExpense] = useState<Expense | null>(null);
+    const [deleteError, setDeleteError] = useState<string | null>(null);
 
-    const handleEditClick = (expense: Expense) => {
+    const handleEditClick = useCallback((expense: Expense) => {
         setEditExpense(expense);
-    };
+    }, []);
+
+    const handleDeleteClick = useCallback(async (id: string) => {
+        try {
+            setDeleteError(null);
+            onDelete(id);
+        } catch {
+            setDeleteError(t('error_deleting_expense'));
+        }
+    }, [onDelete, t]);
 
     const handleDialogSave = async (updated: Expense) => {
         onEdit(updated);
@@ -29,7 +41,8 @@ export default function ExpenseTable({expenses, onEdit, onDelete, loading, error
     return (
         <div className="container">
             <h3>{t('expenses')}</h3>
-            <table className="expense-table">
+            {deleteError && <p className="error-message">{deleteError}</p>}
+            <table className="expense-table" aria-busy={loading}>
                 <thead>
                 <tr>
                     <th>{t('date')}</th>
@@ -56,6 +69,12 @@ export default function ExpenseTable({expenses, onEdit, onDelete, loading, error
                             <p>{t('error_loading_data')}</p>
                         </td>
                     </tr>
+                ) : expenses.length === 0 ? (
+                    <tr>
+                        <td colSpan={9} className="empty-state">
+                            {t('no_data')}
+                        </td>
+                    </tr>
                 ) : (
                     expenses.map((exp) => (
                         <tr key={exp.id}>
@@ -72,14 +91,12 @@ export default function ExpenseTable({expenses, onEdit, onDelete, loading, error
                             <td>{exp.seller}</td>
                             <td>{exp.marketplace}</td>
                             <td>
-                                <button className="icon-btn" onClick={() => handleEditClick(exp)} title={t('edit')}>
+                                <button className="icon-btn" onClick={() => handleEditClick(exp)} title={t('edit')}
+                                        aria-label={t('edit')}>
                                     <Pencil size={16}/>
                                 </button>
-                                <button
-                                    className="icon-btn"
-                                    onClick={() => exp.id && onDelete(exp.id)}
-                                    title={t('delete')}
-                                >
+                                <button className="icon-btn" onClick={() => exp.id && handleDeleteClick(exp.id)}
+                                        title={t('delete')} aria-label={t('delete')}>
                                     <Trash2 size={16}/>
                                 </button>
                             </td>

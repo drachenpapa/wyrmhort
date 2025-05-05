@@ -1,18 +1,25 @@
-import ExpenseTable from '../components/ExpenseTable';
-import ExpenseDialog from '../components/ExpenseDialog';
 import {useEffect, useState} from 'react';
-import {Expense} from '../types/Expense';
+import {useTranslation} from 'react-i18next';
+
+import ExpenseDialog from '../components/ExpenseDialog';
+import ExpenseTable from '../components/ExpenseTable';
 import useApiExpenses from '../hooks/useApiExpenses';
 import {useAuth} from '../hooks/useAuth';
+import {Expense} from '../types/Expense';
 
-export default function Dashboard() {
+export default function ExpensesView() {
     const {user} = useAuth();
+    const {t} = useTranslation();
     const [dialogOpen, setDialogOpen] = useState(false);
     const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
     const {expenses, fetchExpenses, addExpense, updateExpense, deleteExpense, loading, error} = useApiExpenses(user);
 
     useEffect(() => {
-        fetchExpenses();
+        if (user) {
+            fetchExpenses().catch((err) => {
+                console.error('Error fetching expenses:', err);
+            });
+        }
     }, [user, fetchExpenses]);
 
     const handleSaveExpense = async (expense: Expense) => {
@@ -25,28 +32,38 @@ export default function Dashboard() {
         setEditingExpense(null);
     };
 
-    if (!user) return <p>Bitte einloggen</p>;
+    const handleOpenDialog = () => {
+        setDialogOpen(true);
+    };
+
+    const handleCloseDialog = () => {
+        setDialogOpen(false);
+        setEditingExpense(null);
+    };
+
+    const handleEditExpense = (expense: Expense) => {
+        setEditingExpense(expense);
+        setDialogOpen(true);
+    };
+
+    if (!user) return <p>{t('login')}</p>;
 
     return (
         <div className="container">
-            <button onClick={() => setDialogOpen(true)}>+ Add Expense</button>
+            <button type="button" onClick={handleOpenDialog} aria-label={t('add_expense')}>
+                {t('add_expense')}
+            </button>
 
             <ExpenseDialog
                 open={dialogOpen}
-                onClose={() => {
-                    setDialogOpen(false);
-                    setEditingExpense(null);
-                }}
+                onClose={handleCloseDialog}
                 onSave={handleSaveExpense}
                 initialData={editingExpense || undefined}
             />
 
             <ExpenseTable
                 expenses={expenses}
-                onEdit={(e) => {
-                    setEditingExpense(e);
-                    setDialogOpen(true);
-                }}
+                onEdit={handleEditExpense}
                 onDelete={deleteExpense}
                 loading={loading}
                 error={error}
