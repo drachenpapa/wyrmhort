@@ -11,11 +11,13 @@ import PivotOverview from './pages/PivotOverview';
 export default function App() {
     const {user, login, logout} = useAuth();
     const {t} = useTranslation()
+    const allowedEmail = import.meta.env.VITE_ALLOWED_EMAIL;
+    const isOwner = user?.email === allowedEmail;
 
     return (
         <div className="container">
             <h1>Wyrmhort</h1>
-            {user ? (
+            {user && isOwner ? (
                 <>
                     <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '1rem'}}>
                         <h2>{t('greeting', {name: user.displayName})}</h2>
@@ -31,6 +33,8 @@ export default function App() {
                         <Route path="/overview" element={<PivotOverview/>}/>
                     </Routes>
                 </>
+            ) : user && !isOwner ? (
+                <p>{t('access_denied')}</p>
             ) : (
                 <Login onLogin={login}/>
             )}

@@ -4,6 +4,7 @@
   "expenses": "Ausgaben",
   "add_expense": "+ Add Expense",
   "edit_expense": "Ausgabe bearbeiten",
+  "access_denied": "Zugriff verweigert",
   "edit": "Bearbeiten",
   "delete": "Löschen",
   "confirm_delete": "Möchtest du diese Ausgabe wirklich löschen?",

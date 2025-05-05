@@ -4,6 +4,7 @@
   "expenses": "Expenses",
   "add_expense": "+ Add Expense",
   "edit_expense": "Edit Expense",
+  "access_denied": "Access Denied",
   "edit": "Edit",
   "delete": "Delete",
   "confirm_delete": "Are you sure you want to delete this expense?",
