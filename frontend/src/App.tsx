@@ -4,6 +4,7 @@ import {Navigate, Route, Routes} from 'react-router-dom';
 
 import Tabs from './components/Tabs';
 import {useAuth} from './hooks/useAuth';
+import {logger} from './logger';
 import ExpensesView from './pages/ExpensesView';
 import Login from './pages/Login';
 import PivotOverview from './pages/PivotOverview';
@@ -13,6 +14,13 @@ export default function App() {
     const {t} = useTranslation()
     const allowedEmail = import.meta.env.VITE_ALLOWED_EMAIL;
     const isOwner = user?.email === allowedEmail;
+
+    if (user) {
+        logger.info("User detected", user);
+        if (!isOwner) {
+            logger.warn("Unauthorized user tried to access app", user.email);
+        }
+    }
 
     return (
         <div className="container">

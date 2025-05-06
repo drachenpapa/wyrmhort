@@ -1,6 +1,7 @@
 import {User} from 'firebase/auth';
 import {useCallback, useEffect, useState} from 'react';
 
+import {logger} from '../logger';
 import {Expense} from '../types/Expense';
 import {ExpenseFilters} from '../types/ExpenseFilters';
 
@@ -37,12 +38,15 @@ export default function useApiExpenses(user: User | null) {
         setLoading(true);
         setError(null);
         try {
+            logger.debug('Request started');
             return await fetchFn();
         } catch (e) {
+            logger.error('Request failed', e);
             setError(e instanceof Error ? e.message : 'Unknown error');
             return null;
         } finally {
             setLoading(false);
+            logger.debug('Request ended');
         }
     };
 
@@ -59,6 +63,7 @@ export default function useApiExpenses(user: User | null) {
                 },
             });
             if (!res.ok) {
+                logger.error('Failed to fetch expenses', {url, status: res.status});
                 throw new Error('Failed to fetch expenses');
             }
             return res.json();
@@ -82,6 +87,7 @@ export default function useApiExpenses(user: User | null) {
                 body: JSON.stringify(expense),
             });
             if (!res.ok) {
+                logger.error('Failed to add expense', {expense});
                 throw new Error('Failed to add expense');
             }
             return res.json();
@@ -105,6 +111,7 @@ export default function useApiExpenses(user: User | null) {
                 body: JSON.stringify(updated),
             });
             if (!res.ok) {
+                logger.error('Failed to update expense', {id, updated});
                 throw new Error('Failed to update expense');
             }
         });
@@ -127,6 +134,7 @@ export default function useApiExpenses(user: User | null) {
                 },
             });
             if (!res.ok) {
+                logger.error('Failed to delete expense', {id});
                 throw new Error('Failed to delete expense');
             }
         });

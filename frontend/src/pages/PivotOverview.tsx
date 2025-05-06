@@ -5,6 +5,7 @@ import {LoadingSpinner} from '../components/LoadingSpinner';
 import useApiExpenses from '../hooks/useApiExpenses';
 import '../styles.css';
 import {useAuth} from '../hooks/useAuth';
+import {logger} from '../logger';
 import {Expense} from '../types/Expense';
 import {ExpenseFilters} from '../types/ExpenseFilters';
 
@@ -31,7 +32,7 @@ export default function PivotOverview() {
     useEffect(() => {
         if (user) {
             fetchExpenses().catch((err) => {
-                console.error('Error fetching expenses:', err);
+                logger.error('Error fetching expenses:', err);
             });
         }
     }, [user, fetchExpenses]);
@@ -68,7 +69,7 @@ export default function PivotOverview() {
 
     const handleApplyFilters = () => {
         fetchExpenses(filters).catch((err) => {
-            console.error('Error fetching expenses:', err);
+            logger.error('Error fetching expenses with filters:', err);
         });
     };
 

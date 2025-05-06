@@ -2,6 +2,7 @@ import {onAuthStateChanged, signInWithPopup, signOut, User} from 'firebase/auth'
 import {useEffect, useState} from 'react';
 
 import {auth, provider} from '../firebase';
+import {logger} from '../logger';
 
 export function useAuth() {
     const [user, setUser] = useState<User | null>(null);
@@ -15,7 +16,7 @@ export function useAuth() {
         try {
             await signInWithPopup(auth, provider);
         } catch (err) {
-            console.error('Login failed:', err);
+            logger.error('Login failed:', err);
         }
     };
 
@@ -23,7 +24,7 @@ export function useAuth() {
         try {
             await signOut(auth);
         } catch (err) {
-            console.error('Logout failed:', err);
+            logger.error('Logout failed:', err);
         }
     };
 
