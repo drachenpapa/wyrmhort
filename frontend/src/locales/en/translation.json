@@ -26,8 +26,8 @@
   "start_date": "Start",
   "end_date": "End",
   "items_per_page": "Items per page",
-  "previous": "Previous",
-  "next": "Next",
+  "previous": "← Previous",
+  "next": "Next →",
   "page": "Page",
   "apply_filters": "Filter",
   "actions": "Actions"

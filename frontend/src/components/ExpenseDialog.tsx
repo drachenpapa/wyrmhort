@@ -1,6 +1,7 @@
 import React, {useCallback, useEffect, useState} from 'react';
 import {useTranslation} from 'react-i18next';
 
+import {logger} from '../logger';
 import {Expense} from '../types/Expense';
 
 type Props = {
@@ -54,7 +55,7 @@ export default function ExpenseDialog({open, onClose, onSave, initialData = empt
             });
             onClose();
         } catch (error) {
-            console.error(error);
+            logger.error('Error saving expense:', error);
         } finally {
             setSaving(false);
         }

@@ -1,3 +1,5 @@
+import {useTranslation} from "react-i18next";
+
 type PaginationProps = {
     currentPage: number;
     totalPages: number;
@@ -17,6 +19,8 @@ export default function Pagination({
                                        onPrevPage,
                                        onPageSizeChange
                                    }: PaginationProps) {
+    const {t} = useTranslation();
+
     return (
         <div className="pagination-controls">
             <div className="page-size-select">
@@ -34,7 +38,7 @@ export default function Pagination({
 
             <div className="page-buttons">
                 <button onClick={onPrevPage} disabled={currentPage === 1}>
-                    ← Zurück
+                    {t('previous')}
                 </button>
 
                 {[...Array(totalPages)].map((_, idx) => {
@@ -55,7 +59,7 @@ export default function Pagination({
                 })}
 
                 <button onClick={onNextPage} disabled={currentPage === totalPages}>
-                    Weiter →
+                    {t('next')}
                 </button>
             </div>
         </div>

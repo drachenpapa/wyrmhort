@@ -5,7 +5,9 @@ import ExpenseDialog from '../components/ExpenseDialog';
 import ExpenseTable from '../components/ExpenseTable';
 import useApiExpenses from '../hooks/useApiExpenses';
 import {useAuth} from '../hooks/useAuth';
+import {logger} from '../logger';
 import {Expense} from '../types/Expense';
+
 
 export default function ExpensesView() {
     const {user} = useAuth();
@@ -23,7 +25,7 @@ export default function ExpensesView() {
     useEffect(() => {
         if (user) {
             fetchExpenses({sortKey, sortAsc}).catch((err) => {
-                console.error('Error fetching expenses:', err);
+                logger.error('Error fetching expenses:', err);
             });
         }
     }, [user, fetchExpenses, sortKey, sortAsc]);
