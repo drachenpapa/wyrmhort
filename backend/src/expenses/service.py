@@ -7,7 +7,9 @@ from google.cloud.firestore import Client
 from expenses.models import Expense
 from expenses.schemas import ExpenseRequest
 from firebase.firestore import add_expense, get_expenses, update_expense, delete_expense
+from logger_config import setup_logger
 
+logger = setup_logger(__name__)
 ALLOWED_SORT_FIELDS = {"date", "amount", "product", "item_type", "series", "seller", "marketplace"}
 
 
@@ -35,6 +37,7 @@ def read_expenses_service(
         order_by = sort
         ascending = True
     if order_by not in ALLOWED_SORT_FIELDS:
+        logger.warning(f"Invalid sort field '{order_by}', defaulting to 'date'")
         order_by = "date"
         ascending = False
 
