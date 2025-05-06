@@ -7,8 +7,17 @@ import {ExpenseFilters} from '../types/ExpenseFilters';
 function buildQueryParams(filters: ExpenseFilters = {}) {
     const params = new URLSearchParams();
     Object.entries(filters).forEach(([key, value]) => {
-        if (value) params.append(key, value);
+        if (value !== undefined && value !== null && value !== '') {
+            if (key === 'sortKey' || key === 'sortAsc') return;
+            params.append(key, value.toString());
+        }
     });
+
+    if (filters.sortKey) {
+        const sort = filters.sortAsc ? filters.sortKey : `-${filters.sortKey}`;
+        params.append('sort', sort);
+    }
+
     return params.toString();
 }
 
