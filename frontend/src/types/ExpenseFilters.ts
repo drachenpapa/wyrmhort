@@ -6,4 +6,6 @@ export interface ExpenseFilters {
     series?: string;
     seller?: string;
     marketplace?: string;
+    sortKey?: string;
+    sortAsc?: boolean;
 }

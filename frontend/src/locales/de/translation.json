@@ -28,6 +28,10 @@
   "grand_total": "Gesamtsumme",
   "start_date": "Startdatum",
   "end_date": "Enddatum",
+  "items_per_page": "Einträge pro Seite",
+  "previous": "Zurück",
+  "next": "Weiter",
+  "page": "Seite",
   "apply_filters": "Filtern",
   "actions": "Aktionen"
 }

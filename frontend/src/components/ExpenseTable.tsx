@@ -6,6 +6,8 @@ import {Expense} from '../types/Expense';
 
 import ExpenseDialog from './ExpenseDialog';
 import {LoadingSpinner} from './LoadingSpinner';
+import Pagination from './Pagination';
+import SortIndicator from './SortIndicator';
 
 type Props = {
     expenses: Expense[];
@@ -13,9 +15,35 @@ type Props = {
     onDelete: (id: string) => void;
     loading: boolean;
     error: string | null;
+    sortKey: string;
+    sortAsc: boolean;
+    onSortChange: (key: string) => void;
+    currentPage: number;
+    totalPages: number;
+    pageSize: number;
+    onNextPage: () => void;
+    onPrevPage: () => void;
+    onPageSizeChange: (size: number) => void;
+    onPageChange: (page: number) => void;
 };
 
-export default function ExpenseTable({expenses, onEdit, onDelete, loading, error}: Props) {
+export default function ExpenseTable({
+                                         expenses,
+                                         onEdit,
+                                         onDelete,
+                                         loading,
+                                         error,
+                                         sortKey,
+                                         sortAsc,
+                                         onSortChange,
+                                         currentPage,
+                                         totalPages,
+                                         pageSize,
+                                         onNextPage,
+                                         onPrevPage,
+                                         onPageSizeChange,
+                                         onPageChange
+                                     }: Props) {
     const {t} = useTranslation();
     const [editExpense, setEditExpense] = useState<Expense | null>(null);
     const [deleteError, setDeleteError] = useState<string | null>(null);
@@ -45,14 +73,30 @@ export default function ExpenseTable({expenses, onEdit, onDelete, loading, error
             <table className="expense-table" aria-busy={loading}>
                 <thead>
                 <tr>
-                    <th>{t('date')}</th>
-                    <th>{t('amount')}</th>
-                    <th>{t('product')}</th>
-                    <th>{t('item_type')}</th>
-                    <th>{t('series')}</th>
-                    <th>{t('quantity')}</th>
-                    <th>{t('seller')}</th>
-                    <th>{t('marketplace')}</th>
+                    <th onClick={() => onSortChange("date")}>
+                        {t('date')} <SortIndicator active={sortKey === "date"} asc={sortAsc}/>
+                    </th>
+                    <th onClick={() => onSortChange("amount")}>
+                        {t('amount')} <SortIndicator active={sortKey === "amount"} asc={sortAsc}/>
+                    </th>
+                    <th onClick={() => onSortChange("product")}>
+                        {t('product')} <SortIndicator active={sortKey === "product"} asc={sortAsc}/>
+                    </th>
+                    <th onClick={() => onSortChange("item_type")}>
+                        {t('item_type')} <SortIndicator active={sortKey === "item_type"} asc={sortAsc}/>
+                    </th>
+                    <th onClick={() => onSortChange("series")}>
+                        {t('series')} <SortIndicator active={sortKey === "series"} asc={sortAsc}/>
+                    </th>
+                    <th onClick={() => onSortChange("quantity")}>
+                        {t('quantity')} <SortIndicator active={sortKey === "quantity"} asc={sortAsc}/>
+                    </th>
+                    <th onClick={() => onSortChange("seller")}>
+                        {t('seller')} <SortIndicator active={sortKey === "seller"} asc={sortAsc}/>
+                    </th>
+                    <th onClick={() => onSortChange("marketplace")}>
+                        {t('marketplace')} <SortIndicator active={sortKey === "marketplace"} asc={sortAsc}/>
+                    </th>
                     <th></th>
                 </tr>
                 </thead>
@@ -104,6 +148,16 @@ export default function ExpenseTable({expenses, onEdit, onDelete, loading, error
                     )))}
                 </tbody>
             </table>
+
+            <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                pageSize={pageSize}
+                onPageChange={onPageChange}
+                onNextPage={onNextPage}
+                onPrevPage={onPrevPage}
+                onPageSizeChange={onPageSizeChange}
+            />
 
             {editExpense && (
                 <ExpenseDialog
