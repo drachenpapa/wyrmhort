@@ -7,12 +7,10 @@ jobs:
   deploy:
     name: Build & Deploy Backend
     runs-on: ubuntu-latest
-
     env:
       PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
       REGION: europe-west1
       SERVICE_NAME: wyrmhort-backend
-
     steps:
       - name: Checkout codebase
         uses: actions/checkout@v4
@@ -39,12 +37,10 @@ jobs:
             --region $REGION \
             --allow-unauthenticated \
             --quiet
-      - name: Show Cloud Run URL
+      - name: Health check
         run: |
           SERVICE_URL=$(gcloud run services describe $SERVICE_NAME \
             --region $REGION \
             --format 'value(status.url)')
+          curl --fail $SERVICE_URL/health || (echo "Backend failed to deploy!" && exit 1)
           echo "🚀 Deployed to: $SERVICE_URL"
-      - name: Health check
-        run: |
-          curl --fail $SERVICE_URL/health || (echo "Frontend failed to deploy!" && exit 1)

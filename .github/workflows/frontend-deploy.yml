@@ -5,12 +5,13 @@ on:
 
 jobs:
   deploy:
+    name: Build & Deploy Frontend
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: frontend
     steps:
-      - name: Checkout repository
+      - name: Checkout codebase
         uses: actions/checkout@v4
       - name: Setup environment
         uses: ./.github/actions/frontend-setup
