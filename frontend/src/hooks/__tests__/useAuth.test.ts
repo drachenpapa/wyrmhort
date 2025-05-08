@@ -11,8 +11,11 @@ vi.mock('firebase/auth', async () => {
     const actual = await vi.importActual<typeof import('firebase/auth')>('firebase/auth');
     return {
         ...actual,
+        getAuth: vi.fn(() => ({
+            currentUser: {uid: '123', email: 'test@example.com'},
+        })),
         onAuthStateChanged: vi.fn((_auth, callback) => {
-            callback(mockUser);
+            callback({uid: '123', email: 'test@example.com'});
             return mockUnsubscribe;
         }),
         signInWithPopup: vi.fn(),
