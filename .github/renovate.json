@@ -14,11 +14,15 @@
     ":timezone(Europe/Berlin)"
   ],
   "pip_requirements": {
-    "fileMatch": ["^backend/requirements\\.txt$"]
+    "managerFilePatterns": [
+      "/^backend/requirements\\.txt$/"
+    ]
   },
   "packageRules": [
     {
-      "matchManagers": ["pip_requirements"],
+      "matchManagers": [
+        "pip_requirements"
+      ],
       "groupName": "backend Python dependencies",
       "automerge": true
     }
