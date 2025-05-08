@@ -3,6 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 
 from fastapi import FastAPI, Depends, Query
+from starlette.responses import JSONResponse
 
 from expenses.schemas import ExpenseRequest
 from expenses.service import (
@@ -19,6 +20,11 @@ app = FastAPI()
 
 def get_db():
     return init_firestore()
+
+
+@app.get("/health")
+async def health_check():
+    return JSONResponse(content={"status": "healthy"}, status_code=200)
 
 
 @app.post("/api/expenses/")

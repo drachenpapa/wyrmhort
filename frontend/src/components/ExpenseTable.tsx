@@ -2,7 +2,7 @@ import {Pencil, Trash2} from 'lucide-react';
 import {useCallback, useState} from 'react';
 import {useTranslation} from 'react-i18next';
 
-import {logger} from "../logger.ts";
+import {logger} from '../logger';
 import {Expense} from '../types/Expense';
 
 import ExpenseDialog from './ExpenseDialog';

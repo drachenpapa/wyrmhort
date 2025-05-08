@@ -38,3 +38,6 @@ jobs:
           firebaseServiceAccount: '${{ secrets.GCP_SA_KEY }}'
           channelId: live
           projectId: wyrmhort
+      - name: Health check
+        run: |
+          curl --fail https://wyrmhort.web.app/ || (echo "Frontend failed to deploy!" && exit 1)

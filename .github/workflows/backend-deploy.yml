@@ -45,3 +45,6 @@ jobs:
             --region $REGION \
             --format 'value(status.url)')
           echo "🚀 Deployed to: $SERVICE_URL"
+      - name: Health check
+        run: |
+          curl --fail $SERVICE_URL/health || (echo "Frontend failed to deploy!" && exit 1)
