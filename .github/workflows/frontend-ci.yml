@@ -33,7 +33,7 @@ jobs:
       - name: Setup environment
         uses: ./.github/actions/frontend-setup
       - name: Run tests
-        run: npm test -- --coverage --watchAll=false
+        run: npm test
 
   build:
     name: Build
