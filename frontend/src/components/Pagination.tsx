@@ -1,5 +1,4 @@
-import {ArrowLeft, ArrowRight, Moon, Sun} from "lucide-react";
-import {useEffect, useState} from "react";
+import {ArrowLeft, ArrowRight} from "lucide-react";
 import {useTranslation} from 'react-i18next';
 
 type PaginationProps = {
@@ -22,24 +21,6 @@ export default function Pagination({
                                        onPageSizeChange
                                    }: PaginationProps) {
     const {t} = useTranslation();
-    const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
-
-    useEffect(() => {
-        const prefersDarkMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
-        setIsDarkMode(prefersDarkMode);
-    }, []);
-
-    const toggleDarkMode = () => {
-        setIsDarkMode(prevMode => !prevMode);
-    };
-
-    useEffect(() => {
-        if (isDarkMode) {
-            document.body.classList.add('dark');
-        } else {
-            document.body.classList.remove('dark');
-        }
-    }, [isDarkMode]);
 
     return (
         <div className="pagination-controls">
@@ -54,12 +35,6 @@ export default function Pagination({
                         <option key={size} value={size}>{size}</option>
                     ))}
                 </select>
-            </div>
-
-            <div className="dark-mode-toggle">
-                <button onClick={toggleDarkMode} className="dark-mode-icon-btn">
-                    {isDarkMode ? <Sun size={20}/> : <Moon size={20}/>}
-                </button>
             </div>
 
             <div className="btn-container">

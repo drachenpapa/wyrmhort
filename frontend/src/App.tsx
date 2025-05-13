@@ -1,4 +1,5 @@
-import {LogOut} from 'lucide-react';
+import {LogOut, Moon, Sun} from 'lucide-react';
+import {useEffect, useState} from "react";
 import {useTranslation} from 'react-i18next';
 import {Navigate, Route, Routes} from 'react-router-dom';
 
@@ -9,11 +10,30 @@ import ExpensesView from './pages/ExpensesView';
 import Login from './pages/Login';
 import PivotOverview from './pages/PivotOverview';
 
+
 export default function App() {
     const {user, login, logout} = useAuth();
     const {t} = useTranslation()
     const allowedEmail = import.meta.env.VITE_ALLOWED_EMAIL;
     const isOwner = user?.email === allowedEmail;
+    const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
+
+    useEffect(() => {
+        const prefersDarkMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        setIsDarkMode(prefersDarkMode);
+    }, []);
+
+    const toggleDarkMode = () => {
+        setIsDarkMode(prevMode => !prevMode);
+    };
+
+    useEffect(() => {
+        if (isDarkMode) {
+            document.body.classList.add('dark');
+        } else {
+            document.body.classList.remove('dark');
+        }
+    }, [isDarkMode]);
 
     if (user) {
         logger.info("User detected", user);
@@ -45,6 +65,11 @@ export default function App() {
                         <Route path="/expenses" element={<ExpensesView/>}/>
                         <Route path="/overview" element={<PivotOverview/>}/>
                     </Routes>
+                    <div className="dark-mode-toggle">
+                        <button onClick={toggleDarkMode} className="dark-mode-icon-btn">
+                            {isDarkMode ? <Sun size={20}/> : <Moon size={20}/>}
+                        </button>
+                    </div>
                 </>
             ) : user && !isOwner ? (
                 <p>{t("access_denied")}</p>

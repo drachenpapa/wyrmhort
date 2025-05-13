@@ -83,10 +83,6 @@ th {
     background: var(--bg-table-head);
 }
 
-tr:hover {
-    background-color: var(--hover-bg);
-}
-
 .dialog-overlay {
     position: fixed;
     inset: 0;
@@ -152,8 +148,13 @@ tr:hover {
 }
 
 .btn.secondary:not(:disabled) {
-    color: var(--primary);
+    color: var(--text-light);
     border: 1px solid var(--text-muted);
+}
+
+.btn.secondary:not(:disabled):hover {
+    color: var(--primary);
+    border-color: var(--primary);
 }
 
 .btn:disabled {
@@ -398,6 +399,7 @@ tr:hover {
 .dark-mode-toggle {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 0.5rem;
 }
 
@@ -411,6 +413,10 @@ tr:hover {
     justify-content: center;
     border-radius: 6px;
     transition: background-color 0.3s ease;
+}
+
+.dark-mode-icon-btn:hover {
+    color: var(--primary);
 }
 
 body.dark {
@@ -433,7 +439,7 @@ body.dark table {
 
 body.dark table th {
     background-color: var(--bg-dark);
-    color: var(--primary);
+    color: var(--text-dark);
 }
 
 body.dark .btn.secondary {
@@ -442,7 +448,12 @@ body.dark .btn.secondary {
 }
 
 body.dark .btn.secondary:not(:disabled) {
+    color: var(--text-dark);
+}
+
+body.dark .btn.secondary:not(:disabled):hover {
     color: var(--primary);
+    border-color: var(--primary);
 }
 
 body.dark .tabs .tab {
@@ -466,4 +477,8 @@ body.dark .page-size-select select {
 
 body.dark .dark-mode-icon-btn {
     color: var(--text-muted);
+}
+
+body.dark .dark-mode-icon-btn:hover {
+    color: var(--primary);
 }

@@ -23,7 +23,7 @@ and the application is not designed to be scalable or secure for public use.
 ### Frontend
 
 - **Language**: TypeScript
-- **Framework**: React (react-i18next + React Router DOM) + Vite + Tailwind CSS
+- **Framework**: React + Vite
 - **Platform**: Google Cloud (Firebase Authentication, Firebase Hosting)
 - **Testing & QA**: ESLint + Vitest
 
