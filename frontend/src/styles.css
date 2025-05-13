@@ -22,6 +22,15 @@ body {
     margin: auto;
 }
 
+.expenses-data-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.expenses-data-container {
+    width: 100%;
+}
+
 h1 {
     font-size: 2.5rem;
     font-weight: bold;
@@ -410,6 +419,7 @@ th {
     justify-content: center;
     border-radius: 6px;
     transition: background-color 0.3s ease;
+    color: var(--text-light);
 }
 
 .dark-mode-icon-btn:hover {
@@ -478,4 +488,9 @@ body.dark .dark-mode-icon-btn {
 
 body.dark .dark-mode-icon-btn:hover {
     color: var(--primary);
+}
+
+body.dark .dialog {
+    background-color: var(--bg-dark);
+    color: var(--text-dark);
 }
