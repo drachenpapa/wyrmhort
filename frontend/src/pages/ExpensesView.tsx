@@ -1,3 +1,4 @@
+import {Plus} from 'lucide-react';
 import {useEffect, useState} from 'react';
 import {useTranslation} from 'react-i18next';
 
@@ -81,13 +82,16 @@ export default function ExpensesView() {
         setDialogOpen(true);
     };
 
-    if (!user) return <p>{t('login')}</p>;
+    if (!user) return <p>{t("login")}</p>;
 
     return (
         <div className="container">
-            <button type="button" onClick={handleOpenDialog} aria-label={t('add_expense')}>
-                {t('add_expense')}
-            </button>
+            <div className="add-expense-container">
+                <button type="button" className="btn secondary" onClick={handleOpenDialog} aria-label={t("add_expense")}>
+                    <Plus size={18}/>
+                    {t("add_expense")}
+                </button>
+            </div>
 
             <ExpenseDialog
                 open={dialogOpen}

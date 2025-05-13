@@ -7,7 +7,7 @@ type SortIndicatorProps = {
 
 const SortIndicator = React.memo(({active, asc}: SortIndicatorProps) => {
     if (!active) return null;
-    return <span style={{marginLeft: 4}}>{asc ? '▲' : '▼'}</span>;
+    return <span className="sort-indicator">{asc ? '▲' : '▼'}</span>;
 });
 
 export default SortIndicator;

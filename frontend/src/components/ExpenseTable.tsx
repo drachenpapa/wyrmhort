@@ -59,7 +59,7 @@ export default function ExpenseTable({
             onDelete(id);
         } catch (error) {
             logger.error('Error deleting expense:', error);
-            setDeleteError(t('error_deleting_expense'));
+            setDeleteError(t("error_deleting_expense"));
         }
     }, [onDelete, t]);
 
@@ -70,34 +70,33 @@ export default function ExpenseTable({
 
     return (
         <div className="container">
-            <h3>{t('expenses')}</h3>
             {deleteError && <p className="error-message">{deleteError}</p>}
             <table className="expense-table" aria-busy={loading}>
                 <thead>
                 <tr>
                     <th onClick={() => onSortChange("date")}>
-                        {t('date')} <SortIndicator active={sortKey === "date"} asc={sortAsc}/>
+                        {t("date")} <SortIndicator active={sortKey === "date"} asc={sortAsc}/>
                     </th>
                     <th onClick={() => onSortChange("amount")}>
-                        {t('amount')} <SortIndicator active={sortKey === "amount"} asc={sortAsc}/>
+                        {t("amount")} <SortIndicator active={sortKey === "amount"} asc={sortAsc}/>
                     </th>
                     <th onClick={() => onSortChange("product")}>
-                        {t('product')} <SortIndicator active={sortKey === "product"} asc={sortAsc}/>
+                        {t("product")} <SortIndicator active={sortKey === "product"} asc={sortAsc}/>
                     </th>
                     <th onClick={() => onSortChange("item_type")}>
-                        {t('item_type')} <SortIndicator active={sortKey === "item_type"} asc={sortAsc}/>
+                        {t("item_type")} <SortIndicator active={sortKey === "item_type"} asc={sortAsc}/>
                     </th>
                     <th onClick={() => onSortChange("series")}>
-                        {t('series')} <SortIndicator active={sortKey === "series"} asc={sortAsc}/>
+                        {t("series")} <SortIndicator active={sortKey === "series"} asc={sortAsc}/>
                     </th>
                     <th onClick={() => onSortChange("quantity")}>
-                        {t('quantity')} <SortIndicator active={sortKey === "quantity"} asc={sortAsc}/>
+                        {t("quantity")} <SortIndicator active={sortKey === "quantity"} asc={sortAsc}/>
                     </th>
                     <th onClick={() => onSortChange("seller")}>
-                        {t('seller')} <SortIndicator active={sortKey === "seller"} asc={sortAsc}/>
+                        {t("seller")} <SortIndicator active={sortKey === "seller"} asc={sortAsc}/>
                     </th>
                     <th onClick={() => onSortChange("marketplace")}>
-                        {t('marketplace')} <SortIndicator active={sortKey === "marketplace"} asc={sortAsc}/>
+                        {t("marketplace")} <SortIndicator active={sortKey === "marketplace"} asc={sortAsc}/>
                     </th>
                     <th></th>
                 </tr>
@@ -112,13 +111,13 @@ export default function ExpenseTable({
                 ) : error ? (
                     <tr>
                         <td colSpan={9} className="error-message">
-                            <p>{t('error_loading_data')}</p>
+                            <p>{t("error_loading_data")}</p>
                         </td>
                     </tr>
                 ) : expenses.length === 0 ? (
                     <tr>
                         <td colSpan={9} className="empty-state">
-                            {t('no_data')}
+                            {t("no_data")}
                         </td>
                     </tr>
                 ) : (
@@ -137,12 +136,12 @@ export default function ExpenseTable({
                             <td>{exp.seller}</td>
                             <td>{exp.marketplace}</td>
                             <td>
-                                <button className="icon-btn" onClick={() => handleEditClick(exp)} title={t('edit')}
-                                        aria-label={t('edit')}>
+                                <button className="icon-btn" onClick={() => handleEditClick(exp)} title={t("edit")}
+                                        aria-label={t("edit")}>
                                     <Pencil size={16}/>
                                 </button>
                                 <button className="icon-btn" onClick={() => exp.id && handleDeleteClick(exp.id)}
-                                        title={t('delete')} aria-label={t('delete')}>
+                                        title={t("delete")} aria-label={t("delete")}>
                                     <Trash2 size={16}/>
                                 </button>
                             </td>

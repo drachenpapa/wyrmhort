@@ -77,14 +77,14 @@ export default function PivotOverview() {
         <div className="pivot-overview">
             <div className="filters">
                 <label>
-                    {t('start_date')}: <input type="date" name="start_date" value={filters.start_date}
-                                              onChange={handleFilterChange}/>
+                    {t("start_date")}
+                    <input type="date" name="start_date" value={filters.start_date} onChange={handleFilterChange} />
                 </label>
                 <label>
-                    {t('end_date')}: <input type="date" name="end_date" value={filters.end_date}
-                                            onChange={handleFilterChange}/>
+                    {t("end_date")}
+                    <input type="date" name="end_date" value={filters.end_date} onChange={handleFilterChange} />
                 </label>
-                <button onClick={handleApplyFilters}>{t('apply_filters')}</button>
+                <button className="btn primary" onClick={handleApplyFilters}>{t("apply_filters")}</button>
             </div>
             {loading && <LoadingSpinner/>}
             {error && <div className="error-message"><p>{t("error_loading_data")}</p></div>}

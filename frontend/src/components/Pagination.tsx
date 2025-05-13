@@ -1,3 +1,5 @@
+import {ArrowLeft, ArrowRight, Moon, Sun} from "lucide-react";
+import {useEffect, useState} from "react";
 import {useTranslation} from 'react-i18next';
 
 type PaginationProps = {
@@ -20,11 +22,29 @@ export default function Pagination({
                                        onPageSizeChange
                                    }: PaginationProps) {
     const {t} = useTranslation();
+    const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
+
+    useEffect(() => {
+        const prefersDarkMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        setIsDarkMode(prefersDarkMode);
+    }, []);
+
+    const toggleDarkMode = () => {
+        setIsDarkMode(prevMode => !prevMode);
+    };
+
+    useEffect(() => {
+        if (isDarkMode) {
+            document.body.classList.add('dark');
+        } else {
+            document.body.classList.remove('dark');
+        }
+    }, [isDarkMode]);
 
     return (
         <div className="pagination-controls">
             <div className="page-size-select">
-                <label htmlFor="pageSize">Elemente pro Seite:</label>
+                <label htmlFor="pageSize">{t("items_per_page")}</label>
                 <select
                     id="pageSize"
                     value={pageSize}
@@ -36,9 +56,16 @@ export default function Pagination({
                 </select>
             </div>
 
-            <div className="page-buttons">
-                <button onClick={onPrevPage} disabled={currentPage === 1}>
-                    {t('previous')}
+            <div className="dark-mode-toggle">
+                <button onClick={toggleDarkMode} className="dark-mode-icon-btn">
+                    {isDarkMode ? <Sun size={20}/> : <Moon size={20}/>}
+                </button>
+            </div>
+
+            <div className="btn-container">
+                <button className="btn secondary" onClick={onPrevPage} disabled={currentPage === 1}>
+                    <ArrowLeft size={18}/>
+                    {t("previous")}
                 </button>
 
                 {[...Array(totalPages)].map((_, idx) => {
@@ -58,8 +85,10 @@ export default function Pagination({
                     );
                 })}
 
-                <button onClick={onNextPage} disabled={currentPage === totalPages}>
-                    {t('next')}
+                <button className="btn secondary" onClick={onNextPage}
+                        disabled={currentPage === totalPages || totalPages === 0}>
+                    {t("next")}
+                    <ArrowRight size={18}/>
                 </button>
             </div>
         </div>

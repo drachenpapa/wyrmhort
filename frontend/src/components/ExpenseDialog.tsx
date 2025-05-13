@@ -66,7 +66,7 @@ export default function ExpenseDialog({open, onClose, onSave, initialData = empt
     return (
         <div className="dialog-overlay" role="dialog" aria-modal="true">
             <div className="dialog" aria-labelledby="dialog-title">
-                <h3>{t('add_expense')}</h3>
+                <h3>{t("add_expense")}</h3>
                 <form onSubmit={(e) => e.preventDefault()}>
                     {[
                         'date',
@@ -78,7 +78,7 @@ export default function ExpenseDialog({open, onClose, onSave, initialData = empt
                         'seller',
                         'marketplace'
                     ].map((field) => (
-                        <div key={field} style={{marginBottom: '1rem'}}>
+                        <div key={field} className="form-field">
                             <label htmlFor={field}>
                                 {t(field)}{field !== 'marketplace' && <span className="required">*</span>}
                             </label>
@@ -88,17 +88,17 @@ export default function ExpenseDialog({open, onClose, onSave, initialData = empt
                                 name={field}
                                 value={form[field as keyof Expense]}
                                 onChange={handleChange}
-                                style={{width: '100%'}}
+                                className="input-full-width"
                                 min={field === 'amount' || field === 'quantity' ? 0 : undefined}
                             />
                         </div>
                     ))}
-                    <p style={{fontSize: '0.85rem', color: '#555', marginTop: '-0.5rem', marginBottom: '1rem'}}>
-                        * {t('required_field_hint')}
+                    <p className="form-hint">
+                        * {t("required_field_hint")}
                     </p>
                     <div className="dialog-actions">
                         <button type="button" className="btn secondary" onClick={onClose} disabled={saving}>
-                            {t('cancel')}
+                            {t("cancel")}
                         </button>
                         <button type="button" className="btn primary" onClick={handleSubmit}
                                 disabled={
@@ -110,7 +110,7 @@ export default function ExpenseDialog({open, onClose, onSave, initialData = empt
                                     form.item_type.trim() === '' ||
                                     form.series.trim() === '' ||
                                     saving}>
-                            {saving ? <span className="btn-spinner"/> : t('save')}
+                            {saving ? <span className="btn-spinner"/> : t("save")}
                         </button>
                     </div>
                 </form>

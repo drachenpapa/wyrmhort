@@ -27,11 +27,16 @@ export default function App() {
             <h1>Wyrmhort</h1>
             {user && isOwner ? (
                 <>
-                    <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '1rem'}}>
-                        <h2>{t('greeting', {name: user.displayName})}</h2>
+                    <div style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        marginBottom: '1rem',
+                        alignItems: 'center'
+                    }}>
+                        <h2>{t("greeting", {name: user.displayName})}</h2>
                         <button className="btn secondary" onClick={logout}>
                             <LogOut size={18}/>
-                            {t('logout')}
+                            {t("logout")}
                         </button>
                     </div>
                     <Tabs/>
@@ -42,7 +47,7 @@ export default function App() {
                     </Routes>
                 </>
             ) : user && !isOwner ? (
-                <p>{t('access_denied')}</p>
+                <p>{t("access_denied")}</p>
             ) : (
                 <Login onLogin={login}/>
             )}

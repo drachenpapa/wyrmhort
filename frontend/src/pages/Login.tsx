@@ -9,10 +9,10 @@ export default function Login({onLogin}: Props) {
     const {t} = useTranslation();
 
     return (
-        <div style={{textAlign: 'center', marginTop: '5rem'}}>
+        <div className="login-form">
             <button className="btn primary" onClick={onLogin}>
                 <LogIn size={18}/>
-                {t('login')}
+                {t("login")}
             </button>
         </div>
     );
