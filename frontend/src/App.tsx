@@ -44,7 +44,7 @@ export default function App() {
 
     return (
         <div className="container">
-            <h1>Wyrmhort</h1>
+            <h1>{t("title")}</h1>
             {user && isOwner ? (
                 <>
                     <div style={{

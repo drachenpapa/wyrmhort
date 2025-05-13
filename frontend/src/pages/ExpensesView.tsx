@@ -87,7 +87,7 @@ export default function ExpensesView() {
     return (
         <div className="container">
             <div className="add-expense-container">
-                <button type="button" className="btn secondary" onClick={handleOpenDialog} aria-label={t("add_expense")}>
+                <button type="button" className="btn primary" onClick={handleOpenDialog} aria-label={t("add_expense")}>
                     <Plus size={18}/>
                     {t("add_expense")}
                 </button>

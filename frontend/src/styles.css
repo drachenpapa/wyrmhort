@@ -57,7 +57,7 @@ h1 {
 .add-expense-container {
     display: flex;
     align-items: center;
-    justify-content: flex-end;
+    justify-content: center;
     margin-bottom: 1rem;
 }
 
@@ -144,17 +144,14 @@ th {
 .btn.secondary {
     background-color: var(--bg-table-head);
     color: var(--text-muted);
-    border: 1px solid var(--text-muted);
 }
 
 .btn.secondary:not(:disabled) {
     color: var(--text-light);
-    border: 1px solid var(--text-muted);
 }
 
 .btn.secondary:not(:disabled):hover {
     color: var(--primary);
-    border-color: var(--primary);
 }
 
 .btn:disabled {
@@ -432,13 +429,14 @@ body.dark h2 {
     color: var(--text-dark);
 }
 
-body.dark table {
-    background-color: var(--bg-dark);
-    border-color: var(--text-muted);
+body.dark .error-message {
+    color: red !important;
 }
 
-body.dark table th {
+body.dark .expense-table th,
+body.dark .expense-table td {
     background-color: var(--bg-dark);
+    border-color: var(--text-muted);
     color: var(--text-dark);
 }
 
@@ -453,7 +451,6 @@ body.dark .btn.secondary:not(:disabled) {
 
 body.dark .btn.secondary:not(:disabled):hover {
     color: var(--primary);
-    border-color: var(--primary);
 }
 
 body.dark .tabs .tab {
