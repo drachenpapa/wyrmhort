@@ -43,25 +43,19 @@ export default function Pagination({
                     {t("previous")}
                 </button>
 
-                {[...Array(totalPages)].map((_, idx) => {
-                    const pageNum = idx + 1;
-                    return (
-                        <button
-                            key={pageNum}
-                            onClick={() => onPageChange(pageNum)}
-                            disabled={pageNum === currentPage}
-                            style={{
-                                fontWeight: pageNum === currentPage ? 'bold' : 'normal',
-                                textDecoration: pageNum === currentPage ? 'underline' : 'none'
-                            }}
-                        >
-                            {pageNum}
-                        </button>
-                    );
-                })}
+                <div className="page-select-wrapper">
+                    {t("page")}
+                    <select id="pageSelect" value={currentPage} onChange={(e) => onPageChange(Number(e.target.value))}
+                            className="page-select">
+                        {Array.from({length: totalPages}, (_, idx) => (
+                            <option key={idx + 1} value={idx + 1}>{idx + 1}</option>
+                        ))}
+                    </select>
+                    <span className="page-total">/ {totalPages}</span>
+                </div>
 
                 <button className="btn secondary" onClick={onNextPage}
-                        disabled={currentPage === totalPages || totalPages === 0}>
+                        disabled={currentPage === totalPages}>
                     {t("next")}
                     <ArrowRight size={18}/>
                 </button>

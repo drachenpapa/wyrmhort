@@ -20,7 +20,7 @@ export default function ExpensesView() {
     const [sortAsc, setSortAsc] = useState<boolean>(false);
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize, setPageSize] = useState(20);
-    const totalPages = Math.ceil(expenses.length / pageSize);
+    const totalPages = Math.max(1, Math.ceil(expenses.length / pageSize));
     const paginatedExpenses = expenses.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
     useEffect(() => {
@@ -30,6 +30,12 @@ export default function ExpensesView() {
             });
         }
     }, [user, fetchExpenses, sortKey, sortAsc]);
+
+    useEffect(() => {
+        if (currentPage > totalPages) {
+            setCurrentPage(totalPages);
+        }
+    }, [totalPages, currentPage]);
 
     const handlePageSizeChange = (size: number) => {
         setPageSize(size);
@@ -87,7 +93,7 @@ export default function ExpensesView() {
     return (
         <div className="container">
             <div className="add-expense-container">
-                <button type="button" className="btn primary" onClick={handleOpenDialog} aria-label={t("add_expense")}>
+                <button type="button" className="btn primary" onClick={handleOpenDialog}>
                     <Plus size={18}/>
                     {t("add_expense")}
                 </button>

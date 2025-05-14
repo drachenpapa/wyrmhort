@@ -4,7 +4,7 @@ export function LoadingSpinner() {
     const {t} = useTranslation()
 
     return (
-        <div className="spinner-container" role="status" aria-live="polite">
+        <div className="spinner-container">
             <div className="spinner"/>
             <div>{t("loading")}</div>
         </div>

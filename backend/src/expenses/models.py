@@ -8,7 +8,7 @@ class Expense:
     amount: float
     product: str
     item_type: str
-    series: str | None
+    series: str
     quantity: int
     seller: str
     marketplace: str | None

@@ -30,7 +30,6 @@ export default function ExpenseDialog({open, onClose, onSave, initialData = empt
     useEffect(() => {
         if (open) {
             setForm(initialData);
-            document.getElementById('date')?.focus();
         }
     }, [open, initialData]);
 
@@ -64,8 +63,8 @@ export default function ExpenseDialog({open, onClose, onSave, initialData = empt
     if (!open) return null;
 
     return (
-        <div className="dialog-overlay" role="dialog" aria-modal="true">
-            <div className="dialog" aria-labelledby="dialog-title">
+        <div className="dialog-overlay">
+            <div className="dialog">
                 <h3>{t("add_expense")}</h3>
                 <form onSubmit={(e) => e.preventDefault()}>
                     {[

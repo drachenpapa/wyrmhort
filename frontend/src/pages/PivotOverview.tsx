@@ -40,13 +40,13 @@ export default function PivotOverview() {
     const grouped = expenses.reduce<GroupedExpenses>((acc, expense) => {
         const product = safeKey(expense.product || t("unknown"));
         const itemType = safeKey(expense.item_type || t("unknown"));
-        const serie = safeKey(expense.series || t("unknown"));
+        const series = safeKey(expense.series || t("unknown"));
 
         acc[product] ??= {};
         acc[product][itemType] ??= {};
-        acc[product][itemType][serie] ??= [];
+        acc[product][itemType][series] ??= [];
 
-        acc[product][itemType][serie].push(expense);
+        acc[product][itemType][series].push(expense);
         return acc;
     }, {});
 
@@ -78,11 +78,11 @@ export default function PivotOverview() {
             <div className="filters">
                 <label>
                     {t("start_date")}
-                    <input type="date" name="start_date" value={filters.start_date} onChange={handleFilterChange} />
+                    <input type="date" name="start_date" value={filters.start_date} onChange={handleFilterChange}/>
                 </label>
                 <label>
                     {t("end_date")}
-                    <input type="date" name="end_date" value={filters.end_date} onChange={handleFilterChange} />
+                    <input type="date" name="end_date" value={filters.end_date} onChange={handleFilterChange}/>
                 </label>
                 <button className="btn primary" onClick={handleApplyFilters}>{t("apply_filters")}</button>
             </div>
@@ -92,7 +92,7 @@ export default function PivotOverview() {
                 <div>{t("no_expenses_found")}</div>
             )}
             {!loading && !error && expenses.length > 0 && (
-                Object.entries(grouped).map(([product, itemTypes]) => {
+                Object.entries(grouped).sort(([a], [b]) => a.localeCompare(b)).map(([product, itemTypes]) => {
                     const productKey = safeKey(`product-${product}`);
                     const productTotal = Object.values(itemTypes)
                         .flatMap((series) => Object.values(series).flat())
@@ -107,7 +107,7 @@ export default function PivotOverview() {
                             </div>
 
                             <div className={`pivot-subgroup ${openGroups[productKey] ? "open" : ""}`}>
-                                {Object.entries(itemTypes).map(([itemType, series]) => {
+                                {Object.entries(itemTypes).sort(([a], [b]) => a.localeCompare(b)).map(([itemType, series]) => {
                                     const itemTypeKey = safeKey(`${productKey}-itemType-${itemType}`);
                                     const itemTypeTotal = Object.values(series)
                                         .flat()
@@ -123,27 +123,16 @@ export default function PivotOverview() {
                                             </div>
 
                                             <div className={`pivot-subgroup ${openGroups[itemTypeKey] ? "open" : ""}`}>
-                                                {Object.entries(series).map(([serie, items]) => {
-                                                    const serieKey = safeKey(`${itemTypeKey}-serie-${serie}`);
-                                                    const serieTotal = calculateTotal(items);
+                                                {Object.entries(series).sort(([a], [b]) => a.localeCompare(b)).map(([series, items]) => {
+                                                    const seriesKey = safeKey(`${itemTypeKey}-series-${series}`);
+                                                    const seriesTotal = calculateTotal(items);
 
                                                     return (
-                                                        <div key={serieKey} className="pivot-group">
-                                                            <div className="pivot-group-header">
-                                                                <span className="pivot-title">{serie}</span>
+                                                        <div key={seriesKey} className="pivot-group">
+                                                            <div className="pivot-group-series">
+                                                                <span className="pivot-title">{series}</span>
                                                                 <span
-                                                                    className="pivot-total">{serieTotal.toFixed(2)} €</span>
-                                                            </div>
-
-                                                            <div
-                                                                className={`pivot-subgroup ${openGroups[serieKey] ? "open" : ""}`}>
-                                                                {items.map((item) => (
-                                                                    <div key={item.id} className="pivot-item">
-                                                                    <span className="pivot-item-amount">
-                                                                        {item.amount.toFixed(2)} €
-                                                                    </span>
-                                                                    </div>
-                                                                ))}
+                                                                    className="pivot-total">{seriesTotal.toFixed(2)} €</span>
                                                             </div>
                                                         </div>
                                                     );

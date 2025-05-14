@@ -72,7 +72,7 @@ export default function ExpenseTable({
         <div className="container">
             {deleteError && <p className="error-message">{deleteError}</p>}
             <div className="expenses-data-container">
-                <table className="expense-table" aria-busy={loading}>
+                <table className="expense-table">
                     <thead>
                     <tr>
                         <th onClick={() => onSortChange("date")}>
@@ -137,12 +137,11 @@ export default function ExpenseTable({
                                 <td>{exp.seller}</td>
                                 <td>{exp.marketplace}</td>
                                 <td>
-                                    <button className="icon-btn" onClick={() => handleEditClick(exp)} title={t("edit")}
-                                            aria-label={t("edit")}>
+                                    <button className="icon-btn" onClick={() => handleEditClick(exp)} title={t("edit")}>
                                         <Pencil size={16}/>
                                     </button>
                                     <button className="icon-btn" onClick={() => exp.id && handleDeleteClick(exp.id)}
-                                            title={t("delete")} aria-label={t("delete")}>
+                                            title={t("delete")}>
                                         <Trash2 size={16}/>
                                     </button>
                                 </td>
