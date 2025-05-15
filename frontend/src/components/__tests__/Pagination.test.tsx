@@ -3,7 +3,7 @@ import {vi} from 'vitest';
 
 import Pagination from '../Pagination';
 
-describe('Pagination', () => {
+describe('<Pagination />', () => {
     const onPageChangeMock = vi.fn();
     const onNextPageMock = vi.fn();
     const onPrevPageMock = vi.fn();
