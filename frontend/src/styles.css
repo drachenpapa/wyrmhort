@@ -1,7 +1,7 @@
 :root {
-    --primary: #ff6b00;
+    --primary: #e1aa2a;
     --bg-light: #f8f9fa;
-    --bg-dark: #1a1a2e;
+    --bg-dark: #151b20;
     --bg-table-head: #f8f8f8;
     --text-light: #333;
     --text-dark: #f9fafb;
@@ -70,7 +70,7 @@ th {
 
 .btn.primary {
     background-color: var(--primary);
-    color: var(--text-dark);
+    color: var(--text-light);
 }
 
 .btn.secondary {
