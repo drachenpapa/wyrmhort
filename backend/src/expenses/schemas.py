@@ -10,7 +10,7 @@ class ExpenseRequest(BaseModel):
     amount: Decimal = Field(..., gt=0, description="Total amount paid")
     product: str = Field(..., description="Product name")
     item_type: str = Field(..., description="Type of item, e.g. Booster, Display")
-    series: str = Field(None, description="Product series or edition")
+    series: str = Field(..., description="Product series or edition")
     quantity: int = Field(..., ge=1, description="Number of items purchased")
     seller: str = Field(..., description="Name of the seller or store")
     marketplace: Optional[str] = Field(None, description="Platform or marketplace, if any")
