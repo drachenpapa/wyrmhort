@@ -1,4 +1,4 @@
-<h1 align="center">Wyrmhort</h1>
+<h1 align="center">Wyrmhort 🐉</h1>
 
 <p align="center">
   <a href="./LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow?style=flat-square" alt="License"></a>
@@ -8,37 +8,43 @@
 
 Wyrmhort is a personal hobby expense tracker designed to help me manage and monitor my spending across various hobbies.
 
-**Important:** This is a personal project and is not intended for public use. The only accepted user accounts are mine,
+**Note:** This is a personal project and is not intended for public use. The only accepted user accounts are mine,
 and the application is not designed to be scalable or secure for public use.
 
-## Tech Stack
 
-### Backend
+## 🚀 Tech Stack
 
-- **Language**: Python
-- **Framework**: FastAPI + Uvicorn + Pydantic
-- **Platform**: Google Cloud (Cloud Run, Firebase Authentication, Firestore)
-- **Testing & QA**: pytest + flake8 + mypy
+<details>
+  <summary>🛠️ <strong>Backend</strong></summary>
+  <ul>
+    <li><strong>Language:</strong> Python</li>
+    <li><strong>Framework:</strong> FastAPI · Uvicorn · Pydantic</li>
+    <li><strong>Platform:</strong> Google Cloud (Cloud Run · Firebase Authentication · Firestore)</li>
+    <li><strong>Testing & QA:</strong> pytest · flake8 · mypy</li>
+  </ul>
+</details>
 
-### Frontend
+<details>
+  <summary>🎨 <strong>Frontend</strong></summary>
+  <ul>
+    <li><strong>Language:</strong> TypeScript</li>
+    <li><strong>Framework:</strong> React · Vite</li>
+    <li><strong>Platform:</strong> Google Cloud (Firebase Authentication · Firebase Hosting)</li>
+    <li><strong>Testing & QA:</strong> ESLint · Vitest</li>
+  </ul>
+</details>
 
-- **Language**: TypeScript
-- **Framework**: React + Vite
-- **Platform**: Google Cloud (Firebase Authentication, Firebase Hosting)
-- **Testing & QA**: ESLint + Vitest
+<details>
+  <summary>⚙️ <strong>Tooling & Automation</strong></summary>
+  <ul>
+    <li><strong>Containerization:</strong> Docker</li>
+    <li><strong>CI/CD:</strong> GitHub Actions</li>
+    <li><strong>Dependency Management:</strong> Renovate</li>
+    <li><strong>Security:</strong> Snyk</li>
+  </ul>
+</details>
 
-### Tooling & Automation
 
-- **Containerization**: Docker
-- **CI/CD**: GitHub Actions
-- **Dependency Management**: Renovate
-- **Security**: Snyk
-
-## License
+## 📄 License
 
 Wyrmhort is licensed under the [MIT License](LICENSE).
-
-[//]: # (```bash)
-[//]: # (uvicorn src.api.routes:app --reload)
-[//]: # (docker compose up --build)
-[//]: # (```)
