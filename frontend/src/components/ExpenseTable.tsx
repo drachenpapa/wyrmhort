@@ -5,7 +5,6 @@ import {useTranslation} from 'react-i18next';
 import {logger} from '../logger';
 import {Expense} from '../types/Expense';
 
-import ExpenseDialog from './ExpenseDialog';
 import {LoadingSpinner} from './LoadingSpinner';
 import Pagination from './Pagination';
 import SortIndicator from './SortIndicator';
@@ -46,13 +45,12 @@ export default function ExpenseTable({
                                          onPageChange
                                      }: Props) {
     const {t} = useTranslation();
-    const [editExpense, setEditExpense] = useState<Expense | null>(null);
     const [deleteError, setDeleteError] = useState<string | null>(null);
     const [deleting, setDeleting] = useState(false);
 
     const handleEditClick = useCallback((expense: Expense) => {
-        setEditExpense(expense);
-    }, []);
+        onEdit(expense);
+    }, [onEdit]);
 
     const handleDeleteClick = useCallback(async (id: string) => {
         try {
@@ -67,15 +65,10 @@ export default function ExpenseTable({
         }
     }, [onDelete, t]);
 
-    const handleDialogSave = async (updated: Expense) => {
-        onEdit(updated);
-        setEditExpense(null);
-    };
-
     return (
         <div className="container">
             {deleteError && <p className="error-message">{deleteError}</p>}
-            <div className="expenses-data-container" style={{ position: 'relative' }}>
+            <div className="expenses-data-container" style={{position: 'relative'}}>
                 <div style={{
                     pointerEvents: deleting ? 'none' : undefined,
                     opacity: deleting ? 0.5 : 1
@@ -137,7 +130,10 @@ export default function ExpenseTable({
                                         month: '2-digit',
                                         year: 'numeric'
                                     })}</td>
-                                    <td>{Number(exp.amount).toLocaleString('de-DE', { style: 'currency', currency: 'EUR' })}</td>
+                                    <td>{Number(exp.amount).toLocaleString('de-DE', {
+                                        style: 'currency',
+                                        currency: 'EUR'
+                                    })}</td>
                                     <td>{exp.product}</td>
                                     <td>{exp.item_type}</td>
                                     <td>{exp.series}</td>
@@ -145,11 +141,12 @@ export default function ExpenseTable({
                                     <td>{exp.seller}</td>
                                     <td>{exp.marketplace}</td>
                                     <td>
-                                        <button className="icon-btn" onClick={() => handleEditClick(exp)} title={t("edit")}>
+                                        <button className="icon-btn" title={t("edit")}
+                                                onClick={() => handleEditClick(exp)}>
                                             <Pencil size={16}/>
                                         </button>
-                                        <button className="icon-btn" onClick={() => exp.id && handleDeleteClick(exp.id)}
-                                                title={t("delete")}>
+                                        <button className="icon-btn" title={t("delete")}
+                                                onClick={() => handleDeleteClick(exp.id)}>
                                             <Trash2 size={16}/>
                                         </button>
                                     </td>
@@ -171,7 +168,7 @@ export default function ExpenseTable({
                         background: 'rgba(255,255,255,0.5)',
                         zIndex: 2
                     }}>
-                        <LoadingSpinner />
+                        <LoadingSpinner/>
                     </div>
                 )}
             </div>
@@ -185,15 +182,6 @@ export default function ExpenseTable({
                 onPrevPage={onPrevPage}
                 onPageSizeChange={onPageSizeChange}
             />
-
-            {editExpense && (
-                <ExpenseDialog
-                    open
-                    onClose={() => setEditExpense(null)}
-                    onSave={handleDialogSave}
-                    initialData={editExpense}
-                />
-            )}
         </div>
     );
 }

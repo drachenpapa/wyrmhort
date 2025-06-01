@@ -34,12 +34,25 @@ export default function useApiExpenses(user: User | null) {
         setError(null);
     }, [user]);
 
-    const request = async <T>(fetchFn: () => Promise<T>): Promise<T | null> => {
+    const getFreshToken = useCallback(async () => {
+        if (!user) return null;
+        try {
+            return await user.getIdToken();
+        } catch (e) {
+            logger.error('Token holen fehlgeschlagen', e);
+            setError('Token holen fehlgeschlagen');
+            return null;
+        }
+    }, [user]);
+
+    const request = useCallback(async <T, >(fetchFn: (token: string) => Promise<T>): Promise<T | null> => {
         setLoading(true);
         setError(null);
         try {
             logger.debug('Request started');
-            return await fetchFn();
+            const freshToken = await getFreshToken();
+            if (!freshToken) throw new Error('Kein Token verfügbar');
+            return await fetchFn(freshToken);
         } catch (e) {
             logger.error('Request failed', e);
             setError(e instanceof Error ? e.message : 'Unknown error');
@@ -48,15 +61,13 @@ export default function useApiExpenses(user: User | null) {
             setLoading(false);
             logger.debug('Request ended');
         }
-    };
+    }, [getFreshToken]);
 
     const fetchExpenses = useCallback(async (filters?: ExpenseFilters) => {
-        if (!token) return;
-
         const query = filters ? buildQueryParams(filters) : '';
         const url = query ? `/api/expenses/?${query}` : '/api/expenses/';
 
-        const data = await request(async () => {
+        const data = await request(async (token) => {
             const res = await fetch(url, {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -72,12 +83,10 @@ export default function useApiExpenses(user: User | null) {
         if (data) {
             setExpenses(data.expenses);
         }
-    }, [token]);
+    }, [request]);
 
     const addExpense = async (expense: Omit<Expense, 'id'>) => {
-        if (!token) return;
-
-        const newExpense = await request(async () => {
+        const newExpense = await request(async (token) => {
             const res = await fetch('/api/expenses/', {
                 method: 'POST',
                 headers: {
@@ -99,9 +108,7 @@ export default function useApiExpenses(user: User | null) {
     };
 
     const updateExpense = async (id: string, updated: Partial<Expense>) => {
-        if (!token) return;
-
-        const success = await request(async () => {
+        const success = await request(async (token) => {
             const res = await fetch(`/api/expenses/${id}`, {
                 method: 'PUT',
                 headers: {
@@ -124,9 +131,7 @@ export default function useApiExpenses(user: User | null) {
     };
 
     const deleteExpense = async (id: string) => {
-        if (!token) return;
-
-        const success = await request(async () => {
+        const success = await request(async (token) => {
             const res = await fetch(`/api/expenses/${id}`, {
                 method: 'DELETE',
                 headers: {

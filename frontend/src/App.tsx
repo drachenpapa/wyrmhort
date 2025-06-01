@@ -35,12 +35,14 @@ export default function App() {
         }
     }, [isDarkMode]);
 
-    if (user) {
-        logger.info("User detected", user);
-        if (!isOwner) {
-            logger.warn("Unauthorized user tried to access app", user.email);
+    useEffect(() => {
+        if (user) {
+            logger.info("User detected", user);
+            if (!isOwner) {
+                logger.warn("Unauthorized user tried to access app", user.email);
+            }
         }
-    }
+    }, [user, isOwner]);
 
     return (
         <div className="container">
@@ -63,7 +65,7 @@ export default function App() {
                     <Routes>
                         <Route path="/" element={<Navigate to="/expenses" replace/>}/>
                         <Route path="/expenses" element={<ExpensesView/>}/>
-                        <Route path="/overview" element={<PivotOverview/>}/>
+                        <Route path="/pivot" element={<PivotOverview/>}/>
                     </Routes>
                     <div className="dark-mode-toggle">
                         <button onClick={toggleDarkMode} className="dark-mode-icon-btn">

@@ -9,6 +9,7 @@ type PaginationProps = {
     onNextPage: () => void;
     onPrevPage: () => void;
     onPageSizeChange: (size: number) => void;
+    pageSizeOptions?: number[];
 };
 
 export default function Pagination({
@@ -18,7 +19,8 @@ export default function Pagination({
                                        onPageChange,
                                        onNextPage,
                                        onPrevPage,
-                                       onPageSizeChange
+                                       onPageSizeChange,
+                                       pageSizeOptions = [10, 20, 50],
                                    }: PaginationProps) {
     const {t} = useTranslation();
 
@@ -31,14 +33,14 @@ export default function Pagination({
                     value={pageSize}
                     onChange={(e) => onPageSizeChange(Number(e.target.value))}
                 >
-                    {[10, 20, 50].map((size) => (
+                    {pageSizeOptions.map((size) => (
                         <option key={size} value={size}>{size}</option>
                     ))}
                 </select>
             </div>
 
             <div className="btn-container">
-                <button className="btn secondary" onClick={onPrevPage} disabled={currentPage === 1}>
+                <button type="button" className="btn secondary" onClick={onPrevPage} disabled={currentPage === 1}>
                     <ArrowLeft size={18}/>
                     {t("previous")}
                 </button>
@@ -54,7 +56,7 @@ export default function Pagination({
                     <span className="page-total">/ {totalPages}</span>
                 </div>
 
-                <button className="btn secondary" onClick={onNextPage}
+                <button type="button" className="btn secondary" onClick={onNextPage}
                         disabled={currentPage === totalPages}>
                     {t("next")}
                     <ArrowRight size={18}/>

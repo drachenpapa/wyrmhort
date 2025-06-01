@@ -6,7 +6,7 @@ export default function Tabs() {
     const {t} = useTranslation();
     const tabs = [
         {path: "/expenses", label: t("expenses"), layout: LayoutDashboard},
-        {path: "/overview", label: t("pivot"), layout: BarChart},
+        {path: "/pivot", label: t("pivot"), layout: BarChart},
     ];
 
     return (
