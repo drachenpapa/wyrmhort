@@ -11,6 +11,7 @@ from firebase.auth import get_current_user_uid
 @pytest.fixture
 def sample_expense_data():
     return {
+        "id": "test-id",
         "date": "2025-04-15T10:00:00",
         "amount": 4.99,
         "product": "Pokémon TCG",
@@ -29,6 +30,7 @@ def expense_factory(sample_expense_data):
             overrides = {}
         data = {**sample_expense_data, **overrides}
         return Expense(
+            id=data["id"],
             date=datetime.fromisoformat(data["date"]),
             amount=data["amount"],
             product=data["product"],

@@ -144,5 +144,5 @@ export default function useApiExpenses(user: User | null) {
         }
     };
 
-    return {expenses, fetchExpenses, addExpense, updateExpense, deleteExpense, loading, error};
+    return {expenses, fetchExpenses, addExpense, updateExpense, deleteExpense, loading, error, token};
 }

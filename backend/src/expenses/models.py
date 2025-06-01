@@ -1,9 +1,11 @@
 from dataclasses import dataclass
 from datetime import datetime
+from typing import Optional
 
 
 @dataclass
 class Expense:
+    id: str
     date: datetime
     amount: float
     product: str
@@ -11,11 +13,12 @@ class Expense:
     series: str
     quantity: int
     seller: str
-    marketplace: str | None
+    marketplace: Optional[str]
 
     @classmethod
-    def from_firestore(cls, data: dict) -> "Expense":
+    def from_firestore(cls, data: dict, doc_id: str) -> "Expense":
         return cls(
+            id=doc_id,
             date=datetime.fromisoformat(data["date"]),
             amount=data["amount"],
             quantity=data["quantity"],

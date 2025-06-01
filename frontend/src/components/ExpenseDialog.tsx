@@ -12,6 +12,7 @@ type Props = {
 };
 
 const emptyExpense: Expense = {
+    id: "",
     date: new Date().toISOString().slice(0, 10),
     amount: 0,
     product: '',
