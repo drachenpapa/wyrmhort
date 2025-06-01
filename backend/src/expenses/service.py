@@ -14,7 +14,7 @@ ALLOWED_SORT_FIELDS = {"date", "amount", "product", "item_type", "series", "sell
 
 
 def create_expense_service(db: Client, uid: str, expense: ExpenseRequest) -> str:
-    expense_obj = __convert(expense)
+    expense_obj = __convert(expense, id="")
     return add_expense(db, uid, expense_obj)
 
 
@@ -57,7 +57,7 @@ def read_expenses_service(
 
 
 def update_expense_service(db: Client, uid: str, expense_id: str, expense: ExpenseRequest) -> None:
-    updated_expense = __convert(expense)
+    updated_expense = __convert(expense, id=expense_id)
     update_expense(db, uid, expense_id, updated_expense)
 
 
@@ -65,8 +65,9 @@ def delete_expense_service(db: Client, uid: str, expense_id: str) -> None:
     delete_expense(db, uid, expense_id)
 
 
-def __convert(expense: ExpenseRequest) -> Expense:
+def __convert(expense: ExpenseRequest, id: str) -> Expense:
     return Expense(
+        id=id,
         date=expense.date,
         amount=float(expense.amount),
         quantity=expense.quantity,

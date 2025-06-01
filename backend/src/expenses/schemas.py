@@ -26,3 +26,18 @@ class ExpenseRequest(BaseModel):
         if v is not None and (not isinstance(v, str) or not v.strip()):
             raise ValueError(f"{info.field_name} must be a non-empty string if provided")
         return v
+
+
+class ExpenseResponse(BaseModel):
+    id: str
+    date: datetime
+    amount: Decimal
+    product: str
+    item_type: str
+    series: str
+    quantity: int
+    seller: str
+    marketplace: Optional[str]
+
+    class Config:
+        orm_mode = True

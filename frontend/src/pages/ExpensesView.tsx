@@ -13,7 +13,7 @@ import {Expense} from '../types/Expense';
 export default function ExpensesView() {
     const {user} = useAuth();
     const {t} = useTranslation();
-    const {expenses, fetchExpenses, addExpense, updateExpense, deleteExpense, loading, error} = useApiExpenses(user);
+    const {expenses, fetchExpenses, addExpense, updateExpense, deleteExpense, loading, error, token} = useApiExpenses(user);
     const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
     const [dialogOpen, setDialogOpen] = useState(false);
     const [sortKey, setSortKey] = useState<string>("date");
@@ -24,12 +24,12 @@ export default function ExpensesView() {
     const paginatedExpenses = expenses.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
     useEffect(() => {
-        if (user) {
+        if (user && token) {
             fetchExpenses({sortKey, sortAsc}).catch((err) => {
                 logger.error('Error fetching expenses:', err);
             });
         }
-    }, [user, fetchExpenses, sortKey, sortAsc]);
+    }, [user, token, fetchExpenses, sortKey, sortAsc]);
 
     useEffect(() => {
         if (currentPage > totalPages) {
@@ -88,6 +88,14 @@ export default function ExpensesView() {
         setDialogOpen(true);
     };
 
+    const handleDeleteExpense = async (id: string) => {
+        try {
+            await deleteExpense(id);
+        } catch (err) {
+            logger.error('Error deleting expense:', err);
+        }
+    };
+
     if (!user) return <p>{t("login")}</p>;
 
     return (
@@ -109,7 +117,7 @@ export default function ExpensesView() {
             <ExpenseTable
                 expenses={paginatedExpenses}
                 onEdit={handleEditExpense}
-                onDelete={deleteExpense}
+                onDelete={handleDeleteExpense}
                 loading={loading}
                 error={error}
                 sortKey={sortKey}

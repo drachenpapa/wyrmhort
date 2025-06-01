@@ -43,7 +43,7 @@ def get_expenses(db, uid, **filters):
 
         expenses_ref = expenses_ref.order_by(order_by, direction="ASCENDING" if ascending else "DESCENDING")
         docs = expenses_ref.stream()
-        return [Expense.from_firestore(doc.to_dict()) for doc in docs]
+        return [Expense.from_firestore(doc.to_dict(), doc.id) for doc in docs]
     except Exception as e:
         logger.error(f"Failed to get expenses: {e}")
         raise
