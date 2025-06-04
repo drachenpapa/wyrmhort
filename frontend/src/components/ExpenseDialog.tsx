@@ -25,21 +25,27 @@ const emptyExpense: Expense = {
 
 export default function ExpenseDialog({open, onClose, onSave, initialData = emptyExpense}: Props) {
     const {t} = useTranslation();
-    const [form, setForm] = useState<Expense>(initialData);
+    const [form, setForm] = useState<Expense>(emptyExpense);
     const [saving, setSaving] = useState(false);
 
     useEffect(() => {
         if (open) {
-            setForm(initialData);
+            const data = initialData ?? emptyExpense;
+            setForm({
+                ...data,
+                date: data.date ? new Date(data.date).toISOString().slice(0, 10) : new Date().toISOString().slice(0, 10)
+            });
         }
     }, [open, initialData]);
 
     const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         const {name, value} = e.target;
-        setForm((prev: Expense) => ({
-            ...prev,
-            [name]: name === 'amount' || name === 'quantity' ? Number(value) : value,
-        }));
+        setForm((prev: Expense) => {
+            return {
+                ...prev,
+                [name]: name === 'amount' || name === 'quantity' ? Number(value) : value,
+            };
+        });
     }, []);
 
     const cleanOptionalFields = (value?: string): string | undefined =>
@@ -61,7 +67,9 @@ export default function ExpenseDialog({open, onClose, onSave, initialData = empt
         }
     }, [form, onSave, onClose]);
 
-    if (!open) return null;
+    if (!open) {
+        return null;
+    }
 
     return (
         <div className="dialog-overlay">
@@ -80,7 +88,9 @@ export default function ExpenseDialog({open, onClose, onSave, initialData = empt
                     ].map((field) => (
                         <div key={field} className="form-field">
                             <label htmlFor={field}>
-                                {t(field)}{field !== 'marketplace' && <span className="required">*</span>}
+                                {field === 'amount'
+                                    ? `${t(field)} (€)`
+                                    : t(field)}{field !== 'marketplace' && <span className="required">*</span>}
                             </label>
                             <input
                                 type={field === 'date' ? 'date' : field === 'amount' || field === 'quantity' ? 'number' : 'text'}

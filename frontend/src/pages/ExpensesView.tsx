@@ -9,13 +9,24 @@ import {useAuth} from '../hooks/useAuth';
 import {logger} from '../logger';
 import {Expense} from '../types/Expense';
 
+const emptyExpense: Expense = {
+    id: '',
+    date: new Date().toISOString().slice(0, 10),
+    amount: 0,
+    product: '',
+    item_type: '',
+    series: '',
+    quantity: 1,
+    seller: '',
+    marketplace: undefined
+};
 
 export default function ExpensesView() {
     const {user} = useAuth();
     const {t} = useTranslation();
     const {expenses, fetchExpenses, addExpense, updateExpense, deleteExpense, loading, error, token} = useApiExpenses(user);
     const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
-    const [dialogOpen, setDialogOpen] = useState(false);
+    const dialogOpen = editingExpense !== null;
     const [sortKey, setSortKey] = useState<string>("date");
     const [sortAsc, setSortAsc] = useState<boolean>(false);
     const [currentPage, setCurrentPage] = useState(1);
@@ -70,22 +81,19 @@ export default function ExpensesView() {
         } else {
             await addExpense(expense);
         }
-        setDialogOpen(false);
         setEditingExpense(null);
     };
 
     const handleOpenDialog = () => {
-        setDialogOpen(true);
+        setEditingExpense({ ...emptyExpense });
     };
 
     const handleCloseDialog = () => {
-        setDialogOpen(false);
         setEditingExpense(null);
     };
 
     const handleEditExpense = (expense: Expense) => {
         setEditingExpense(expense);
-        setDialogOpen(true);
     };
 
     const handleDeleteExpense = async (id: string) => {
@@ -111,7 +119,8 @@ export default function ExpensesView() {
                 open={dialogOpen}
                 onClose={handleCloseDialog}
                 onSave={handleSaveExpense}
-                initialData={editingExpense || undefined}
+                initialData={editingExpense ?? undefined}
+                key={dialogOpen ? (editingExpense?.id || 'new') : 'closed'}
             />
 
             <ExpenseTable

@@ -57,10 +57,14 @@ export default function PivotOverview() {
         }));
     };
 
-    const calculateTotal = (items: Expense[]) =>
-        items.reduce((sum, item) => sum + (item.amount || 0), 0);
+    const getFormattedAmount = (amount: number) => {
+        return amount.toLocaleString('de-DE', { style: 'currency', currency: 'EUR' });
+    }
 
-    const grandTotal = expenses.reduce((sum, item) => sum + (item.amount || 0), 0);
+    const calculateTotal = (items: Expense[]) =>
+        items.reduce((sum, item) => sum + Number(item.amount), 0);
+
+    const grandTotal = expenses.reduce((sum, item) => sum + Number(item.amount), 0);
 
     const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const {name, value} = e.target;
@@ -96,14 +100,14 @@ export default function PivotOverview() {
                     const productKey = safeKey(`product-${product}`);
                     const productTotal = Object.values(itemTypes)
                         .flatMap((series) => Object.values(series).flat())
-                        .reduce((sum, item) => sum + (item.amount || 0), 0);
+                        .reduce((sum, item) => sum + Number(item.amount), 0);
 
                     return (
                         <div key={productKey} className="pivot-group">
                             <div className="pivot-group-header" onClick={() => toggle(productKey)}>
                                 <span className="pivot-toggle">{openGroups[productKey] ? "-" : "+"}</span>
                                 <span className="pivot-title">{product}</span>
-                                <span className="pivot-total">{productTotal.toFixed(2)} €</span>
+                                <span className="pivot-total">{getFormattedAmount(productTotal)}</span>
                             </div>
 
                             <div className={`pivot-subgroup ${openGroups[productKey] ? "open" : ""}`}>
@@ -111,7 +115,7 @@ export default function PivotOverview() {
                                     const itemTypeKey = safeKey(`${productKey}-itemType-${itemType}`);
                                     const itemTypeTotal = Object.values(series)
                                         .flat()
-                                        .reduce((sum, item) => sum + (item.amount || 0), 0);
+                                        .reduce((sum, item) => sum + Number(item.amount), 0);
 
                                     return (
                                         <div key={itemTypeKey} className="pivot-group">
@@ -119,7 +123,7 @@ export default function PivotOverview() {
                                                 <span
                                                     className="pivot-toggle">{openGroups[itemTypeKey] ? "-" : "+"}</span>
                                                 <span className="pivot-title">{itemType}</span>
-                                                <span className="pivot-total">{itemTypeTotal.toFixed(2)} €</span>
+                                                <span className="pivot-total">{getFormattedAmount(itemTypeTotal)}</span>
                                             </div>
 
                                             <div className={`pivot-subgroup ${openGroups[itemTypeKey] ? "open" : ""}`}>
@@ -131,8 +135,7 @@ export default function PivotOverview() {
                                                         <div key={seriesKey} className="pivot-group">
                                                             <div className="pivot-group-series">
                                                                 <span className="pivot-title">{series}</span>
-                                                                <span
-                                                                    className="pivot-total">{seriesTotal.toFixed(2)} €</span>
+                                                                <span className="pivot-total">{getFormattedAmount(seriesTotal)}</span>
                                                             </div>
                                                         </div>
                                                     );
@@ -147,7 +150,7 @@ export default function PivotOverview() {
                 }))}
 
             <div className="pivot-grand-total">
-                {t("grand_total")}: {grandTotal.toFixed(2)} €
+                {t("grand_total")}: {getFormattedAmount(grandTotal)}
             </div>
         </div>
     );
