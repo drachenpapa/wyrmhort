@@ -31,8 +31,27 @@ export default function ExpensesView() {
     const [sortAsc, setSortAsc] = useState<boolean>(false);
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize, setPageSize] = useState(20);
-    const totalPages = Math.max(1, Math.ceil(expenses.length / pageSize));
-    const paginatedExpenses = expenses.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+    const [filterDateFrom, setFilterDateFrom] = useState<string>("");
+    const [filterDateTo, setFilterDateTo] = useState<string>("");
+    const [filterProduct, setFilterProduct] = useState<string>("");
+    const [filterItemType, setFilterItemType] = useState<string>("");
+    const [filterSeries, setFilterSeries] = useState<string>("");
+    const [filterMarketplace, setFilterMarketplace] = useState<string>("");
+    const [filterSeller, setFilterSeller] = useState<string>("");
+
+    const filteredExpenses = expenses.filter(exp => {
+        const date = exp.date.slice(0, 10);
+        if (filterDateFrom && date < filterDateFrom) return false;
+        if (filterDateTo && date > filterDateTo) return false;
+        if (filterProduct && !exp.product?.toLowerCase().includes(filterProduct.toLowerCase())) return false;
+        if (filterItemType && !exp.item_type?.toLowerCase().includes(filterItemType.toLowerCase())) return false;
+        if (filterSeries && !exp.series?.toLowerCase().includes(filterSeries.toLowerCase())) return false;
+        if (filterMarketplace && !(exp.marketplace || "").toLowerCase().includes(filterMarketplace.toLowerCase())) return false;
+        if (filterSeller && !exp.seller?.toLowerCase().includes(filterSeller.toLowerCase())) return false;
+        return true;
+    });
+    const totalPages = Math.max(1, Math.ceil(filteredExpenses.length / pageSize));
+    const paginatedExpenses = filteredExpenses.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
     useEffect(() => {
         if (user && token) {
@@ -108,6 +127,19 @@ export default function ExpensesView() {
 
     return (
         <div className="container">
+            <form className="expense-filters" style={{display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 16}} onSubmit={e => {e.preventDefault();}}>
+                <input type="date" value={filterDateFrom} onChange={e => setFilterDateFrom(e.target.value)} placeholder={t("date_from") || "Von"} title={t("date_from") || "Von"} />
+                <input type="date" value={filterDateTo} onChange={e => setFilterDateTo(e.target.value)} placeholder={t("date_to") || "Bis"} title={t("date_to") || "Bis"} />
+                <input type="text" value={filterProduct} onChange={e => setFilterProduct(e.target.value)} placeholder={t("product") || "Produkt"} />
+                <input type="text" value={filterItemType} onChange={e => setFilterItemType(e.target.value)} placeholder={t("item_type") || "Typ"} />
+                <input type="text" value={filterSeries} onChange={e => setFilterSeries(e.target.value)} placeholder={t("series") || "Serie"} />
+                <input type="text" value={filterMarketplace} onChange={e => setFilterMarketplace(e.target.value)} placeholder={t("marketplace") || "Marktplatz"} />
+                <input type="text" value={filterSeller} onChange={e => setFilterSeller(e.target.value)} placeholder={t("seller") || "Verkäufer"} />
+                <button type="button" className="btn" onClick={() => {
+                    setFilterDateFrom(""); setFilterDateTo(""); setFilterProduct(""); setFilterItemType(""); setFilterSeries(""); setFilterMarketplace(""); setFilterSeller("");
+                }}>{t("reset") || "Zurücksetzen"}</button>
+            </form>
+
             <div className="add-expense-container">
                 <button type="button" className="btn primary" onClick={handleOpenDialog}>
                     <Plus size={18}/>
