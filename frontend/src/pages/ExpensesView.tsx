@@ -38,6 +38,13 @@ export default function ExpensesView() {
     const [filterSeries, setFilterSeries] = useState<string>("");
     const [filterMarketplace, setFilterMarketplace] = useState<string>("");
     const [filterSeller, setFilterSeller] = useState<string>("");
+    const [showFilters, setShowFilters] = useState(false);
+
+    const uniqueProducts = Array.from(new Set(expenses.map(e => e.product).filter(Boolean)));
+    const uniqueItemTypes = Array.from(new Set(expenses.map(e => e.item_type).filter(Boolean)));
+    const uniqueSeries = Array.from(new Set(expenses.map(e => e.series).filter(Boolean)));
+    const uniqueMarketplaces = Array.from(new Set(expenses.map(e => e.marketplace).filter(Boolean)));
+    const uniqueSellers = Array.from(new Set(expenses.map(e => e.seller).filter(Boolean)));
 
     const filteredExpenses = expenses.filter(exp => {
         const date = exp.date.slice(0, 10);
@@ -50,6 +57,7 @@ export default function ExpensesView() {
         if (filterSeller && !exp.seller?.toLowerCase().includes(filterSeller.toLowerCase())) return false;
         return true;
     });
+
     const totalPages = Math.max(1, Math.ceil(filteredExpenses.length / pageSize));
     const paginatedExpenses = filteredExpenses.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
@@ -127,18 +135,34 @@ export default function ExpensesView() {
 
     return (
         <div className="container">
-            <form className="expense-filters" style={{display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 16}} onSubmit={e => {e.preventDefault();}}>
-                <input type="date" value={filterDateFrom} onChange={e => setFilterDateFrom(e.target.value)} placeholder={t("date_from") || "Von"} title={t("date_from") || "Von"} />
-                <input type="date" value={filterDateTo} onChange={e => setFilterDateTo(e.target.value)} placeholder={t("date_to") || "Bis"} title={t("date_to") || "Bis"} />
-                <input type="text" value={filterProduct} onChange={e => setFilterProduct(e.target.value)} placeholder={t("product") || "Produkt"} />
-                <input type="text" value={filterItemType} onChange={e => setFilterItemType(e.target.value)} placeholder={t("item_type") || "Typ"} />
-                <input type="text" value={filterSeries} onChange={e => setFilterSeries(e.target.value)} placeholder={t("series") || "Serie"} />
-                <input type="text" value={filterMarketplace} onChange={e => setFilterMarketplace(e.target.value)} placeholder={t("marketplace") || "Marktplatz"} />
-                <input type="text" value={filterSeller} onChange={e => setFilterSeller(e.target.value)} placeholder={t("seller") || "Verkäufer"} />
-                <button type="button" className="btn" onClick={() => {
-                    setFilterDateFrom(""); setFilterDateTo(""); setFilterProduct(""); setFilterItemType(""); setFilterSeries(""); setFilterMarketplace(""); setFilterSeller("");
-                }}>{t("reset") || "Zurücksetzen"}</button>
-            </form>
+            <button type="button" className="btn" style={{marginBottom: 8}} onClick={() => setShowFilters(f => !f)}>
+                {showFilters ? t("hide_filters") || "Filter ausblenden" : t("show_filters") || "Filter anzeigen"}
+            </button>
+            {showFilters && (
+                <form className="expense-filters" style={{display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 16}} onSubmit={e => {e.preventDefault();}}>
+                    <input type="date" value={filterDateFrom} onChange={e => setFilterDateFrom(e.target.value)} placeholder={t("date_from")} title={t("date_from")} />
+                    <input type="date" value={filterDateTo} onChange={e => setFilterDateTo(e.target.value)} placeholder={t("date_to")} title={t("date_to")} />
+                    <select value={filterProduct} onChange={e => setFilterProduct(e.target.value)} title={t("product") || "Produkt"}>
+                        <option value="">{t("all_products") || "Alle Produkte"}</option>
+                        {uniqueProducts.map(p => <option key={p} value={p}>{p}</option>)}
+                    </select>
+                    <select value={filterItemType} onChange={e => setFilterItemType(e.target.value)} title={t("item_type") || "Typ"}>
+                        <option value="">{t("all_item_types") || "Alle Typen"}</option>
+                        {uniqueItemTypes.map(t => <option key={t} value={t}>{t}</option>)}
+                    </select>
+                    <select value={filterSeries} onChange={e => setFilterSeries(e.target.value)} title={t("series") || "Serie"}>
+                        <option value="">{t("all_series") || "Alle Serien"}</option>
+                        {uniqueSeries.map(s => <option key={s} value={s}>{s}</option>)}
+                    </select>
+                    <select value={filterMarketplace} onChange={e => setFilterMarketplace(e.target.value)} title={t("marketplace") || "Marktplatz"}>
+                        <option value="">{t("all_marketplaces") || "Alle Marktplatz"}</option>
+                        {uniqueMarketplaces.map(s => <option key={s} value={s}>{s}</option>)}
+                    </select>
+                    <select value={filterSeller} onChange={e => setFilterSeller(e.target.value)} title={t("seller") || "Verkäufer"}>
+                        <option value="">{t("all_seller") || "Alle Verkäufer"}</option>
+                        {uniqueSellers.map(s => <option key={s} value={s}>{s}</option>)}
+                    </select>
+                </form>)}
 
             <div className="add-expense-container">
                 <button type="button" className="btn primary" onClick={handleOpenDialog}>
