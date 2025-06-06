@@ -52,7 +52,7 @@ export default function ExpensesView() {
     const uniqueProducts = Array.from(new Set(expenses.map(e => e.product).filter(Boolean))).sort((a, b) => a.localeCompare(b));
     const uniqueItemTypes = Array.from(new Set(expenses.map(e => e.item_type).filter(Boolean))).sort((a, b) => a.localeCompare(b));
     const uniqueSeries = Array.from(new Set(expenses.map(e => e.series).filter(Boolean))).sort((a, b) => a.localeCompare(b));
-    const uniqueMarketplaces = Array.from(new Set(expenses.map(e => e.marketplace).filter(Boolean))).sort((a, b) => a.localeCompare(b));
+    const uniqueMarketplaces = Array.from(new Set(expenses.map(e => e.marketplace).filter((v): v is string => !!v))).sort((a, b) => a.localeCompare(b));
     const uniqueSellers = Array.from(new Set(expenses.map(e => e.seller).filter(Boolean))).sort((a, b) => a.localeCompare(b));
 
     const filteredExpenses = expenses.filter(exp => {
