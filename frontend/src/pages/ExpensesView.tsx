@@ -24,15 +24,51 @@ const emptyExpense: Expense = {
 export default function ExpensesView() {
     const {user} = useAuth();
     const {t} = useTranslation();
-    const {expenses, fetchExpenses, addExpense, updateExpense, deleteExpense, loading, error, token} = useApiExpenses(user);
+    const {
+        expenses,
+        fetchExpenses,
+        addExpense,
+        updateExpense,
+        deleteExpense,
+        loading,
+        error,
+        token
+    } = useApiExpenses(user);
     const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
     const dialogOpen = editingExpense !== null;
     const [sortKey, setSortKey] = useState<string>("date");
     const [sortAsc, setSortAsc] = useState<boolean>(false);
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize, setPageSize] = useState(20);
-    const totalPages = Math.max(1, Math.ceil(expenses.length / pageSize));
-    const paginatedExpenses = expenses.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+    const [filterDateFrom, setFilterDateFrom] = useState<string>("");
+    const [filterDateTo, setFilterDateTo] = useState<string>("");
+    const [filterProduct, setFilterProduct] = useState<string>("");
+    const [filterItemType, setFilterItemType] = useState<string>("");
+    const [filterSeries, setFilterSeries] = useState<string>("");
+    const [filterMarketplace, setFilterMarketplace] = useState<string>("");
+    const [filterSeller, setFilterSeller] = useState<string>("");
+    const [showFilters, setShowFilters] = useState(false);
+
+    const uniqueProducts = Array.from(new Set(expenses.map(e => e.product).filter(Boolean))).sort((a, b) => a.localeCompare(b));
+    const uniqueItemTypes = Array.from(new Set(expenses.map(e => e.item_type).filter(Boolean))).sort((a, b) => a.localeCompare(b));
+    const uniqueSeries = Array.from(new Set(expenses.map(e => e.series).filter(Boolean))).sort((a, b) => a.localeCompare(b));
+    const uniqueMarketplaces = Array.from(new Set(expenses.map(e => e.marketplace).filter((v): v is string => !!v))).sort((a, b) => a.localeCompare(b));
+    const uniqueSellers = Array.from(new Set(expenses.map(e => e.seller).filter(Boolean))).sort((a, b) => a.localeCompare(b));
+
+    const filteredExpenses = expenses.filter(exp => {
+        const date = exp.date.slice(0, 10);
+        if (filterDateFrom && date < filterDateFrom) return false;
+        if (filterDateTo && date > filterDateTo) return false;
+        if (filterProduct && !exp.product?.toLowerCase().includes(filterProduct.toLowerCase())) return false;
+        if (filterItemType && !exp.item_type?.toLowerCase().includes(filterItemType.toLowerCase())) return false;
+        if (filterSeries && !exp.series?.toLowerCase().includes(filterSeries.toLowerCase())) return false;
+        if (filterMarketplace && !(exp.marketplace || "").toLowerCase().includes(filterMarketplace.toLowerCase())) return false;
+        if (filterSeller && !exp.seller?.toLowerCase().includes(filterSeller.toLowerCase())) return false;
+        return true;
+    });
+
+    const totalPages = Math.max(1, Math.ceil(filteredExpenses.length / pageSize));
+    const paginatedExpenses = filteredExpenses.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
     useEffect(() => {
         if (user && token) {
@@ -85,7 +121,7 @@ export default function ExpensesView() {
     };
 
     const handleOpenDialog = () => {
-        setEditingExpense({ ...emptyExpense });
+        setEditingExpense({...emptyExpense});
     };
 
     const handleCloseDialog = () => {
@@ -108,6 +144,45 @@ export default function ExpensesView() {
 
     return (
         <div className="container">
+            <button type="button" className="btn" style={{marginBottom: 8}} onClick={() => setShowFilters(f => !f)}>
+                {showFilters ? t("hide_filters") || "Filter ausblenden" : t("show_filters") || "Filter anzeigen"}
+            </button>
+            {showFilters && (
+                <form className="expense-filters" style={{display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 16}}
+                      onSubmit={e => {
+                          e.preventDefault();
+                      }}>
+                    <input type="date" value={filterDateFrom} onChange={e => setFilterDateFrom(e.target.value)}
+                           placeholder={t("date_from")} title={t("date_from")}/>
+                    <input type="date" value={filterDateTo} onChange={e => setFilterDateTo(e.target.value)}
+                           placeholder={t("date_to")} title={t("date_to")}/>
+                    <select value={filterProduct} onChange={e => setFilterProduct(e.target.value)}
+                            title={t("product") || "Produkt"}>
+                        <option value="">{t("all_products") || "Alle Produkte"}</option>
+                        {uniqueProducts.map(p => <option key={p} value={p}>{p}</option>)}
+                    </select>
+                    <select value={filterItemType} onChange={e => setFilterItemType(e.target.value)}
+                            title={t("item_type") || "Typ"}>
+                        <option value="">{t("all_item_types") || "Alle Typen"}</option>
+                        {uniqueItemTypes.map(t => <option key={t} value={t}>{t}</option>)}
+                    </select>
+                    <select value={filterSeries} onChange={e => setFilterSeries(e.target.value)}
+                            title={t("series") || "Serie"}>
+                        <option value="">{t("all_series") || "Alle Serien"}</option>
+                        {uniqueSeries.map(s => <option key={s} value={s}>{s}</option>)}
+                    </select>
+                    <select value={filterMarketplace} onChange={e => setFilterMarketplace(e.target.value)}
+                            title={t("marketplace") || "Marktplatz"}>
+                        <option value="">{t("all_marketplaces") || "Alle Marktplatz"}</option>
+                        {uniqueMarketplaces.map(s => <option key={s} value={s}>{s}</option>)}
+                    </select>
+                    <select value={filterSeller} onChange={e => setFilterSeller(e.target.value)}
+                            title={t("seller") || "Verkäufer"}>
+                        <option value="">{t("all_seller") || "Alle Verkäufer"}</option>
+                        {uniqueSellers.map(s => <option key={s} value={s}>{s}</option>)}
+                    </select>
+                </form>)}
+
             <div className="add-expense-container">
                 <button type="button" className="btn primary" onClick={handleOpenDialog}>
                     <Plus size={18}/>
