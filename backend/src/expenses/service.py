@@ -5,7 +5,7 @@ from datetime import datetime
 from google.cloud.firestore import Client
 
 from expenses.models import Expense
-from expenses.schemas import ExpenseRequest
+from expenses.schemas import ExpenseRequest, ExpenseResponse
 from firebase.firestore import add_expense, get_expenses, update_expense, delete_expense
 from logger_config import setup_logger
 
@@ -29,7 +29,7 @@ def read_expenses_service(
         start_date: datetime | None = None,
         end_date: datetime | None = None,
         sort: str = "-date"
-) -> list[Expense]:
+) -> list[ExpenseResponse]:
     if sort.startswith("-"):
         order_by = sort[1:]
         ascending = False
@@ -41,7 +41,7 @@ def read_expenses_service(
         order_by = "date"
         ascending = False
 
-    return get_expenses(
+    expenses = get_expenses(
         db,
         uid,
         product=product,
@@ -54,6 +54,7 @@ def read_expenses_service(
         order_by=order_by,
         ascending=ascending
     )
+    return [ExpenseResponse.model_validate(e) for e in expenses]
 
 
 def update_expense_service(db: Client, uid: str, expense_id: str, expense: ExpenseRequest) -> None:
