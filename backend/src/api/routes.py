@@ -1,12 +1,11 @@
 from __future__ import annotations
 
-import dataclasses
 from datetime import datetime
 
 from fastapi import FastAPI, Depends, Query
 from starlette.responses import JSONResponse
 
-from expenses.schemas import ExpenseRequest, ExpenseResponse
+from expenses.schemas import ExpenseRequest
 from expenses.service import (
     create_expense_service,
     read_expenses_service,
@@ -69,7 +68,7 @@ async def read_expenses(
         end_date=end_date,
         sort=sort
     )
-    return {"expenses": [ExpenseResponse.model_validate(dataclasses.asdict(e)) for e in expenses]}
+    return {"expenses": [e.model_dump() for e in expenses]}
 
 
 @app.put("/api/expenses/{expense_id}")

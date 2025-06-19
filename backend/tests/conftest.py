@@ -9,6 +9,20 @@ from firebase.auth import get_current_user_uid
 
 
 @pytest.fixture
+def valid_expense_payload(sample_expense_data):
+    payload = sample_expense_data.copy()
+    payload["date"] = "2025-04-15T10:00:00"
+    payload["amount"] = 9.99
+    payload["quantity"] = 2
+    payload["product"] = "Test Product"
+    payload["series"] = "Test Series"
+    payload["seller"] = "Test Seller"
+    payload["marketplace"] = "Test Market"
+    payload.pop("id", None)
+    return payload
+
+
+@pytest.fixture
 def sample_expense_data():
     return {
         "id": "test-id",
