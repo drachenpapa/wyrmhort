@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from datetime import datetime
 import dataclasses
+from datetime import datetime
 
 from google.cloud.firestore import Client
 
@@ -79,4 +79,3 @@ def __convert(expense: ExpenseRequest, request_id: str) -> Expense:
         item_type=expense.item_type,
         series=expense.series
     )
-
