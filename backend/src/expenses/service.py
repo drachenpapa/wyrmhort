@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
+import dataclasses
 
 from google.cloud.firestore import Client
 
@@ -14,7 +15,7 @@ ALLOWED_SORT_FIELDS = {"date", "amount", "product", "item_type", "series", "sell
 
 
 def create_expense_service(db: Client, uid: str, expense: ExpenseRequest) -> str:
-    expense_obj = __convert(expense, id="")
+    expense_obj = __convert(expense, request_id="")
     return add_expense(db, uid, expense_obj)
 
 
@@ -54,11 +55,11 @@ def read_expenses_service(
         order_by=order_by,
         ascending=ascending
     )
-    return [ExpenseResponse.model_validate(e) for e in expenses]
+    return [ExpenseResponse.model_validate(dataclasses.asdict(e)) for e in expenses]
 
 
 def update_expense_service(db: Client, uid: str, expense_id: str, expense: ExpenseRequest) -> None:
-    updated_expense = __convert(expense, id=expense_id)
+    updated_expense = __convert(expense, request_id=expense_id)
     update_expense(db, uid, expense_id, updated_expense)
 
 
@@ -66,9 +67,9 @@ def delete_expense_service(db: Client, uid: str, expense_id: str) -> None:
     delete_expense(db, uid, expense_id)
 
 
-def __convert(expense: ExpenseRequest, id: str) -> Expense:
+def __convert(expense: ExpenseRequest, request_id: str) -> Expense:
     return Expense(
-        id=id,
+        id=request_id,
         date=expense.date,
         amount=float(expense.amount),
         quantity=expense.quantity,
@@ -78,3 +79,4 @@ def __convert(expense: ExpenseRequest, id: str) -> Expense:
         item_type=expense.item_type,
         series=expense.series
     )
+

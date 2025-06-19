@@ -15,7 +15,9 @@ def mock_add_expense(mocker):
 
 @pytest.fixture
 def mock_get_expenses(mocker, sample_expense_data):
-    return mocker.patch("expenses.service.get_expenses", return_value=[sample_expense_data])
+    from expenses.models import Expense
+    expense_instance = Expense(**sample_expense_data)
+    return mocker.patch("expenses.service.get_expenses", return_value=[expense_instance])
 
 
 @pytest.fixture
