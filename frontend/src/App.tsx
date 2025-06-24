@@ -1,8 +1,9 @@
-import {LogOut, Moon, Sun} from 'lucide-react';
+import {AlertTriangle, LogOut, Moon, Sun} from 'lucide-react';
 import {useEffect, useState} from "react";
 import {useTranslation} from 'react-i18next';
 import {Navigate, Route, Routes} from 'react-router-dom';
 
+import LanguageSwitch from "./components/LanguageSwitch.tsx";
 import Tabs from './components/Tabs';
 import {useAuth} from './hooks/useAuth';
 import {logger} from './logger';
@@ -12,7 +13,7 @@ import PivotOverview from './pages/PivotOverview';
 
 
 export default function App() {
-    const {user, login, logout} = useAuth();
+    const {user, login, logout, loginAsDemo, authMode} = useAuth();
     const {t} = useTranslation()
     const allowedEmail = import.meta.env.VITE_ALLOWED_EMAIL;
     const isOwner = user?.email === allowedEmail;
@@ -36,30 +37,40 @@ export default function App() {
     }, [isDarkMode]);
 
     useEffect(() => {
-        if (user) {
+        if (user && authMode !== 'demo') {
             logger.info("User detected", user);
             if (!isOwner) {
                 logger.warn("Unauthorized user tried to access app", user.email);
             }
         }
-    }, [user, isOwner]);
+    }, [user, isOwner, authMode]);
 
     return (
         <div className="container">
-            <h1>{t("title")}</h1>
-            {user && isOwner ? (
+            <div className="app-title-row">
+                <h1 className="app-title">
+                    {t("title")}
+                    <img src="/favicon.svg" alt="Logo" className="app-title-logo"/>
+                </h1>
+            </div>
+            {authMode === 'demo' && (
+                <div className="demo-mode-banner">
+                    <AlertTriangle/>
+                    {t('demo_mode_active')}
+                    <AlertTriangle/>
+                </div>
+            )}
+            {user && (isOwner || authMode === 'demo') ? (
                 <>
-                    <div style={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        marginBottom: '1rem',
-                        alignItems: 'center'
-                    }}>
+                    <div className="app-header-row">
                         <h2>{t("greeting", {name: user.displayName})}</h2>
-                        <button className="btn secondary" onClick={logout}>
-                            <LogOut size={18}/>
-                            {t("logout")}
-                        </button>
+                        <div className="app-header-actions">
+                            <LanguageSwitch/>
+                            <button className="btn secondary" onClick={logout}>
+                                <LogOut size={18}/>
+                                {t("logout")}
+                            </button>
+                        </div>
                     </div>
                     <Tabs/>
                     <Routes>
@@ -73,10 +84,10 @@ export default function App() {
                         </button>
                     </div>
                 </>
-            ) : user && !isOwner ? (
+            ) : user && !isOwner && authMode !== 'demo' ? (
                 <p>{t("access_denied")}</p>
             ) : (
-                <Login onLogin={login}/>
+                <Login onLogin={login} onDemo={loginAsDemo}/>
             )}
         </div>
     );

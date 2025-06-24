@@ -25,6 +25,7 @@ type Props = {
     onPrevPage: () => void;
     onPageSizeChange: (size: number) => void;
     onPageChange: (page: number) => void;
+    authMode: string;
 };
 
 export default function ExpenseTable({
@@ -42,7 +43,8 @@ export default function ExpenseTable({
                                          onNextPage,
                                          onPrevPage,
                                          onPageSizeChange,
-                                         onPageChange
+                                         onPageChange,
+                                         authMode
                                      }: Props) {
     const {t} = useTranslation();
     const [deleteError, setDeleteError] = useState<string | null>(null);
@@ -146,7 +148,8 @@ export default function ExpenseTable({
                                             <Pencil size={16}/>
                                         </button>
                                         <button className="icon-btn" title={t("delete")}
-                                                onClick={() => handleDeleteClick(exp.id)}>
+                                                onClick={() => handleDeleteClick(exp.id)}
+                                                disabled={authMode === 'demo'}>
                                             <Trash2 size={16}/>
                                         </button>
                                     </td>

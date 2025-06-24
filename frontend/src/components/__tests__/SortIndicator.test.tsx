@@ -2,7 +2,7 @@ import {render} from '@testing-library/react';
 
 import SortIndicator from '../SortIndicator';
 
-describe('<SortIndicator />', () => {
+describe('<SortIndicator/>', () => {
     it('should render the ascending arrow when active and ascending', () => {
         render(<SortIndicator active={true} asc={true}/>);
         expect(document.querySelector('.lucide-chevron-up')).toBeInTheDocument();
