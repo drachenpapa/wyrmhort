@@ -21,8 +21,8 @@ const safeKey = (key: string): string =>
     key.replace(/[\\/:*?"<>|#%]/g, "_").trim();
 
 export default function PivotOverview() {
-    const {user} = useAuth();
-    const {expenses, fetchExpenses, loading, error} = useApiExpenses(user);
+    const {user, authMode} = useAuth();
+    const {expenses, fetchExpenses, loading, error} = useApiExpenses(user, authMode);
     const {t} = useTranslation();
     const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({});
     const [filters, setFilters] = useState<ExpenseFilters>({
@@ -30,12 +30,12 @@ export default function PivotOverview() {
     });
 
     useEffect(() => {
-        if (user) {
-            fetchExpenses().catch((err) => {
+        if ((user && user.email) || authMode === 'demo') {
+            fetchExpenses(filters).catch((err) => {
                 logger.error('Error fetching expenses:', err);
             });
         }
-    }, [user, fetchExpenses]);
+    }, [user, authMode, fetchExpenses, filters]);
 
     const grouped = expenses.reduce<GroupedExpenses>((acc, expense) => {
         const product = safeKey(expense.product || t("unknown"));
@@ -58,7 +58,7 @@ export default function PivotOverview() {
     };
 
     const getFormattedAmount = (amount: number) => {
-        return amount.toLocaleString('de-DE', { style: 'currency', currency: 'EUR' });
+        return amount.toLocaleString('de-DE', {style: 'currency', currency: 'EUR'});
     }
 
     const calculateTotal = (items: Expense[]) =>
@@ -135,7 +135,8 @@ export default function PivotOverview() {
                                                         <div key={seriesKey} className="pivot-group">
                                                             <div className="pivot-group-series">
                                                                 <span className="pivot-title">{series}</span>
-                                                                <span className="pivot-total">{getFormattedAmount(seriesTotal)}</span>
+                                                                <span
+                                                                    className="pivot-total">{getFormattedAmount(seriesTotal)}</span>
                                                             </div>
                                                         </div>
                                                     );

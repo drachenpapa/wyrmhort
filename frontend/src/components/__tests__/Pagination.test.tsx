@@ -3,7 +3,7 @@ import {vi} from 'vitest';
 
 import Pagination from '../Pagination';
 
-describe('<Pagination />', () => {
+describe('<Pagination/>', () => {
     const onPageChangeMock = vi.fn();
     const onNextPageMock = vi.fn();
     const onPrevPageMock = vi.fn();
@@ -24,7 +24,7 @@ describe('<Pagination />', () => {
     });
 
     test('renders pagination controls', () => {
-        render(<Pagination {...defaultProps} />);
+        render(<Pagination {...defaultProps}/>);
 
         expect(screen.getByText('previous')).toBeInTheDocument();
         expect(screen.getByText('next')).toBeInTheDocument();
@@ -73,7 +73,7 @@ describe('<Pagination />', () => {
     });
 
     test('changes size when page size is changed', () => {
-        render(<Pagination {...defaultProps} />);
+        render(<Pagination {...defaultProps}/>);
         const sizeSelect = screen.getByLabelText('items_per_page');
 
         fireEvent.change(sizeSelect, {target: {value: '50'}});
