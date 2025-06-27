@@ -9,6 +9,7 @@ type Props = {
     onClose: () => void;
     onSave: (expense: Expense) => Promise<void>;
     initialData?: Expense;
+    authMode: string;
 };
 
 const emptyExpense: Expense = {
@@ -23,7 +24,7 @@ const emptyExpense: Expense = {
     marketplace: undefined
 };
 
-export default function ExpenseDialog({open, onClose, onSave, initialData = emptyExpense}: Props) {
+export default function ExpenseDialog({open, onClose, onSave, initialData = emptyExpense, authMode}: Props) {
     const {t} = useTranslation();
     const [form, setForm] = useState<Expense>(emptyExpense);
     const [saving, setSaving] = useState(false);
@@ -119,7 +120,8 @@ export default function ExpenseDialog({open, onClose, onSave, initialData = empt
                                     form.product.trim() === '' ||
                                     form.item_type.trim() === '' ||
                                     form.series.trim() === '' ||
-                                    saving}>
+                                    saving ||
+                                    authMode === 'demo'}>
                             {saving ? <span className="btn-spinner"/> : t("save")}
                         </button>
                     </div>

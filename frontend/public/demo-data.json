@@ -1,0 +1,69 @@
+[
+  {
+    "id": "1",
+    "date": "2024-12-31",
+    "amount": 4.99,
+    "product": "Pokémon TCG",
+    "item_type": "Booster",
+    "series": "Ewige Rivalen",
+    "quantity": 1,
+    "seller": "Kiosk",
+    "marketplace": ""
+  },
+  {
+    "id": "2",
+    "date": "2025-01-04",
+    "amount": 0.99,
+    "product": "Pokémon GO",
+    "item_type": "Community Day Ticket",
+    "series": "Gluamnda (Classic)",
+    "quantity": 1,
+    "seller": "Niantic",
+    "marketplace": "Pokémon GO Webstore"
+  },
+  {
+    "id": "3",
+    "date": "2025-04-13",
+    "amount": 21.99,
+    "product": "Pokémon GO",
+    "item_type": "PokéMünzen",
+    "series": "2700 PokéMünzen",
+    "quantity": 2700,
+    "seller": "Niantic",
+    "marketplace": "Pokémon GO Webstore"
+  },
+  {
+    "id": "4",
+    "date": "2025-04-25",
+    "amount": 24.96,
+    "product": "Pokémon TCG",
+    "item_type": "Booster",
+    "series": "Ewige Rivalen",
+    "quantity": 5,
+    "seller": "Kiosk",
+    "marketplace": ""
+  },
+  {
+    "id": "5",
+    "date": "2025-06-06",
+    "amount": 50.00,
+    "product": "Pokémon TCG",
+    "item_type": "Einzelkarten",
+    "series": "Diverse",
+    "quantity": 10,
+    "seller": "SuperSeller123",
+    "marketplace": "Cardmarket"
+  },
+  {
+    "id": "6",
+    "date": "2025-06-06",
+    "amount": 2.19,
+    "product": "Pokémon GO",
+    "item_type": "Community Day Ticket",
+    "series": "Pikachu",
+    "quantity": 1,
+    "seller": "Niantic",
+    "marketplace": "Pokémon GO Webstore"
+  }
+]
+
