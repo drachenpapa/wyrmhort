@@ -1,5 +1,7 @@
-<h1 align="center" style="display: flex; align-items: center; justify-content: center;">
-  Wyrmhort <img src="frontend/public/favicon.svg" alt="Wyrmhort Logo" width="64" height="64"/>
+<h1 align="center">
+  <img src="frontend/public/favicon.svg" alt="Wyrmhort Logo" width="64" height="64"/>
+  <br/>
+  Wyrmhort
 </h1>
 
 <p align="center">
