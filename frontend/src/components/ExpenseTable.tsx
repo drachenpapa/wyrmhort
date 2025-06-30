@@ -2,6 +2,7 @@ import {Pencil, Trash2} from 'lucide-react';
 import {useCallback, useState} from 'react';
 import {useTranslation} from 'react-i18next';
 
+import type {AuthMode} from '../hooks/useAuth';
 import {logger} from '../logger';
 import {Expense} from '../types/Expense';
 
@@ -25,6 +26,7 @@ type Props = {
     onPrevPage: () => void;
     onPageSizeChange: (size: number) => void;
     onPageChange: (page: number) => void;
+    authMode: AuthMode;
 };
 
 export default function ExpenseTable({
@@ -42,7 +44,8 @@ export default function ExpenseTable({
                                          onNextPage,
                                          onPrevPage,
                                          onPageSizeChange,
-                                         onPageChange
+                                         onPageChange,
+                                         authMode
                                      }: Props) {
     const {t} = useTranslation();
     const [deleteError, setDeleteError] = useState<string | null>(null);
@@ -146,7 +149,8 @@ export default function ExpenseTable({
                                             <Pencil size={16}/>
                                         </button>
                                         <button className="icon-btn" title={t("delete")}
-                                                onClick={() => handleDeleteClick(exp.id)}>
+                                                onClick={() => handleDeleteClick(exp.id)}
+                                                disabled={authMode === 'demo'}>
                                             <Trash2 size={16}/>
                                         </button>
                                     </td>

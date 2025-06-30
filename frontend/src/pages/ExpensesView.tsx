@@ -22,7 +22,7 @@ const emptyExpense: Expense = {
 };
 
 export default function ExpensesView() {
-    const {user} = useAuth();
+    const {user, authMode} = useAuth();
     const {t} = useTranslation();
     const {
         expenses,
@@ -33,7 +33,7 @@ export default function ExpensesView() {
         loading,
         error,
         token
-    } = useApiExpenses(user);
+    } = useApiExpenses(user, authMode);
     const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
     const dialogOpen = editingExpense !== null;
     const [sortKey, setSortKey] = useState<string>("date");
@@ -94,12 +94,12 @@ export default function ExpensesView() {
     const paginatedExpenses = filteredExpenses.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
     useEffect(() => {
-        if (user && token) {
+        if ((user && token) || authMode === 'demo') {
             fetchExpenses({sortKey, sortAsc}).catch((err) => {
                 logger.error('Error fetching expenses:', err);
             });
         }
-    }, [user, token, fetchExpenses, sortKey, sortAsc]);
+    }, [user, token, fetchExpenses, sortKey, sortAsc, authMode]);
 
     useEffect(() => {
         setCurrentPage((prev) => Math.min(Math.max(prev, 1), totalPages));
@@ -161,7 +161,9 @@ export default function ExpensesView() {
         }
     };
 
-    if (!user) return <p>{t("login")}</p>;
+    if (loading) {
+        return <div>{t('loading')}</div>;
+    }
 
     return (
         <div className="container">
@@ -230,6 +232,7 @@ export default function ExpensesView() {
                 onSave={handleSaveExpense}
                 initialData={editingExpense ?? undefined}
                 key={dialogOpen ? (editingExpense?.id || 'new') : 'closed'}
+                authMode={authMode}
             />
 
             <ExpenseTable
@@ -248,6 +251,7 @@ export default function ExpensesView() {
                 onPrevPage={handlePrevPage}
                 onPageSizeChange={handlePageSizeChange}
                 onPageChange={handlePageChange}
+                authMode={authMode}
             />
         </div>
     );
