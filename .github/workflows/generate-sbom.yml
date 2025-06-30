@@ -3,7 +3,9 @@ name: Generate SBOM
 on:
   workflow_dispatch:
 
-permissions: write-all
+permissions:
+  contents: read
+  id-token: write
 
 jobs:
   build:

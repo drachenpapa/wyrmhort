@@ -11,6 +11,9 @@ defaults:
   run:
     working-directory: backend
 
+permissions:
+  contents: read
+
 jobs:
   compile:
     name: Compile Backend

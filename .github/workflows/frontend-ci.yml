@@ -11,6 +11,9 @@ defaults:
   run:
     working-directory: frontend
 
+permissions:
+  contents: read
+
 jobs:
   lint:
     name: Lint
@@ -36,7 +39,7 @@ jobs:
 
   build:
     name: Build
-    needs: [lint, test]
+    needs: [ lint, test ]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout codebase
