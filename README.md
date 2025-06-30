@@ -1,4 +1,6 @@
-<h1 align="center">Wyrmhort 🐉</h1>
+<h1 align="center" style="display: flex; align-items: center; justify-content: center;">
+  Wyrmhort <img src="frontend/public/favicon.svg" alt="Wyrmhort Logo" width="64" height="64"/>
+</h1>
 
 <p align="center">
   <a href="./LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow?style=flat-square" alt="License"></a>
