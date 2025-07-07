@@ -3,3 +3,4 @@ firebase-admin
 httpx
 python-dotenv
 uvicorn[standard]
+protobuf>=4.25.8 # not directly required, pinned by Snyk to avoid a vulnerability
