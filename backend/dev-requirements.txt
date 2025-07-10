@@ -1,5 +1,5 @@
-flake8
-mypy
-pytest
-pytest-asyncio
-pytest-mock
+flake8==7.0.0
+mypy==1.10.0
+pytest==8.2.1
+pytest-asyncio==0.23.6
+pytest-mock==3.14.0
