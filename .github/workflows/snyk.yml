@@ -49,23 +49,29 @@ jobs:
     name: Open Source Scan (SCA)
     runs-on: ubuntu-latest
     needs: backend
-    defaults:
-      run:
-        working-directory: backend
     steps:
       - name: Checkout codebase
         uses: actions/checkout@v4
       - name: Setup backend
         uses: ./.github/actions/backend-setup
-      - name: Scan with Snyk Open Source
-        uses: snyk/actions/python@master
+      - name: Install Snyk CLI
+        run: npm install -g snyk
+      - name: Snyk Open Source Scan
         continue-on-error: true
+        run: |
+          snyk test --file=backend/requirements.txt --sarif-file-output=snyk-backend-sca.sarif || echo "Snyk Scan failed or limit reached"
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-          command: test
-          args: --sarif-file-output=snyk-backend-sca.sarif
+      - name: Check SARIF file
+        id: check_sarif_req
+        run: |
+          if [ -f snyk-backend-sca.sarif ]; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
       - name: Upload results
+        if: steps.check_sarif_req.outputs.exists == 'true'
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: snyk-backend-sca.sarif
