@@ -64,7 +64,7 @@ jobs:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
           command: test
-          args: --file=backend/requirements.txt --sarif-file-output=snyk-backend-sca.sarif
+          args: --sarif-file-output=snyk-backend-sca.sarif
       - name: Upload results
         uses: github/codeql-action/upload-sarif@v3
         with:
