@@ -61,7 +61,7 @@ jobs:
         run: |
           cat backend/requirements.txt backend/dev-requirements.txt > backend/combined-requirements.txt
       - name: Check combined file
-        run: cat backend/combined-requirements.txt
+        run: cat requirements.txt dev-requirements.txt > combined-requirements.txt
       - name: Scan with Snyk Open Source
         uses: snyk/actions/python@master
         continue-on-error: true
