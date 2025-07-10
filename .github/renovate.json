@@ -1,11 +1,18 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "description": "Renovate configuration for Wyrmhort.",
-  "extends": ["github>drachenpapa/skeletor"],
+  "extends": [
+    "github>drachenpapa/skeletor"
+  ],
   "packageRules": [
     {
-      "matchManagers": ["pip_requirements"],
-      "matchPaths": ["backend/requirements.txt", "backend/dev-requirements.txt"]
+      "matchManagers": [
+        "pip_requirements"
+      ],
+      "matchFileNames": [
+        "backend/requirements.txt",
+        "backend/dev-requirements.txt"
+      ]
     }
   ]
 }
