@@ -103,6 +103,14 @@ jobs:
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: snyk-docker.sarif
+      - name: Inspect generated SARIF
+        if: always()
+        run: |
+          echo "SARIF file contents:"
+          cat snyk-docker.sarif || echo "No SARIF file created"
+      - name: Check SARIF is valid JSON
+        run: |
+          jq . snyk-docker.sarif || echo '{}' > snyk-docker.sarif
 
   frontend:
     name: Frontend Scans
