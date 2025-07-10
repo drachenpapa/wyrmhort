@@ -59,7 +59,9 @@ jobs:
         uses: ./.github/actions/backend-setup
       - name: Combine requirements files
         run: |
-          cat requirements.txt dev-requirements.txt > combined-requirements.txt
+          cat backend/requirements.txt backend/dev-requirements.txt > backend/combined-requirements.txt
+      - name: Check combined file
+        run: cat backend/combined-requirements.txt
       - name: Scan with Snyk Open Source
         uses: snyk/actions/python@master
         continue-on-error: true
@@ -67,7 +69,7 @@ jobs:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
           command: test
-          args: --file=combined-requirements.txt --sarif-file-output=snyk-backend-sca.sarif
+          args: --file=backend/combined-requirements.txt --sarif-file-output=snyk-backend-sca.sarif
       - name: Upload results
         uses: github/codeql-action/upload-sarif@v3
         with:
