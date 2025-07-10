@@ -1,4 +1,6 @@
-FROM python:3.13-slim
+FROM python:3.11-slim-bookworm
+
+RUN apt-get update && apt-get upgrade -y && apt-get install -y build-essential && apt-get clean
 
 WORKDIR /app
 
