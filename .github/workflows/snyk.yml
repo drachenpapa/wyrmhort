@@ -59,7 +59,7 @@ jobs:
         uses: ./.github/actions/backend-setup
       - name: Combine requirements files
         run: |
-          cat backend/requirements.txt backend/dev-requirements.txt > backend/combined-requirements.txt
+          cat requirements.txt dev-requirements.txt > combined-requirements.txt
       - name: Check combined file
         run: cat requirements.txt dev-requirements.txt > combined-requirements.txt
       - name: Scan with Snyk Open Source
