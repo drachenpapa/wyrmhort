@@ -33,8 +33,17 @@ jobs:
         shell: bash
       - name: Verify signed SBOMs
         run: |
-          cosign verify-blob --certificate sbom-backend.spdx.json.cert --signature sbom-backend.spdx.json.sig sbom-backend.spdx.json
-          cosign verify-blob --certificate sbom-frontend.spdx.json.cert --signature sbom-frontend.spdx.json.sig sbom-frontend.spdx.json
+          cosign verify-blob --certificate sbom-backend.spdx.json.cert \
+          --certificate-identity "https://github.com/drachenpapa/wyrmhort/.github/workflows/sbom.yml@refs/heads/main" \
+          --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
+          --signature sbom-backend.spdx.json.sig \
+          sbom-backend.spdx.json
+          
+          cosign verify-blob --certificate sbom-frontend.spdx.json.cert \
+          --certificate-identity "https://github.com/drachenpapa/wyrmhort/.github/workflows/sbom.yml@refs/heads/main" \
+          --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
+          --signature sbom-frontend.spdx.json.sig \
+          sbom-frontend.spdx.json
       - name: Upload as artifact
         uses: actions/upload-artifact@v4
         with:
