@@ -1,27 +1,57 @@
 name: SBOM
 
 on:
+  release:
+    types: [created]
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   id-token: write
 
 jobs:
-  build:
+  generate-sbom:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
+      - name: Checkout codebase
         uses: actions/checkout@v4
-      - name: Submit Dependency Snapshot
-        uses: advanced-security/maven-dependency-submission-action@v5
-      - name: Generate SBOM
-        uses: advanced-security/sbom-generator-action@v0.0.2
-        id: sbom
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-      - name: Upload SBOM
+      - name: Install Syft
+        uses: anchore/sbom-action/download-syft@v0.15.3
+      - name: Generate SBOMs
+        run: |
+          ./syft backend/ -o spdx-json > sbom-backend.spdx.json
+          ./syft frontend/ -o spdx-json > sbom-frontend.spdx.json
+        shell: bash
+      - name: Install Cosign
+        uses: sigstore/cosign-installer@v3
+      - name: Sign SBOMs
+        run: |
+          cosign sign-blob --yes --output-signature sbom-backend.spdx.json.sig sbom-backend.spdx.json
+          cosign sign-blob --yes --output-signature sbom-frontend.spdx.json.sig sbom-frontend.spdx.json
+        shell: bash
+      - name: Verify signed SBOMs (optional)
+        run: |
+          cosign verify-blob --certificate-oidc-issuer https://token.actions.githubusercontent.com \
+            --cert-identity "https://github.com/${{ github.repository }}/.github/workflows/sbom.yml@refs/heads/main" \
+            --signature sbom-backend.spdx.json.sig sbom-backend.spdx.json
+          cosign verify-blob --certificate-oidc-issuer https://token.actions.githubusercontent.com \
+            --cert-identity "https://github.com/${{ github.repository }}/.github/workflows/sbom.yml@refs/heads/main" \
+            --signature sbom-frontend.spdx.json.sig sbom-frontend.spdx.json
+      - name: Upload as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: "SBOM"
-          path: ${{ steps.sbom.outputs.fileName }}
+          name: sboms
+          path: |
+            sbom-backend.spdx.json
+            sbom-backend.spdx.json.sig
+            sbom-frontend.spdx.json
+            sbom-frontend.spdx.json.sig
+      - name: Upload to release
+        if: github.event_name == 'release'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            sbom-backend.spdx.json
+            sbom-backend.spdx.json.sig
+            sbom-frontend.spdx.json
+            sbom-frontend.spdx.json.sig

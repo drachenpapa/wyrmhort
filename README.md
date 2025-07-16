@@ -44,7 +44,7 @@ and the application is not designed to be scalable or secure for public use.
     <li><strong>Containerization:</strong> Docker</li>
     <li><strong>CI/CD:</strong> GitHub Actions</li>
     <li><strong>Dependency Management:</strong> Renovate</li>
-    <li><strong>Security:</strong> Snyk</li>
+    <li><strong>Security & Vulnerability Scanning:</strong> CodeQL · Dependabot Alerts  · Snyk (SnykCode · Snyk Container · Snyk Open Source)</li>
   </ul>
 </details>
 
