@@ -17,7 +17,8 @@ jobs:
       - name: Checkout codebase
         uses: actions/checkout@v4
       - name: Install Syft
-        uses: anchore/sbom-action@v0.15.3
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b /usr/local/bin
       - name: Generate SBOMs
         run: |
           syft backend/ -o spdx-json > sbom-backend.spdx.json
