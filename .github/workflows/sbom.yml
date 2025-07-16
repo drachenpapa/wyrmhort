@@ -28,13 +28,13 @@ jobs:
         uses: sigstore/cosign-installer@v3
       - name: Sign SBOMs
         run: |
-          cosign sign-blob --yes --output-signature sbom-backend.spdx.json.sig --output-bundle sbom-backend.spdx.json.bundle sbom-backend.spdx.json
-          cosign sign-blob --yes --output-signature sbom-frontend.spdx.json.sig --output-bundle sbom-frontend.spdx.json.bundle sbom-frontend.spdx.json
+          cosign sign-blob --yes --output-signature sbom-backend.spdx.json.sig --output-certificate sbom-backend.spdx.json.cert sbom-backend.spdx.json
+          cosign sign-blob --yes --output-signature sbom-frontend.spdx.json.sig --output-certificate sbom-frontend.spdx.json.cert sbom-frontend.spdx.json
         shell: bash
-      - name: Verify signed SBOMs (optional)
+      - name: Verify signed SBOMs
         run: |
-          cosign verify-blob --bundle sbom-backend.spdx.json.bundle sbom-backend.spdx.json
-          cosign verify-blob --bundle sbom-frontend.spdx.json.bundle sbom-frontend.spdx.json
+          cosign verify-blob --certificate sbom-backend.spdx.json.cert --signature sbom-backend.spdx.json.sig sbom-backend.spdx.json
+          cosign verify-blob --certificate sbom-frontend.spdx.json.cert --signature sbom-frontend.spdx.json.sig sbom-frontend.spdx.json
       - name: Upload as artifact
         uses: actions/upload-artifact@v4
         with:
@@ -42,8 +42,10 @@ jobs:
           path: |
             sbom-backend.spdx.json
             sbom-backend.spdx.json.sig
+            sbom-backend.spdx.json.cert
             sbom-frontend.spdx.json
             sbom-frontend.spdx.json.sig
+            sbom-frontend.spdx.json.cert
       - name: Upload to release
         if: github.event_name == 'release'
         uses: softprops/action-gh-release@v2
@@ -51,5 +53,7 @@ jobs:
           files: |
             sbom-backend.spdx.json
             sbom-backend.spdx.json.sig
+            sbom-backend.spdx.json.cert
             sbom-frontend.spdx.json
             sbom-frontend.spdx.json.sig
+            sbom-frontend.spdx.json.cert
