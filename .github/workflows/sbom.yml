@@ -11,16 +11,17 @@ permissions:
 
 jobs:
   generate-sbom:
+    name: Generate SBOMs
     runs-on: ubuntu-latest
     steps:
       - name: Checkout codebase
         uses: actions/checkout@v4
       - name: Install Syft
-        uses: anchore/sbom-action/download-syft@v0.15.3
+        uses: anchore/sbom-action@v0.15.3
       - name: Generate SBOMs
         run: |
-          ./syft backend/ -o spdx-json > sbom-backend.spdx.json
-          ./syft frontend/ -o spdx-json > sbom-frontend.spdx.json
+          syft backend/ -o spdx-json > sbom-backend.spdx.json
+          syft frontend/ -o spdx-json > sbom-frontend.spdx.json
         shell: bash
       - name: Install Cosign
         uses: sigstore/cosign-installer@v3
