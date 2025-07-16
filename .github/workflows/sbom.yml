@@ -28,17 +28,13 @@ jobs:
         uses: sigstore/cosign-installer@v3
       - name: Sign SBOMs
         run: |
-          cosign sign-blob --yes --output-signature sbom-backend.spdx.json.sig sbom-backend.spdx.json
-          cosign sign-blob --yes --output-signature sbom-frontend.spdx.json.sig sbom-frontend.spdx.json
+          cosign sign-blob --yes --output-signature sbom-backend.spdx.json.sig --output-bundle sbom-backend.spdx.json.bundle sbom-backend.spdx.json
+          cosign sign-blob --yes --output-signature sbom-frontend.spdx.json.sig --output-bundle sbom-frontend.spdx.json.bundle sbom-frontend.spdx.json
         shell: bash
       - name: Verify signed SBOMs (optional)
         run: |
-          cosign verify-blob --certificate-oidc-issuer https://token.actions.githubusercontent.com \
-            --cert-identity "https://github.com/${{ github.repository }}/.github/workflows/sbom.yml@refs/heads/main" \
-            --signature sbom-backend.spdx.json.sig sbom-backend.spdx.json
-          cosign verify-blob --certificate-oidc-issuer https://token.actions.githubusercontent.com \
-            --cert-identity "https://github.com/${{ github.repository }}/.github/workflows/sbom.yml@refs/heads/main" \
-            --signature sbom-frontend.spdx.json.sig sbom-frontend.spdx.json
+          cosign verify-blob --bundle sbom-backend.spdx.json.bundle sbom-backend.spdx.json
+          cosign verify-blob --bundle sbom-frontend.spdx.json.bundle sbom-frontend.spdx.json
       - name: Upload as artifact
         uses: actions/upload-artifact@v4
         with:
