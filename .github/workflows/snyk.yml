@@ -13,7 +13,7 @@ permissions:
 
 jobs:
   snyk-scans:
-    name: Run Snyk Scans
+    name: ${{ matrix.id == 'backend-sast' || matrix.id == 'frontend-sast' && 'SAST' || matrix.id == 'backend-sca' || matrix.id == 'frontend-sca' && 'SCA' || matrix.id == 'backend-docker' && 'Container Scan' }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -22,47 +22,52 @@ jobs:
           # Backend SAST
           - id: backend-sast
             component: backend
-            scan_name: "Static Application Security Testing (SAST)"
+            scan_type: "SAST"
             working_dir: backend
             setup_action: ./.github/actions/backend-setup
             snyk_cmd: snyk code test --sarif-file-output=snyk-backend-sast.sarif
             sarif_file: snyk-backend-sast.sarif
+            step_name: "Scan with SnykCode"
 
           # Backend SCA
           - id: backend-sca
             component: backend
-            scan_name: "Software Composition Analysis (SCA)"
+            scan_type: "SCA"
             working_dir: backend
             setup_action: ./.github/actions/backend-setup
             snyk_cmd: snyk test --file=requirements.txt --sarif-file-output=snyk-backend-sca.sarif
             sarif_file: snyk-backend-sca.sarif
+            step_name: "Scan with Snyk Open Source"
 
           # Backend Docker
           - id: backend-docker
             component: backend
-            scan_name: "Container Image Scan"
+            scan_type: "Container Scan"
             working_dir: backend
             setup_action: ./.github/actions/backend-setup
             snyk_cmd: snyk container test wyrmhort-backend --severity-threshold=medium --sarif-file-output=snyk-docker.sarif
             sarif_file: snyk-docker.sarif
+            step_name: "Scan with Snyk Container"
 
           # Frontend SAST
           - id: frontend-sast
             component: frontend
-            scan_name: "Static Application Security Testing (SAST)"
+            scan_type: "SAST"
             working_dir: frontend
             setup_action: ./.github/actions/frontend-setup
             snyk_cmd: snyk code test --sarif-file-output=snyk-frontend-sast.sarif
             sarif_file: snyk-frontend-sast.sarif
+            step_name: "Scan with SnykCode"
 
           # Frontend SCA
           - id: frontend-sca
             component: frontend
-            scan_name: "Software Composition Analysis (SCA)"
+            scan_type: "SCA"
             working_dir: frontend
             setup_action: ./.github/actions/frontend-setup
             snyk_cmd: snyk test --file=package.json --sarif-file-output=snyk-frontend-sca.sarif
             sarif_file: snyk-frontend-sca.sarif
+            step_name: "Scan with Snyk Open Source"
 
     steps:
       - name: Checkout codebase
@@ -73,8 +78,9 @@ jobs:
 
       - name: Build Docker image
         if: ${{ matrix.id == 'backend-docker' }}
-        run: docker build -t wyrmhort-backend -f Dockerfile .
-        working-directory: backend
+        run: |
+          cd backend
+          docker build -t wyrmhort-backend -f Dockerfile .
 
       - name: Cache npm for Snyk
         uses: actions/cache@v4
@@ -85,10 +91,10 @@ jobs:
       - name: Install Snyk CLI
         run: npm install -g snyk
 
-      - name: ${{ matrix.scan_name }}
+      - name: ${{ matrix.step_name }}
         run: |
+          cd ${{ matrix.working_dir }}
           ${{ matrix.snyk_cmd }} || echo "Snyk scan failed or limit reached"
-        working-directory: ${{ matrix.working_dir }}
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
