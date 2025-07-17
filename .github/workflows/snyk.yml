@@ -25,7 +25,6 @@ jobs:
     needs: backend
     defaults:
       run:
-        shell: bash
         working-directory: backend
     steps:
       - name: Checkout codebase
@@ -100,15 +99,15 @@ jobs:
         uses: actions/checkout@v4
       - name: Create environment file
         run: |
-          echo "ALLOWED_EMAIL=${{ secrets.ALLOWED_EMAIL }}" > backend/src/.env
+          echo "ALLOWED_EMAIL=${{ secrets.ALLOWED_EMAIL }}" > src/.env
       - name: Create firebase key file
         run: |
-          mkdir -p backend/secrets
-          echo "${{ secrets.FIREBASE_CREDENTIALS }}" > backend/secrets/firebase-key.json
+          mkdir -p secrets
+          echo "${{ secrets.FIREBASE_CREDENTIALS }}" > secrets/firebase-key.json
       - name: Set up Docker
         uses: docker/setup-buildx-action@v3
       - name: Build Docker image
-        run: docker build -t wyrmhort-backend -f backend/Dockerfile backend
+        run: docker build -t wyrmhort-backend -f Dockerfile backend
       - name: Install Snyk CLI
         run: npm install -g snyk
       - name: Scan with Snyk Container
@@ -138,7 +137,6 @@ jobs:
     needs: frontend
     defaults:
       run:
-        shell: bash
         working-directory: frontend
     steps:
       - name: Checkout codebase
