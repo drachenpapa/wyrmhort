@@ -13,11 +13,7 @@ permissions:
 
 jobs:
   snyk-scans:
-    name: >
-      ${{ matrix.component }} -
-      ${{ matrix.scan == 'SAST' && 'Static Application Security Testing (SAST)' ||
-          matrix.scan == 'SCA' && 'Software Composition Analysis (SCA)' ||
-          matrix.scan == 'Docker' && 'Container Image Scan' }}
+    name: ${{ matrix.component }} - ${{ matrix.scan }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -72,11 +68,9 @@ jobs:
 
       - name: Build Docker image
         if: ${{ matrix.scan == 'Docker' }}
-        run: |
-          echo "Building Docker image for backend..."
-          docker build -t wyrmhort-backend -f Dockerfile .
+        run: docker build -t wyrmhort-backend -f Dockerfile .
 
-      - name: Install Snyk CLI (with cache)
+      - name: Cache npm for Snyk
         uses: actions/cache@v4
         with:
           path: ~/.npm
@@ -85,14 +79,24 @@ jobs:
       - name: Install Snyk
         run: npm install -g snyk
 
-      # ✅ Dynamischer Step-Name für Scan
-      - name: >
-          ${{ matrix.scan == 'SAST' && 'Scan with SnykCode' ||
-              matrix.scan == 'SCA' && 'Scan with Snyk Open Source' ||
-              matrix.scan == 'Docker' && 'Scan with Snyk Container' }}
-        run: |
-          echo "Running ${{ matrix.scan }} scan for ${{ matrix.component }}"
-          ${{ matrix.snyk_cmd }} || echo "SNYK_SCAN_FAILED" >> snyk_status.log
+      # --- Scans with clear names ---
+      - name: Scan with SnykCode
+        if: ${{ matrix.scan == 'SAST' }}
+        run: ${{ matrix.snyk_cmd }}
+        working-directory: ${{ matrix.working_dir }}
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
+      - name: Scan with Snyk Open Source
+        if: ${{ matrix.scan == 'SCA' }}
+        run: ${{ matrix.snyk_cmd }}
+        working-directory: ${{ matrix.working_dir }}
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
+      - name: Scan with Snyk Container
+        if: ${{ matrix.scan == 'Docker' }}
+        run: ${{ matrix.snyk_cmd }}
         working-directory: ${{ matrix.working_dir }}
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
@@ -117,8 +121,8 @@ jobs:
         run: |
           high_issues=$(jq '[.runs[].results[] | select(.properties.severity=="high" or .properties.severity=="critical")] | length' ${{ matrix.sarif_file }})
           if [ "$high_issues" -gt 0 ]; then
-            echo "❌ Found $high_issues High/Critical vulnerabilities"
+            echo "Found $high_issues High/Critical vulnerabilities"
             exit 1
           else
-            echo "✅ No High/Critical issues found"
+            echo "No High/Critical issues found"
           fi
