@@ -12,190 +12,87 @@ permissions:
   actions: read
 
 jobs:
-  backend:
-    name: Backend Scans
+  snyk-scans:
+    name: ${{ matrix.name }}
     runs-on: ubuntu-latest
-    steps:
-      - run: echo "Running backend security scans"
-        shell: bash
-
-  backend-snyk-sast:
-    name: Static Application Security Testing (SAST)
-    runs-on: ubuntu-latest
-    needs: backend
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - id: backend-snyk-sast
+            name: BE-SAST (Static Application Security Testing)
+            dir: backend
+            scan_name: Scan with SnykCode
+            snyk_cmd: snyk code test --sarif-file-output=snyk-backend-sast.sarif || echo "Snyk SAST Scan failed or limit reached"
+            sarif_file: snyk-backend-sast.sarif
+          - id: backend-snyk-sca
+            name: BE-SCA (Software Composition Analysis)
+            dir: backend
+            scan_name: Scan with Snyk Open Source
+            snyk_cmd: snyk test --file=requirements.txt --sarif-file-output=snyk-backend-sca.sarif || echo "Snyk Scan failed or limit reached"
+            sarif_file: snyk-backend-sca.sarif
+          - id: backend-snyk-docker
+            name: Container Image Scan
+            dir: backend
+            scan_name: Scan with Snyk Container
+            snyk_cmd: snyk container test wyrmhort-backend --file=Dockerfile --severity-threshold=medium --sarif-file-output=snyk-docker.sarif || echo "Snyk Container Scan failed or limit reached"
+            sarif_file: snyk-docker.sarif
+          - id: frontend-snyk-sast
+            name: FE-SAST (Static Application Security Testing)
+            dir: frontend
+            scan_name: Scan with SnykCode
+            snyk_cmd: snyk code test --sarif-file-output=snyk-frontend-sast.sarif || echo "Snyk SAST Scan failed or limit reached"
+            sarif_file: snyk-frontend-sast.sarif
+          - id: frontend-snyk-sca
+            name: FE-SCA (Software Composition Analysis)
+            dir: frontend
+            scan_name: Scan with Snyk Open Source
+            snyk_cmd: snyk test --file=package.json --sarif-file-output=snyk-frontend-sca.sarif || echo "Snyk SCA Scan failed or limit reached"
+            sarif_file: snyk-frontend-sca.sarif
     defaults:
       run:
         shell: bash
-        working-directory: backend
+        working-directory: ${{ matrix.dir }}
     steps:
       - name: Checkout codebase
         uses: actions/checkout@v4
-      - name: Setup backend
+      - name: Create secrets
+        if: matrix.id == 'backend-snyk-docker'
+        run: |
+          echo "ALLOWED_EMAIL=${{ secrets.ALLOWED_EMAIL }}" > src/.env
+          mkdir -p secrets
+          echo "${{ secrets.FIREBASE_CREDENTIALS }}" > secrets/firebase-key.json
+      - name: Setup Backend
+        if: matrix.id == 'backend-snyk-sast' || matrix.id == 'backend-snyk-sca'
         uses: ./.github/actions/backend-setup
-      - name: Install Snyk CLI
-        run: npm install -g snyk
-      - name: Scan with SnykCode
-        continue-on-error: true
-        run: snyk code test --sarif-file-output=snyk-backend-sast.sarif || echo "Snyk SAST Scan failed or limit reached"
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-      - name: Check SARIF file
-        id: check_sarif_sast
-        run: |
-          if [ -f snyk-backend-sast.sarif ]; then
-            echo "exists=true" >> $GITHUB_OUTPUT
-          else
-            echo "exists=false" >> $GITHUB_OUTPUT
-          fi
-      - name: Upload results
-        if: steps.check_sarif_sast.outputs.exists == 'true'
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: snyk-backend-sast.sarif
-
-  backend-snyk-sca:
-    name: Software Composition Analysis (SCA)
-    runs-on: ubuntu-latest
-    needs: backend
-    defaults:
-      run:
-        shell: bash
-        working-directory: backend
-    steps:
-      - name: Checkout codebase
-        uses: actions/checkout@v4
-      - name: Setup backend
-        uses: ./.github/actions/backend-setup
-      - name: Install Snyk CLI
-        run: npm install -g snyk
-      - name: Scan with Snyk Open Source
-        continue-on-error: true
-        run: snyk test --file=backend/requirements.txt --sarif-file-output=snyk-backend-sca.sarif || echo "Snyk Scan failed or limit reached"
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-      - name: Check SARIF file
-        id: check_sarif_req
-        run: |
-          if [ -f snyk-backend-sca.sarif ]; then
-            echo "exists=true" >> $GITHUB_OUTPUT
-          else
-            echo "exists=false" >> $GITHUB_OUTPUT
-          fi
-      - name: Upload results
-        if: steps.check_sarif_req.outputs.exists == 'true'
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: snyk-backend-sca.sarif
-
-  backend-snyk-docker:
-    name: Container Image Scan
-    runs-on: ubuntu-latest
-    needs: backend
-    defaults:
-      run:
-        shell: bash
-        working-directory: backend
-    steps:
-      - name: Checkout codebase
-        uses: actions/checkout@v4
-      - name: Create environment file
-        run: |
-          echo "ALLOWED_EMAIL=${{ secrets.ALLOWED_EMAIL }}" > backend/src/.env
-      - name: Create firebase key file
-        run: |
-          mkdir -p backend/secrets
-          echo "${{ secrets.FIREBASE_CREDENTIALS }}" > backend/secrets/firebase-key.json
-      - name: Set up Docker
+      - name: Setup Frontend
+        if: matrix.id == 'frontend-snyk-sast' || matrix.id == 'frontend-snyk-sca'
+        uses: ./.github/actions/frontend-setup
+      - name: Setup Docker
+        if: matrix.id == 'backend-snyk-docker'
         uses: docker/setup-buildx-action@v3
+      - name: Install Snyk CLI
+        run: npm install -g snyk
       - name: Build Docker image
-        run: docker build -t wyrmhort-backend -f backend/Dockerfile backend
-      - name: Install Snyk CLI
-        run: npm install -g snyk
-      - name: Scan with Snyk Container
+        if: matrix.id == 'backend-snyk-docker'
+        run: docker build -t wyrmhort-backend -f Dockerfile .
+      - name: ${{ matrix.scan_name }}
         continue-on-error: true
-        run: snyk container test wyrmhort-backend --severity-threshold=medium --sarif-file-output=snyk-docker.sarif || echo "Snyk Container Scan failed or limit reached"
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-      - name: Fix sarif file
-        run: |
-          jq '(.runs[].tool.driver.rules[]?.properties."security-severity") |= (if . == null or . == "null" then "0.0" else . end)' snyk-docker.sarif > fixed.sarif
-          mv fixed.sarif snyk-docker.sarif
-      - name: Upload results
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: snyk-docker.sarif
-
-  frontend:
-    name: Frontend Scans
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo "Running frontend security scans"
-        shell: bash
-
-  frontend-snyk-sast:
-    name: Static Application Security Testing (SAST)
-    runs-on: ubuntu-latest
-    needs: frontend
-    defaults:
-      run:
-        shell: bash
-        working-directory: frontend
-    steps:
-      - name: Checkout codebase
-        uses: actions/checkout@v4
-      - name: Setup environment
-        uses: ./.github/actions/frontend-setup
-      - name: Install Snyk CLI
-        run: npm install -g snyk
-      - name: Scan with SnykCode
-        continue-on-error: true
-        run: snyk code test --sarif-file-output=snyk-frontend-sast.sarif || echo "Snyk SAST Scan failed or limit reached"
+        run: ${{ matrix.snyk_cmd }}
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
       - name: Check SARIF file
-        id: check_sarif_frontend_sast
+        id: check_sarif
         run: |
-          if [ -f snyk-frontend-sast.sarif ]; then
+          if [ -f ${{ matrix.sarif_file }} ]; then
             echo "exists=true" >> $GITHUB_OUTPUT
+            jq '(.runs[].tool.driver.rules[]?.properties."security-severity") |= (if . == null or . == "null" then "0.0" else . end)' ${{ matrix.sarif_file }} > fixed.sarif
+            mv fixed.sarif ${{ matrix.sarif_file }}
           else
             echo "exists=false" >> $GITHUB_OUTPUT
           fi
       - name: Upload results
-        if: steps.check_sarif_frontend_sast.outputs.exists == 'true'
+        if: steps.check_sarif.outputs.exists == 'true'
         uses: github/codeql-action/upload-sarif@v3
         with:
-          sarif_file: snyk-frontend-sast.sarif
-
-  frontend-snyk-sca:
-    name: Software Composition Analysis (SCA)
-    runs-on: ubuntu-latest
-    needs: frontend
-    defaults:
-      run:
-        shell: bash
-        working-directory: frontend
-    steps:
-      - name: Checkout codebase
-        uses: actions/checkout@v4
-      - name: Setup environment
-        uses: ./.github/actions/frontend-setup
-      - name: Install Snyk CLI
-        run: npm install -g snyk
-      - name: Scan with Snyk Open Source
-        continue-on-error: true
-        run: snyk test --file=frontend/package.json --sarif-file-output=snyk-frontend-sca.sarif || echo "Snyk SCA Scan failed or limit reached"
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-      - name: Check SARIF file
-        id: check_sarif_frontend_sca
-        run: |
-          if [ -f snyk-frontend-sca.sarif ]; then
-            echo "exists=true" >> $GITHUB_OUTPUT
-          else
-            echo "exists=false" >> $GITHUB_OUTPUT
-          fi
-      - name: Upload results
-        if: steps.check_sarif_frontend_sca.outputs.exists == 'true'
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: snyk-frontend-sca.sarif
+          sarif_file: ${{ matrix.dir }}/${{ matrix.sarif_file }}
