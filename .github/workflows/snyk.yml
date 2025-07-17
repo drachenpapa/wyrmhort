@@ -13,12 +13,17 @@ permissions:
 
 jobs:
   snyk-scans:
-    name: ${{ matrix.component }}-${{ matrix.scan }}
+    name: >
+      ${{ matrix.component }} -
+      ${{ matrix.scan == 'SAST' && 'Static Application Security Testing (SAST)' ||
+          matrix.scan == 'SCA' && 'Software Composition Analysis (SCA)' ||
+          matrix.scan == 'Docker' && 'Container Image Scan' }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         include:
+          # Backend SAST
           - component: backend
             scan: SAST
             working_dir: backend
@@ -26,6 +31,7 @@ jobs:
             snyk_cmd: snyk code test --sarif-file-output=snyk-backend-sast.sarif
             sarif_file: snyk-backend-sast.sarif
 
+          # Backend SCA
           - component: backend
             scan: SCA
             working_dir: backend
@@ -33,14 +39,15 @@ jobs:
             snyk_cmd: snyk test --file=requirements.txt --sarif-file-output=snyk-backend-sca.sarif
             sarif_file: snyk-backend-sca.sarif
 
+          # Backend Docker
           - component: backend
             scan: Docker
             working_dir: backend
             setup_action: ./.github/actions/backend-setup
             snyk_cmd: snyk container test wyrmhort-backend --severity-threshold=medium --sarif-file-output=snyk-docker.sarif
             sarif_file: snyk-docker.sarif
-            docker_build: true
 
+          # Frontend SAST
           - component: frontend
             scan: SAST
             working_dir: frontend
@@ -48,6 +55,7 @@ jobs:
             snyk_cmd: snyk code test --sarif-file-output=snyk-frontend-sast.sarif
             sarif_file: snyk-frontend-sast.sarif
 
+          # Frontend SCA
           - component: frontend
             scan: SCA
             working_dir: frontend
@@ -63,7 +71,7 @@ jobs:
         uses: ${{ matrix.setup_action }}
 
       - name: Build Docker image
-        if: ${{ matrix.docker_build == 'true' }}
+        if: ${{ matrix.scan == 'Docker' }}
         run: |
           echo "Building Docker image for backend..."
           docker build -t wyrmhort-backend -f Dockerfile .
@@ -73,11 +81,16 @@ jobs:
         with:
           path: ~/.npm
           key: snyk-cli-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
-      - run: npm install -g snyk
 
-      - name: Scan with Snyk ${{ matrix.scan }}
+      - name: Install Snyk
+        run: npm install -g snyk
+
+      # ✅ Dynamischer Step-Name für Scan
+      - name: >
+          ${{ matrix.scan == 'SAST' && 'Scan with SnykCode' ||
+              matrix.scan == 'SCA' && 'Scan with Snyk Open Source' ||
+              matrix.scan == 'Docker' && 'Scan with Snyk Container' }}
         run: |
-          set -e
           echo "Running ${{ matrix.scan }} scan for ${{ matrix.component }}"
           ${{ matrix.snyk_cmd }} || echo "SNYK_SCAN_FAILED" >> snyk_status.log
         working-directory: ${{ matrix.working_dir }}
