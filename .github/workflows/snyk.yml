@@ -107,7 +107,7 @@ jobs:
       - name: Set up Docker
         uses: docker/setup-buildx-action@v3
       - name: Build Docker image
-        run: docker build -t wyrmhort-backend -f Dockerfile backend
+        run: docker build -t wyrmhort-backend -f Dockerfile .
       - name: Install Snyk CLI
         run: npm install -g snyk
       - name: Scan with Snyk Container
