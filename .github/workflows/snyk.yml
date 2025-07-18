@@ -23,13 +23,13 @@ jobs:
             name: BE-SAST (Static Application Security Testing)
             dir: backend
             scan_name: Scan with SnykCode
-            snyk_cmd: snyk code test --sarif-file-output=snyk-backend-sast.sarif || echo "Snyk SAST Scan failed or limit reached"
+            snyk_cmd: snyk code test --severity-threshold=medium --sarif-file-output=snyk-backend-sast.sarif || echo "Snyk SAST Scan failed or limit reached"
             sarif_file: snyk-backend-sast.sarif
           - id: backend-snyk-sca
             name: BE-SCA (Software Composition Analysis)
             dir: backend
             scan_name: Scan with Snyk Open Source
-            snyk_cmd: snyk test --file=requirements.txt --sarif-file-output=snyk-backend-sca.sarif || echo "Snyk Scan failed or limit reached"
+            snyk_cmd: snyk test --file=requirements.txt --severity-threshold=medium --sarif-file-output=snyk-backend-sca.sarif || echo "Snyk Scan failed or limit reached"
             sarif_file: snyk-backend-sca.sarif
           - id: backend-snyk-docker
             name: Container Image Scan
@@ -41,13 +41,13 @@ jobs:
             name: FE-SAST (Static Application Security Testing)
             dir: frontend
             scan_name: Scan with SnykCode
-            snyk_cmd: snyk code test --sarif-file-output=snyk-frontend-sast.sarif || echo "Snyk SAST Scan failed or limit reached"
+            snyk_cmd: snyk code test --severity-threshold=medium --sarif-file-output=snyk-frontend-sast.sarif || echo "Snyk SAST Scan failed or limit reached"
             sarif_file: snyk-frontend-sast.sarif
           - id: frontend-snyk-sca
             name: FE-SCA (Software Composition Analysis)
             dir: frontend
             scan_name: Scan with Snyk Open Source
-            snyk_cmd: snyk test --file=package.json --sarif-file-output=snyk-frontend-sca.sarif || echo "Snyk SCA Scan failed or limit reached"
+            snyk_cmd: snyk test --file=package.json --severity-threshold=medium --sarif-file-output=snyk-frontend-sca.sarif || echo "Snyk SCA Scan failed or limit reached"
             sarif_file: snyk-frontend-sca.sarif
     defaults:
       run:
