@@ -21,41 +21,44 @@ jobs:
           - id: backend-snyk-sast
             name: Static Application Security Testing (Backend)
             dir: backend
-            cmd: snyk code test --sarif-file-output=snyk-backend-sast.sarif || echo "Snyk SAST Scan failed or limit reached"
+            setup_name: Setup Backend
             setup_action: ./.github/actions/backend-setup
-            step_name: Scan with SnykCode
+            scan_name: Scan with SnykCode
+            snyk_cmd: snyk code test --sarif-file-output=snyk-backend-sast.sarif || echo "Snyk SAST Scan failed or limit reached"
             sarif_file: snyk-backend-sast.sarif
           - id: backend-snyk-sca
             name: Software Composition Analysis (Backend)
             dir: backend
-            cmd: snyk test --file=backend/requirements.txt --sarif-file-output=snyk-backend-sca.sarif || echo "Snyk Scan failed or limit reached"
+            setup_name: Setup Backend
             setup_action: ./.github/actions/backend-setup
-            step_name: Scan with Snyk Open Source
+            scan_name: Scan with Snyk Open Source
+            snyk_cmd: snyk test --file=backend/requirements.txt --sarif-file-output=snyk-backend-sca.sarif || echo "Snyk Scan failed or limit reached"
             sarif_file: snyk-backend-sca.sarif
           - id: backend-snyk-docker
             name: Container Image Scan
             dir: backend
-            cmd: snyk container test wyrmhort-backend --severity-threshold=medium --sarif-file-output=snyk-docker.sarif || echo "Snyk Container Scan failed or limit reached"
             create_secrets: |
               echo "ALLOWED_EMAIL=${{ secrets.ALLOWED_EMAIL }}" > backend/src/.env
               mkdir -p backend/secrets
               echo "${{ secrets.FIREBASE_CREDENTIALS }}" > backend/secrets/firebase-key.json
-            setup_action: docker/setup-buildx-action@v3
-            step_name: Scan with Snyk Container
+            scan_name: Scan with Snyk Container
+            snyk_cmd: snyk container test wyrmhort-backend --severity-threshold=medium --sarif-file-output=snyk-docker.sarif || echo "Snyk Container Scan failed or limit reached"
             sarif_file: snyk-docker.sarif
           - id: frontend-snyk-sast
             name: Static Application Security Testing (Frontend)
             dir: frontend
-            cmd: snyk code test --sarif-file-output=snyk-frontend-sast.sarif || echo "Snyk SAST Scan failed or limit reached"
+            setup_name: Setup Frontend
             setup_action: ./.github/actions/frontend-setup
-            step_name: Scan with SnykCode
+            scan_name: Scan with SnykCode
+            snyk_cmd: snyk code test --sarif-file-output=snyk-frontend-sast.sarif || echo "Snyk SAST Scan failed or limit reached"
             sarif_file: snyk-frontend-sast.sarif
           - id: frontend-snyk-sca
             name: Software Composition Analysis (Frontend)
             dir: frontend
-            cmd: snyk test --file=frontend/package.json --sarif-file-output=snyk-frontend-sca.sarif || echo "Snyk SCA Scan failed or limit reached"
+            setup_name: Setup Frontend
             setup_action: ./.github/actions/frontend-setup
-            step_name: Scan with Snyk Open Source
+            scan_name: Scan with Snyk Open Source
+            snyk_cmd: snyk test --file=frontend/package.json --sarif-file-output=snyk-frontend-sca.sarif || echo "Snyk SCA Scan failed or limit reached"
             sarif_file: snyk-frontend-sca.sarif
     defaults:
       run:
@@ -67,16 +70,20 @@ jobs:
       - name: Create secrets
         if: matrix.id == 'backend-snyk-docker'
         run: ${{ matrix.create_secrets }}
-      - name: Setup
+      - name: ${{ matrix.setup_name }}
+        if: matrix.id != 'backend-snyk-docker'
         uses: ${{ matrix.setup_action }}
+      - name: Setup Docker
+        if: matrix.id == 'backend-snyk-docker'
+        uses: docker/setup-buildx-action@v3
       - name: Install Snyk CLI
         run: npm install -g snyk
       - name: Build Docker image
         if: matrix.id == 'backend-snyk-docker'
         run: docker build -t wyrmhort-backend -f backend/Dockerfile backend
-      - name: ${{ matrix.step_name }}
+      - name: ${{ matrix.scan_name }}
         continue-on-error: true
-        run: ${{ matrix.cmd }}
+        run: ${{ matrix.snyk_cmd }}
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
       - name: Check SARIF file
