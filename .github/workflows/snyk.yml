@@ -23,30 +23,35 @@ jobs:
             scan_name: Scan with SnykCode
             snyk_cmd: snyk code test --severity-threshold=medium --sarif-file-output=snyk-backend-sast.sarif || echo "Snyk SAST Scan failed or limit reached"
             sarif_file: snyk-backend-sast.sarif
+            category: be-sast
           - id: backend-snyk-sca
             name: BE-SCA (Software Composition Analysis)
             dir: backend
             scan_name: Scan with Snyk Open Source
             snyk_cmd: snyk test --file=requirements.txt --severity-threshold=medium --sarif-file-output=snyk-backend-sca.sarif || echo "Snyk Scan failed or limit reached"
             sarif_file: snyk-backend-sca.sarif
+            category: be-sca
           - id: backend-snyk-docker
             name: Container Image Scan
             dir: backend
             scan_name: Scan with Snyk Container
             snyk_cmd: snyk container test wyrmhort-backend --file=Dockerfile --severity-threshold=medium --sarif-file-output=snyk-docker.sarif || echo "Snyk Container Scan failed or limit reached"
             sarif_file: snyk-docker.sarif
+            category: be-docker
           - id: frontend-snyk-sast
             name: FE-SAST (Static Application Security Testing)
             dir: frontend
             scan_name: Scan with SnykCode
             snyk_cmd: snyk code test --severity-threshold=medium --sarif-file-output=snyk-frontend-sast.sarif || echo "Snyk SAST Scan failed or limit reached"
             sarif_file: snyk-frontend-sast.sarif
+            category: fe-sast
           - id: frontend-snyk-sca
             name: FE-SCA (Software Composition Analysis)
             dir: frontend
             scan_name: Scan with Snyk Open Source
             snyk_cmd: snyk test --file=package.json --severity-threshold=medium --sarif-file-output=snyk-frontend-sca.sarif || echo "Snyk SCA Scan failed or limit reached"
             sarif_file: snyk-frontend-sca.sarif
+            category: fe-sca
     defaults:
       run:
         shell: bash
@@ -94,3 +99,4 @@ jobs:
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: ${{ matrix.dir }}/${{ matrix.sarif_file }}
+          category: ${{ matrix.category }}
