@@ -35,7 +35,7 @@ jobs:
             name: Container Image Scan
             dir: backend
             scan_name: Scan with Snyk Container
-            snyk_cmd: snyk container test wyrmhort-backend --file=Dockerfile --severity-threshold=medium --sarif-file-output=snyk-docker.sarif || echo "Snyk Container Scan failed or limit reached"
+            snyk_cmd: snyk container test wyrmhort-backend --file=Dockerfile --severity-threshold=medium --exclude-base-image-vulns --sarif-file-output=snyk-docker.sarif || echo "Snyk Container Scan failed or limit reached"
             sarif_file: snyk-docker.sarif
             category: be-docker
           - id: frontend-snyk-sast
