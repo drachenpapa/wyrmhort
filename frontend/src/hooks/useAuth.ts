@@ -17,8 +17,12 @@ export function useAuth() {
         const stored = localStorage.getItem('authMode');
         return stored === 'demo' ? 'demo' : 'firebase';
     };
-    const [user, setUser] = useState<User | null>(null);
-    const [authMode, setAuthModeState] = useState<AuthMode>(getInitialAuthMode());
+
+    const initialAuthMode = getInitialAuthMode();
+    const [user, setUser] = useState<User | null>(() =>
+        initialAuthMode === 'demo' ? DEMO_USER : null
+    );
+    const [authMode, setAuthModeState] = useState<AuthMode>(initialAuthMode);
     const setAuthMode = (mode: AuthMode) => {
         localStorage.setItem('authMode', mode);
         setAuthModeState(mode);
@@ -29,7 +33,6 @@ export function useAuth() {
             const unsub = onAuthStateChanged(auth, setUser);
             return () => unsub();
         } else {
-            setUser(DEMO_USER);
             return () => setUser(null);
         }
     }, [authMode]);

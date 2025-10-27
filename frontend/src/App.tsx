@@ -19,12 +19,9 @@ export default function App() {
     const {t} = useTranslation()
     const allowedEmail = import.meta.env.VITE_ALLOWED_EMAIL;
     const isOwner = user?.email === allowedEmail;
-    const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
-
-    useEffect(() => {
-        const prefersDarkMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
-        setIsDarkMode(prefersDarkMode);
-    }, []);
+    const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
+        return window.matchMedia("(prefers-color-scheme: dark)").matches;
+    });
 
     const toggleDarkMode = () => {
         setIsDarkMode(prevMode => !prevMode);

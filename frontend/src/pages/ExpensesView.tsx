@@ -91,7 +91,8 @@ export default function ExpensesView() {
     );
 
     const totalPages = Math.max(1, Math.ceil(filteredExpenses.length / pageSize));
-    const paginatedExpenses = filteredExpenses.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+    const validatedCurrentPage = Math.min(Math.max(currentPage, 1), totalPages);
+    const paginatedExpenses = filteredExpenses.slice((validatedCurrentPage - 1) * pageSize, validatedCurrentPage * pageSize);
 
     useEffect(() => {
         if ((user && token) || authMode === 'demo') {
@@ -100,10 +101,6 @@ export default function ExpensesView() {
             });
         }
     }, [user, token, fetchExpenses, sortKey, sortAsc, authMode]);
-
-    useEffect(() => {
-        setCurrentPage((prev) => Math.min(Math.max(prev, 1), totalPages));
-    }, [filteredExpenses.length, totalPages]);
 
     const handlePageSizeChange = (size: number) => {
         setPageSize(size);
