@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout codebase
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Setup environment
         uses: ./.github/actions/frontend-setup
       - name: ESLint
@@ -31,7 +31,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout codebase
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Setup environment
         uses: ./.github/actions/frontend-setup
       - name: Run tests
@@ -43,7 +43,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout codebase
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Setup environment
         uses: ./.github/actions/frontend-setup
       - name: Build production bundle
