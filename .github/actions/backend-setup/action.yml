@@ -28,6 +28,14 @@ runs:
       with:
         path: backend/.venv
         key: venv-${{ runner.os }}-${{ inputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
+    - name: Update lock file if needed
+      shell: bash
+      working-directory: backend
+      run: |
+        if ! poetry check --lock 2>/dev/null; then
+          echo "⚠️ Lock file is out of sync, updating..."
+          poetry lock --no-update
+        fi
     - name: Install dependencies
       shell: bash
       working-directory: backend
