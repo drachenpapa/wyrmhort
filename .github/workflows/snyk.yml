@@ -28,7 +28,7 @@ jobs:
             name: BE-SCA (Software Composition Analysis)
             dir: backend
             scan_name: Scan with Snyk Open Source
-            snyk_cmd: snyk test --file=requirements.txt --severity-threshold=medium --sarif-file-output=snyk-backend-sca.sarif || echo "Snyk Scan failed or limit reached"
+            snyk_cmd: snyk test --file=poetry.lock --package-manager=poetry --severity-threshold=medium --sarif-file-output=snyk-backend-sca.sarif || echo "Snyk Scan failed or limit reached"
             sarif_file: snyk-backend-sca.sarif
             category: be-sca
           - id: backend-snyk-docker

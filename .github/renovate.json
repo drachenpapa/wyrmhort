@@ -7,11 +7,10 @@
   "packageRules": [
     {
       "matchManagers": [
-        "pip_requirements"
+        "poetry"
       ],
       "matchFileNames": [
-        "backend/requirements.txt",
-        "backend/dev-requirements.txt"
+        "backend/pyproject.toml"
       ]
     }
   ]

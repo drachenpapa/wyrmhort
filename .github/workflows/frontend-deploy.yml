@@ -33,8 +33,7 @@ jobs:
       - name: Debug env file
         run: cat .env.production
       - name: Build frontend
-        run: |
-          npm run build
+        run: npm run build
       - name: Deploy to Firebase Hosting
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
@@ -43,5 +42,4 @@ jobs:
           channelId: live
           projectId: wyrmhort
       - name: Health check
-        run: |
-          curl --fail https://wyrmhort.web.app/ || (echo "Frontend failed to deploy!" && exit 1)
+        run: curl --fail https://wyrmhort.web.app/ || (echo "Frontend failed to deploy!" && exit 1)

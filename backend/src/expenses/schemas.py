@@ -2,7 +2,7 @@ from datetime import datetime
 from decimal import Decimal
 from typing import Optional
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 class ExpenseRequest(BaseModel):
@@ -29,6 +29,7 @@ class ExpenseRequest(BaseModel):
 
 
 class ExpenseResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
     id: str
     date: datetime
     amount: Decimal
@@ -38,6 +39,3 @@ class ExpenseResponse(BaseModel):
     quantity: int
     seller: str
     marketplace: Optional[str]
-
-    class Config:
-        orm_mode = True

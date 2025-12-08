@@ -26,8 +26,7 @@ jobs:
         with:
           project_id: ${{ secrets.GCP_PROJECT_ID }}
       - name: Create .env file
-        run: |
-          echo "ALLOWED_EMAIL=${{ secrets.ALLOWED_EMAIL }}" > backend/src/.env
+        run: echo "ALLOWED_EMAIL=${{ secrets.ALLOWED_EMAIL }}" > backend/src/.env
       - name: Create firebase key file
         run: |
           mkdir -p backend/secrets
