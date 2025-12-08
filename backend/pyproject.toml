@@ -2,7 +2,6 @@
 name = "wyrmhort-backend"
 version = "0.1.0"
 description = "Wyrmhort expense tracking backend API"
-authors = ["Your Name <your.email@example.com>"]
 package-mode = false
 
 [tool.poetry.dependencies]
@@ -34,7 +33,7 @@ extend-ignore = ["E203", "W503", "E501", "W291", "W292", "W293", "E266"]
 exclude = [".git", "__pycache__", "venv", ".venv", "env", "build", "dist", ".idea", ".mypy_cache", ".pytest_cache"]
 
 [tool.mypy]
-python_version = "3.13"
+python_version = "3.14"
 explicit_package_bases = true
 ignore_missing_imports = true
 pretty = true
