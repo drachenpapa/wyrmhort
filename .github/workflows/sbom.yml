@@ -44,7 +44,7 @@ jobs:
           --signature sbom-frontend.spdx.json.sig \
           sbom-frontend.spdx.json
       - name: Upload as artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: sboms
           path: |
