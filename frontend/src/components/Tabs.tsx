@@ -1,4 +1,4 @@
-import {BarChart, LayoutDashboard} from 'lucide-react';
+import {BarChart, LayoutDashboard, PieChart} from 'lucide-react';
 import {useTranslation} from 'react-i18next';
 import {NavLink} from 'react-router-dom';
 
@@ -7,6 +7,7 @@ export default function Tabs() {
     const tabs = [
         {path: "/expenses", label: t("expenses"), layout: LayoutDashboard},
         {path: "/pivot", label: t("pivot"), layout: BarChart},
+        {path: "/pie", label: t("piechart"), layout: PieChart},
     ];
 
     return (

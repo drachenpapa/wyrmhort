@@ -11,6 +11,7 @@ import {useAuth} from './hooks/useAuth';
 import {logger} from './logger';
 import ExpensesView from './pages/ExpensesView';
 import Login from './pages/Login';
+import PieChart from './pages/PieChart';
 import PivotOverview from './pages/PivotOverview';
 
 
@@ -69,6 +70,7 @@ export default function App() {
                             <Route path="/" element={<Navigate to="/expenses" replace/>}/>
                             <Route path="/expenses" element={<ExpensesView/>}/>
                             <Route path="/pivot" element={<PivotOverview/>}/>
+                            <Route path="/pie" element={<PieChart/>}/>
                         </Routes>
                         <DarkModeToggle isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode}/>
                     </>

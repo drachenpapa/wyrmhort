@@ -732,3 +732,36 @@ body.dark .dialog {
 body.dark .pivot-title, body.dark .pivot-total, body.dark .pivot-grand-total {
     color: var(--text-dark);
 }
+
+.piechart-container {
+    padding: 1rem;
+}
+
+.piechart-controls {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    gap: 1rem;
+    min-height: 40px;
+}
+
+.piechart-controls .pivot-grand-total {
+    margin: 0;
+}
+
+.piechart-total {
+    text-align: center;
+    font-size: 1.25rem;
+    font-weight: bold;
+    margin-top: 2rem;
+    padding: 1rem;
+    background-color: var(--bg-table-head);
+    border-radius: 8px;
+    color: var(--text-light);
+}
+
+body.dark .piechart-total {
+    background-color: var(--bg-dark);
+    color: var(--text-dark);
+}

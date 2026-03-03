@@ -32,8 +32,6 @@ export function useAuth() {
         if (authMode === 'firebase') {
             const unsub = onAuthStateChanged(auth, setUser);
             return () => unsub();
-        } else {
-            return () => setUser(null);
         }
     }, [authMode]);
 
@@ -47,6 +45,7 @@ export function useAuth() {
 
     const loginAsDemo = () => {
         setAuthMode('demo');
+        setUser(DEMO_USER);
     };
 
     const logout = async (): Promise<void> => {
