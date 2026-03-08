@@ -73,7 +73,7 @@ jobs:
         uses: ./.github/actions/frontend-setup
       - name: Setup Docker
         if: matrix.id == 'backend-snyk-docker'
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
       - name: Install Snyk CLI
         run: npm install -g snyk
       - name: Build Docker image
