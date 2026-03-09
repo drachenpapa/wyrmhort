@@ -1,8 +1,22 @@
 from datetime import datetime
 from decimal import Decimal
+import re
 from typing import Optional
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
+
+
+AUTOCORRECTIONS = {
+    r'pokemon': 'Pokémon',
+}
+
+
+def apply_autocorrections(text: str) -> str:
+    """Apply all defined autocorrections to the text (case-insensitive)."""
+    result = text
+    for pattern, replacement in AUTOCORRECTIONS.items():
+        result = re.sub(pattern, replacement, result, flags=re.IGNORECASE)
+    return result
 
 
 class ExpenseRequest(BaseModel):
@@ -19,12 +33,14 @@ class ExpenseRequest(BaseModel):
     def validate_non_empty_strings(v, info):
         if not isinstance(v, str) or not v.strip():
             raise ValueError(f"{info.field_name} must be a non-empty string")
-        return v
+        return apply_autocorrections(v)
 
     @field_validator("marketplace", mode="before")
     def validate_optional_strings(v, info):
         if v is not None and (not isinstance(v, str) or not v.strip()):
             raise ValueError(f"{info.field_name} must be a non-empty string if provided")
+        if v is not None:
+            return apply_autocorrections(v)
         return v
 
 
