@@ -25,6 +25,19 @@ jobs:
         uses: google-github-actions/setup-gcloud@v3
         with:
           project_id: ${{ secrets.GCP_PROJECT_ID }}
+      - name: Setup environment for SBOM
+        uses: ./.github/actions/backend-setup
+      - name: Generate SBOM
+        run: |
+          cd backend
+          uv export --no-hashes --format requirements-txt > requirements-sbom.txt
+          uv run cyclonedx-py requirements -r requirements-sbom.txt -o sbom.json --format json
+      - name: Upload SBOM artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom-production-${{ github.run_number }}
+          path: backend/sbom.json
+          retention-days: 90
       - name: Create .env file
         run: echo "ALLOWED_EMAIL=${{ secrets.ALLOWED_EMAIL }}" > backend/src/.env
       - name: Create firebase key file
