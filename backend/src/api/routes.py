@@ -2,15 +2,15 @@ from __future__ import annotations
 
 from datetime import datetime
 
-from fastapi import FastAPI, Depends, Query
+from fastapi import Depends, FastAPI, Query
 from starlette.responses import JSONResponse
 
 from expenses.schemas import ExpenseRequest
 from expenses.service import (
     create_expense_service,
+    delete_expense_service,
     read_expenses_service,
     update_expense_service,
-    delete_expense_service,
 )
 from firebase.auth import get_current_user_uid
 from firebase.firestore import init_firestore

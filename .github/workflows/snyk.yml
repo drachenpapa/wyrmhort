@@ -42,7 +42,7 @@ jobs:
             name: FE-SAST (Static Application Security Testing)
             dir: frontend
             scan_name: Scan with SnykCode
-            snyk_cmd: snyk code test --severity-threshold=medium --sarif-file-output=snyk-frontend-sast.sarif || echo "Snyk SAST Scan failed or limit reached"
+            snyk_cmd: snyk code test --exclude=node_modules --severity-threshold=medium --sarif-file-output=snyk-frontend-sast.sarif || echo "Snyk SAST Scan failed or limit reached"
             sarif_file: snyk-frontend-sast.sarif
             category: fe-sast
           - id: frontend-snyk-sca

@@ -7,7 +7,7 @@ from google.cloud.firestore import Client
 
 from expenses.models import Expense
 from expenses.schemas import ExpenseRequest, ExpenseResponse
-from firebase.firestore import add_expense, get_expenses, update_expense, delete_expense
+from firebase.firestore import add_expense, delete_expense, get_expenses, update_expense
 from logger_config import setup_logger
 
 logger = setup_logger(__name__)

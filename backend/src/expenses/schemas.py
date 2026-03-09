@@ -1,10 +1,8 @@
+import re
 from datetime import datetime
 from decimal import Decimal
-import re
-from typing import Optional
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
-
 
 AUTOCORRECTIONS = {
     r"pokemon": "Pokémon",
@@ -27,21 +25,21 @@ class ExpenseRequest(BaseModel):
     series: str = Field(..., description="Product series or edition")
     quantity: int = Field(..., ge=1, description="Number of items purchased")
     seller: str = Field(..., description="Name of the seller or store")
-    marketplace: Optional[str] = Field(None, description="Platform or marketplace, if any")
+    marketplace: str | None = Field(None, description="Platform or marketplace, if any")
 
     @field_validator("product", "item_type", "series", "seller", mode="before")
-    def validate_non_empty_strings(v, info):
-        if not isinstance(v, str) or not v.strip():
+    def validate_non_empty_strings(self, info):
+        if not isinstance(self, str) or not self.strip():
             raise ValueError(f"{info.field_name} must be a non-empty string")
-        return apply_autocorrections(v)
+        return apply_autocorrections(self)
 
     @field_validator("marketplace", mode="before")
-    def validate_optional_strings(v, info):
-        if v is not None and (not isinstance(v, str) or not v.strip()):
+    def validate_optional_strings(self, info):
+        if self is not None and (not isinstance(self, str) or not self.strip()):
             raise ValueError(f"{info.field_name} must be a non-empty string if provided")
-        if v is not None:
-            return apply_autocorrections(v)
-        return v
+        if self is not None:
+            return apply_autocorrections(self)
+        return self
 
 
 class ExpenseResponse(BaseModel):
@@ -55,4 +53,4 @@ class ExpenseResponse(BaseModel):
     series: str
     quantity: int
     seller: str
-    marketplace: Optional[str]
+    marketplace: str | None
