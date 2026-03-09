@@ -7,7 +7,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 AUTOCORRECTIONS = {
-    r'pokemon': 'Pokémon',
+    r"pokemon": "Pokémon",
 }
 
 
@@ -46,7 +46,7 @@ class ExpenseRequest(BaseModel):
 
 class ExpenseResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
-    
+
     id: str
     date: datetime
     amount: Decimal
@@ -56,4 +56,3 @@ class ExpenseResponse(BaseModel):
     quantity: int
     seller: str
     marketplace: Optional[str]
-

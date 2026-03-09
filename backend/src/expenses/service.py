@@ -20,16 +20,16 @@ def create_expense_service(db: Client, uid: str, expense: ExpenseRequest) -> str
 
 
 def read_expenses_service(
-        db: Client,
-        uid: str,
-        product: str | None = None,
-        item_type: str | None = None,
-        series: str | None = None,
-        seller: str | None = None,
-        marketplace: str | None = None,
-        start_date: datetime | None = None,
-        end_date: datetime | None = None,
-        sort: str = "-date"
+    db: Client,
+    uid: str,
+    product: str | None = None,
+    item_type: str | None = None,
+    series: str | None = None,
+    seller: str | None = None,
+    marketplace: str | None = None,
+    start_date: datetime | None = None,
+    end_date: datetime | None = None,
+    sort: str = "-date",
 ) -> list[ExpenseResponse]:
     if sort.startswith("-"):
         order_by = sort[1:]
@@ -53,7 +53,7 @@ def read_expenses_service(
         start_date=start_date,
         end_date=end_date,
         order_by=order_by,
-        ascending=ascending
+        ascending=ascending,
     )
     return [ExpenseResponse.model_validate(dataclasses.asdict(e)) for e in expenses]
 
@@ -77,5 +77,5 @@ def __convert(expense: ExpenseRequest, request_id: str) -> Expense:
         seller=expense.seller,
         product=expense.product,
         item_type=expense.item_type,
-        series=expense.series
+        series=expense.series,
     )

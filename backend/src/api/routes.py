@@ -10,7 +10,7 @@ from expenses.service import (
     create_expense_service,
     read_expenses_service,
     update_expense_service,
-    delete_expense_service
+    delete_expense_service,
 )
 from firebase.auth import get_current_user_uid
 from firebase.firestore import init_firestore
@@ -28,11 +28,7 @@ async def health_check():
 
 
 @app.post("/api/expenses/")
-async def create_expense(
-        expense: ExpenseRequest,
-        db=Depends(get_db),
-        uid=Depends(get_current_user_uid)
-):
+async def create_expense(expense: ExpenseRequest, db=Depends(get_db), uid=Depends(get_current_user_uid)):
     """
     Add a new expense to the user's collection.
     """
@@ -42,16 +38,16 @@ async def create_expense(
 
 @app.get("/api/expenses/")
 async def read_expenses(
-        product: str | None = None,
-        item_type: str | None = None,
-        series: str | None = None,
-        seller: str | None = None,
-        marketplace: str | None = None,
-        start_date: datetime | None = None,
-        end_date: datetime | None = None,
-        sort: str = Query("-date"),
-        db=Depends(get_db),
-        uid=Depends(get_current_user_uid)
+    product: str | None = None,
+    item_type: str | None = None,
+    series: str | None = None,
+    seller: str | None = None,
+    marketplace: str | None = None,
+    start_date: datetime | None = None,
+    end_date: datetime | None = None,
+    sort: str = Query("-date"),
+    db=Depends(get_db),
+    uid=Depends(get_current_user_uid),
 ):
     """
     Retrieve all expenses for the user, optionally filtered by product, type, or series.
@@ -66,17 +62,14 @@ async def read_expenses(
         marketplace=marketplace,
         start_date=start_date,
         end_date=end_date,
-        sort=sort
+        sort=sort,
     )
     return {"expenses": [e.model_dump() for e in expenses]}
 
 
 @app.put("/api/expenses/{expense_id}")
 async def update_expense(
-        expense_id: str,
-        expense: ExpenseRequest,
-        db=Depends(get_db),
-        uid=Depends(get_current_user_uid)
+    expense_id: str, expense: ExpenseRequest, db=Depends(get_db), uid=Depends(get_current_user_uid)
 ):
     """
     Modify an existing expense.
@@ -86,11 +79,7 @@ async def update_expense(
 
 
 @app.delete("/api/expenses/{expense_id}")
-async def delete_expense(
-        expense_id: str,
-        db=Depends(get_db),
-        uid=Depends(get_current_user_uid)
-):
+async def delete_expense(expense_id: str, db=Depends(get_db), uid=Depends(get_current_user_uid)):
     """
     Remove a specific expense entry.
     """

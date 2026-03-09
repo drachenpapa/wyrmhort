@@ -26,7 +26,7 @@ class Expense:
             item_type=data["item_type"],
             series=data["series"],
             seller=data["seller"],
-            marketplace=data.get("marketplace")
+            marketplace=data.get("marketplace"),
         )
 
     def to_firestore(self) -> dict:

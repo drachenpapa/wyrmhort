@@ -15,7 +15,7 @@ def init_firestore():
     try:
         firebase_admin.get_app()
     except ValueError:
-        key_path = os.path.join(os.path.dirname(__file__), '..', '..', 'secrets', 'firebase-key.json')
+        key_path = os.path.join(os.path.dirname(__file__), "..", "..", "secrets", "firebase-key.json")
         cred = credentials.Certificate(os.path.abspath(key_path))
         firebase_admin.initialize_app(cred)
         logger.info("Firebase app initialized.")
