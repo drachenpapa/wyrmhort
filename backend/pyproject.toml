@@ -2,7 +2,7 @@
 name = "wyrmhort-backend"
 version = "0.1.0"
 description = "Wyrmhort expense tracking backend API"
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 dependencies = [
     "fastapi>=0.135.0",
     "firebase-admin>=7.1.0",
