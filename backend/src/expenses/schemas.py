@@ -28,18 +28,20 @@ class ExpenseRequest(BaseModel):
     marketplace: str | None = Field(None, description="Platform or marketplace, if any")
 
     @field_validator("product", "item_type", "series", "seller", mode="before")
-    def validate_non_empty_strings(self, info):
-        if not isinstance(self, str) or not self.strip():
+    @classmethod
+    def validate_non_empty_strings(cls, value, info):
+        if not isinstance(value, str) or not value.strip():
             raise ValueError(f"{info.field_name} must be a non-empty string")
-        return apply_autocorrections(self)
+        return apply_autocorrections(value)
 
     @field_validator("marketplace", mode="before")
-    def validate_optional_strings(self, info):
-        if self is not None and (not isinstance(self, str) or not self.strip()):
+    @classmethod
+    def validate_optional_strings(cls, value, info):
+        if value is not None and (not isinstance(value, str) or not value.strip()):
             raise ValueError(f"{info.field_name} must be a non-empty string if provided")
-        if self is not None:
-            return apply_autocorrections(self)
-        return self
+        if value is not None:
+            return apply_autocorrections(value)
+        return value
 
 
 class ExpenseResponse(BaseModel):
