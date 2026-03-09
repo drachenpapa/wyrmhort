@@ -49,7 +49,7 @@ jobs:
             name: FE-SCA (Software Composition Analysis)
             dir: frontend
             scan_name: Scan with Snyk Open Source
-            snyk_cmd: snyk test --file=package.json --severity-threshold=medium --sarif-file-output=snyk-frontend-sca.sarif || echo "Snyk SCA Scan failed or limit reached"
+            snyk_cmd: snyk test --file=package.json --exclude=node_modules --severity-threshold=medium --sarif-file-output=snyk-frontend-sca.sarif || echo "Snyk SCA Scan failed or limit reached"
             sarif_file: snyk-frontend-sca.sarif
             category: fe-sca
     defaults:
