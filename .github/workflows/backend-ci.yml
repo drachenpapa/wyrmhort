@@ -24,7 +24,7 @@ jobs:
       - name: Setup environment
         uses: ./.github/actions/backend-setup
       - name: Syntax check
-        run: poetry run python -m compileall src
+        run: uv run python -m compileall src
 
   security-audit:
     name: Security Audit (pip-audit)
@@ -36,7 +36,7 @@ jobs:
       - name: Setup environment
         uses: ./.github/actions/backend-setup
       - name: Check dependencies for vulnerabilities
-        run: poetry run pip-audit --require-hashes --disable-pip
+        run: uv run pip-audit --require-hashes --disable-pip
         continue-on-error: true
 
   mypy:
@@ -49,7 +49,7 @@ jobs:
       - name: Setup environment
         uses: ./.github/actions/backend-setup
       - name: Type check
-        run: poetry run mypy src
+        run: uv run mypy src
 
   ruff:
     name: Lint & Format (ruff)
@@ -61,9 +61,9 @@ jobs:
       - name: Setup environment
         uses: ./.github/actions/backend-setup
       - name: Lint
-        run: poetry run ruff check src
+        run: uv run ruff check src
       - name: Format check
-        run: poetry run ruff format --check src
+        run: uv run ruff format --check src
 
   unit-tests:
     name: Run unit tests
@@ -75,7 +75,7 @@ jobs:
       - name: Setup environment
         uses: ./.github/actions/backend-setup
       - name: Run unit tests
-        run: poetry run pytest tests/unit --maxfail=1 --disable-warnings -q
+        run: uv run pytest tests/unit --maxfail=1 --disable-warnings -q
 
   integration-tests:
     name: Run integration tests
@@ -87,7 +87,7 @@ jobs:
       - name: Setup environment
         uses: ./.github/actions/backend-setup
       - name: Run integration tests
-        run: poetry run pytest tests/integration --maxfail=1 --disable-warnings -q
+        run: uv run pytest tests/integration --maxfail=1 --disable-warnings -q
 
   docker-build:
     name: Build Docker image
