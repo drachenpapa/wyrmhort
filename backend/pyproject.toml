@@ -13,7 +13,7 @@ python-dotenv = "^1.2.1"
 uvicorn = {extras = ["standard"], version = "^0.41.0"}
 
 [tool.poetry.group.dev.dependencies]
-flake8 = "^7.3.0"
+ruff = "^0.9.2"
 mypy = "^1.19.0"
 pip-audit = "^2.10.0"
 pytest = "^9.0.2"
@@ -27,11 +27,17 @@ wyrmhort = "wyrmhort:main"
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
-# Flake8 configuration (flake8 doesn't support pyproject.toml natively, but documented here)
-[tool.flake8]
-max-line-length = 120
-extend-ignore = ["E203", "W503", "E501", "W291", "W292", "W293", "E266"]
+[tool.ruff]
+line-length = 120
+target-version = "py311"
 exclude = [".git", "__pycache__", "venv", ".venv", "env", "build", "dist", ".idea", ".mypy_cache", ".pytest_cache"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W", "UP"]
+ignore = ["E203", "E266", "E501", "W503"]
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401"]
 
 [tool.mypy]
 python_version = "3.14"
