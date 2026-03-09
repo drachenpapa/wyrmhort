@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import dataclasses
 from datetime import datetime
+from typing import Final
 
 from google.cloud.firestore import Client
 
@@ -11,10 +12,12 @@ from firebase.firestore import add_expense, delete_expense, get_expenses, update
 from logger_config import setup_logger
 
 logger = setup_logger(__name__)
-ALLOWED_SORT_FIELDS = {"date", "amount", "product", "item_type", "series", "seller", "marketplace"}
+
+ALLOWED_SORT_FIELDS: Final[set[str]] = {"date", "amount", "product", "item_type", "series", "seller", "marketplace"}
 
 
 def create_expense_service(db: Client, uid: str, expense: ExpenseRequest) -> str:
+    """Create a new expense and return its ID."""
     expense_obj = __convert(expense, request_id="")
     return add_expense(db, uid, expense_obj)
 
@@ -31,6 +34,7 @@ def read_expenses_service(
     end_date: datetime | None = None,
     sort: str = "-date",
 ) -> list[ExpenseResponse]:
+    """Retrieve expenses with optional filtering and sorting."""
     if sort.startswith("-"):
         order_by = sort[1:]
         ascending = False
@@ -59,15 +63,18 @@ def read_expenses_service(
 
 
 def update_expense_service(db: Client, uid: str, expense_id: str, expense: ExpenseRequest) -> None:
+    """Update an existing expense."""
     updated_expense = __convert(expense, request_id=expense_id)
     update_expense(db, uid, expense_id, updated_expense)
 
 
 def delete_expense_service(db: Client, uid: str, expense_id: str) -> None:
+    """Delete an expense by ID."""
     delete_expense(db, uid, expense_id)
 
 
 def __convert(expense: ExpenseRequest, request_id: str) -> Expense:
+    """Convert ExpenseRequest to Expense domain model."""
     return Expense(
         id=request_id,
         date=expense.date,

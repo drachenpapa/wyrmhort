@@ -4,6 +4,20 @@ from datetime import datetime
 
 @dataclass
 class Expense:
+    """
+    Domain model for an expense entry.
+
+    Attributes:
+        id: Unique identifier (Firestore document ID)
+        date: Purchase date
+        amount: Total amount paid
+        product: Product name
+        item_type: Type of item (e.g., Booster, Display)
+        series: Product series or edition
+        quantity: Number of items purchased
+        seller: Seller or store name
+        marketplace: Platform or marketplace (optional)
+    """
     id: str
     date: datetime
     amount: float
@@ -16,6 +30,7 @@ class Expense:
 
     @classmethod
     def from_firestore(cls, data: dict, doc_id: str) -> "Expense":
+        """Create an Expense instance from Firestore document data."""
         return cls(
             id=doc_id,
             date=datetime.fromisoformat(data["date"]),
@@ -29,6 +44,7 @@ class Expense:
         )
 
     def to_firestore(self) -> dict:
+        """Convert Expense to Firestore-compatible dictionary."""
         return {
             "date": self.date.isoformat(),
             "amount": self.amount,

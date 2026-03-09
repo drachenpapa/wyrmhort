@@ -1,10 +1,11 @@
 import re
 from datetime import datetime
 from decimal import Decimal
+from typing import Annotated
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
-AUTOCORRECTIONS = {
+AUTOCORRECTIONS: dict[str, str] = {
     r"pokemon": "Pokémon",
 }
 
@@ -18,25 +19,27 @@ def apply_autocorrections(text: str) -> str:
 
 
 class ExpenseRequest(BaseModel):
-    date: datetime = Field(..., description="Purchase date (ISO 8601)")
-    amount: Decimal = Field(..., gt=0, description="Total amount paid")
-    product: str = Field(..., description="Product name")
-    item_type: str = Field(..., description="Type of item, e.g. Booster, Display")
-    series: str = Field(..., description="Product series or edition")
-    quantity: int = Field(..., ge=1, description="Number of items purchased")
-    seller: str = Field(..., description="Name of the seller or store")
-    marketplace: str | None = Field(None, description="Platform or marketplace, if any")
+    """Request model for creating or updating an expense."""
+
+    date: Annotated[datetime, Field(description="Purchase date (ISO 8601 format)")]
+    amount: Annotated[Decimal, Field(gt=0, description="Total amount paid (must be positive)")]
+    product: Annotated[str, Field(min_length=1, description="Product name")]
+    item_type: Annotated[str, Field(min_length=1, description="Type of item, e.g. Booster, Display")]
+    series: Annotated[str, Field(min_length=1, description="Product series or edition")]
+    quantity: Annotated[int, Field(ge=1, description="Number of items purchased (must be >= 1)")]
+    seller: Annotated[str, Field(min_length=1, description="Name of the seller or store")]
+    marketplace: Annotated[str | None, Field(None, description="Platform or marketplace, if any")]
 
     @field_validator("product", "item_type", "series", "seller", mode="before")
     @classmethod
-    def validate_non_empty_strings(cls, value, info):
+    def validate_non_empty_strings(cls, value: str, info) -> str:
         if not isinstance(value, str) or not value.strip():
             raise ValueError(f"{info.field_name} must be a non-empty string")
         return apply_autocorrections(value)
 
     @field_validator("marketplace", mode="before")
     @classmethod
-    def validate_optional_strings(cls, value, info):
+    def validate_optional_strings(cls, value: str | None, info) -> str | None:
         if value is not None and (not isinstance(value, str) or not value.strip()):
             raise ValueError(f"{info.field_name} must be a non-empty string if provided")
         if value is not None:
@@ -45,6 +48,8 @@ class ExpenseRequest(BaseModel):
 
 
 class ExpenseResponse(BaseModel):
+    """Response model for expense data."""
+
     model_config = ConfigDict(from_attributes=True)
 
     id: str

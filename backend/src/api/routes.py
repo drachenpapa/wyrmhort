@@ -3,6 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 
 from fastapi import Depends, FastAPI, Query
+from fastapi.middleware.cors import CORSMiddleware
 from starlette.responses import JSONResponse
 
 from expenses.schemas import ExpenseRequest
@@ -15,19 +16,48 @@ from expenses.service import (
 from firebase.auth import get_current_user_uid
 from firebase.firestore import init_firestore
 
-app = FastAPI()
+app = FastAPI(
+    title="Wyrmhort Expense API",
+    version="0.1.0",
+    description="Personal expense tracking API for hobby collectibles",
+    docs_url="/docs",
+    redoc_url="/redoc",
+    openapi_tags=[
+        {
+            "name": "health",
+            "description": "Health check endpoints",
+        },
+        {
+            "name": "expenses",
+            "description": "CRUD operations for expense tracking",
+        },
+    ],
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+        "https://wyrmhort.web.app",
+        "https://wyrmhort.firebaseapp.com",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 def get_db():
     return init_firestore()
 
 
-@app.get("/health")
+@app.get("/health", tags=["health"])
 async def health_check():
     return JSONResponse(content={"status": "healthy"}, status_code=200)
 
 
-@app.post("/api/expenses/")
+@app.post("/api/expenses/", tags=["expenses"])
 async def create_expense(expense: ExpenseRequest, db=Depends(get_db), uid=Depends(get_current_user_uid)):
     """
     Add a new expense to the user's collection.
@@ -36,7 +66,7 @@ async def create_expense(expense: ExpenseRequest, db=Depends(get_db), uid=Depend
     return {"message": "Expense added successfully", "id": expense_id}
 
 
-@app.get("/api/expenses/")
+@app.get("/api/expenses/", tags=["expenses"])
 async def read_expenses(
     product: str | None = None,
     item_type: str | None = None,
@@ -67,7 +97,7 @@ async def read_expenses(
     return {"expenses": [e.model_dump() for e in expenses]}
 
 
-@app.put("/api/expenses/{expense_id}")
+@app.put("/api/expenses/{expense_id}", tags=["expenses"])
 async def update_expense(
     expense_id: str, expense: ExpenseRequest, db=Depends(get_db), uid=Depends(get_current_user_uid)
 ):
@@ -78,7 +108,7 @@ async def update_expense(
     return {"message": f"Expense with ID {expense_id} updated."}
 
 
-@app.delete("/api/expenses/{expense_id}")
+@app.delete("/api/expenses/{expense_id}", tags=["expenses"])
 async def delete_expense(expense_id: str, db=Depends(get_db), uid=Depends(get_current_user_uid)):
     """
     Remove a specific expense entry.
