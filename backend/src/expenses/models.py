@@ -18,6 +18,7 @@ class Expense:
         seller: Seller or store name
         marketplace: Platform or marketplace (optional)
     """
+
     id: str
     date: datetime
     amount: float

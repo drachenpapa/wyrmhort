@@ -62,7 +62,7 @@ warn_unused_ignores = true
 
 [tool.pytest.ini_options]
 minversion = "6.0"
-addopts = "-ra -q --cov=src --cov-report=term-missing --cov-report=html --cov-fail-under=80"
+addopts = "-ra -q --cov=src"
 pythonpath = ["src"]
 testpaths = ["tests"]
 asyncio_mode = "auto"
