@@ -8,7 +8,7 @@ permissions:
 
 jobs:
   deploy:
-    name: Build & Deploy Backend
+    name: Deploy to Cloud Run
     runs-on: ubuntu-latest
     env:
       PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
@@ -25,19 +25,6 @@ jobs:
         uses: google-github-actions/setup-gcloud@v3
         with:
           project_id: ${{ secrets.GCP_PROJECT_ID }}
-      - name: Setup environment for SBOM
-        uses: ./.github/actions/backend-setup
-      - name: Generate SBOM
-        run: |
-          cd backend
-          uv export --no-hashes --format requirements-txt > requirements-sbom.txt
-          uv run cyclonedx-py requirements requirements-sbom.txt --output-format json --output-file sbom.json
-      - name: Upload SBOM artifact
-        uses: actions/upload-artifact@v7
-        with:
-          name: sbom-production-${{ github.run_number }}
-          path: backend/sbom.json
-          retention-days: 90
       - name: Create .env file
         run: echo "ALLOWED_EMAIL=${{ secrets.ALLOWED_EMAIL }}" > backend/src/.env
       - name: Create firebase key file
@@ -59,3 +46,23 @@ jobs:
             --format 'value(status.url)')
           curl --fail $SERVICE_URL/health || (echo "Backend failed to deploy!" && exit 1)
           echo "🚀 Deployed to: $SERVICE_URL"
+
+  sbom-generation:
+    name: Generate & Archive SBOM
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout codebase
+        uses: actions/checkout@v6
+      - name: Setup environment
+        uses: ./.github/actions/backend-setup
+      - name: Generate SBOM
+        run: |
+          cd backend
+          uv export --no-hashes --format requirements-txt > requirements-sbom.txt
+          uv run cyclonedx-py requirements requirements-sbom.txt --output-format json --output-file sbom.json
+      - name: Upload SBOM artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: sbom-${{ github.run_number }}
+          path: backend/sbom.json
+          retention-days: 90
