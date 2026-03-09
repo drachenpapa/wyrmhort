@@ -31,7 +31,7 @@ jobs:
         run: |
           cd backend
           uv export --no-hashes --format requirements-txt > requirements-sbom.txt
-          uv run cyclonedx-py requirements -r requirements-sbom.txt -o sbom.json --format json
+          uv run cyclonedx-py requirements requirements-sbom.txt --output-format json --output-file sbom.json
       - name: Upload SBOM artifact
         uses: actions/upload-artifact@v7
         with:
