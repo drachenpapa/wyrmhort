@@ -48,7 +48,7 @@ jobs:
           echo "🚀 Deployed to: $SERVICE_URL"
 
   sbom-generation:
-    name: Generate & Archive SBOM
+    name: Generate SBOM
     runs-on: ubuntu-latest
     steps:
       - name: Checkout codebase
