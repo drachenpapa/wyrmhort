@@ -1,22 +1,47 @@
+# Python byte-code & editor artefacts
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
 *.log
-
 *.swp
 *.tmp
 *.bak
 
+# Local env / secrets
 .env
 venv/
 .venv/
 
+# IDE
 .idea/
 .vscode/
 
+# OS
 .DS_Store
 Thumbs.db
 
-.poetry/
-poetry.toml
+# Version control
+.git/
+.gitignore
+
+# Tool caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Build & distribution artefacts
+dist/
+build/
+*.egg-info/
+Dockerfile
+
+# Test & coverage output
+tests/
+htmlcov/
+.coverage
+coverage.xml
+
+# Documentation / metadata
+*.md
+*.cff

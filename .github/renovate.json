@@ -7,7 +7,7 @@
   "packageRules": [
     {
       "matchManagers": [
-        "poetry"
+        "uv"
       ],
       "matchFileNames": [
         "backend/pyproject.toml"

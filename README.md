@@ -6,7 +6,6 @@
 
 <p align="center">
   <a href="./LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow?style=flat-square" alt="License"></a>
-  <img src="https://img.shields.io/badge/Snyk-monitored-4C4A73?logo=snyk&style=flat-square" alt="Snyk">
   <img src="https://img.shields.io/badge/Renovate-enabled-brightgreen?logo=renovate&style=flat-square" alt="Renovate">
 </p>
 
@@ -24,7 +23,7 @@ and the application is not designed to be scalable or secure for public use.
     <li><strong>Language:</strong> Python</li>
     <li><strong>Framework:</strong> FastAPI · Uvicorn · Pydantic</li>
     <li><strong>Platform:</strong> Google Cloud (Cloud Run · Firebase Authentication · Firestore)</li>
-    <li><strong>Testing & QA:</strong> pytest · flake8 · mypy</li>
+    <li><strong>Testing & QA:</strong> pytest · ruff · mypy</li>
   </ul>
 </details>
 
@@ -44,7 +43,7 @@ and the application is not designed to be scalable or secure for public use.
     <li><strong>Containerization:</strong> Docker</li>
     <li><strong>CI/CD:</strong> GitHub Actions</li>
     <li><strong>Dependency Management:</strong> Renovate</li>
-    <li><strong>Security & Vulnerability Scanning:</strong> CodeQL · Dependabot Alerts  · Snyk (SnykCode · Snyk Container · Snyk Open Source)</li>
+    <li><strong>Security & Vulnerability Scanning:</strong> CodeQL · Dependabot Alerts · bandit · pip-audit</li>
   </ul>
 </details>
 
