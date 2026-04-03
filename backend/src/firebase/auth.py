@@ -23,7 +23,7 @@ async def get_current_user_uid(request: Request) -> str:
         email = decoded_token.get("email")
     except Exception as e:
         logger.error(f"Token verification failed: {e}")
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token verification failed")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token verification failed") from None
 
     if ALLOWED_EMAIL and email != ALLOWED_EMAIL:
         logger.warning(f"Access denied for email: {email}")

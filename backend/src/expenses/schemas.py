@@ -21,6 +21,8 @@ def apply_autocorrections(text: str) -> str:
 class ExpenseRequest(BaseModel):
     """Request model for creating or updating an expense."""
 
+    model_config = ConfigDict(str_strip_whitespace=True)
+
     date: Annotated[datetime, Field(description="Purchase date (ISO 8601 format)")]
     amount: Annotated[Decimal, Field(gt=0, description="Total amount paid (must be positive)")]
     product: Annotated[str, Field(min_length=1, description="Product name")]
@@ -30,25 +32,21 @@ class ExpenseRequest(BaseModel):
     seller: Annotated[str, Field(min_length=1, description="Name of the seller or store")]
     marketplace: Annotated[str | None, Field(None, description="Platform or marketplace, if any")]
 
-    @field_validator("product", "item_type", "series", "seller", mode="before")
+    @field_validator("product", "item_type", "series", "seller", mode="after")
     @classmethod
-    def validate_non_empty_strings(cls, value: str, info) -> str:
-        if not isinstance(value, str) or not value.strip():
-            raise ValueError(f"{info.field_name} must be a non-empty string")
+    def autocorrect_strings(cls, value: str) -> str:
         return apply_autocorrections(value)
 
-    @field_validator("marketplace", mode="before")
+    @field_validator("marketplace", mode="after")
     @classmethod
-    def validate_optional_strings(cls, value: str | None, info) -> str | None:
-        if value is not None and (not isinstance(value, str) or not value.strip()):
-            raise ValueError(f"{info.field_name} must be a non-empty string if provided")
-        if value is not None:
-            return apply_autocorrections(value)
-        return value
+    def autocorrect_marketplace(cls, value: str | None) -> str | None:
+        if not value:
+            return None
+        return apply_autocorrections(value)
 
 
 class ExpenseResponse(BaseModel):
-    """Response model for expense data."""
+    """Response model for a single expense."""
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -61,3 +59,21 @@ class ExpenseResponse(BaseModel):
     quantity: int
     seller: str
     marketplace: str | None
+
+
+class ExpensesListResponse(BaseModel):
+    """Response wrapping a paginated list of expenses."""
+
+    expenses: list[ExpenseResponse]
+
+
+class MessageResponse(BaseModel):
+    """Generic operation-success response."""
+
+    message: str
+
+
+class CreateExpenseResponse(MessageResponse):
+    """Response returned after a successful expense creation."""
+
+    id: str

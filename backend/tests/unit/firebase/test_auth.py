@@ -1,42 +1,53 @@
-import anyio
 import pytest
+from fastapi import HTTPException
 from starlette.requests import Request
 
 from firebase.auth import get_current_user_uid
 
 
-def test_get_current_user_uid_valid(monkeypatch):
-    mock_token = "fake-token"
-    mock_request = Request(scope={"type": "http", "headers": [(b"authorization", f"Bearer {mock_token}".encode())]})
+def _make_request(token: str | None) -> Request:
+    headers = [(b"authorization", f"Bearer {token}".encode())] if token else []
+    return Request(scope={"type": "http", "headers": headers})
 
-    def mock_verify_id_token(token):
-        assert token == mock_token
-        return {"uid": "user-123"}
 
-    monkeypatch.setattr("firebase_admin.auth.verify_id_token", mock_verify_id_token)
-
-    uid = anyio.run(get_current_user_uid, mock_request)
+async def test_valid_token_returns_uid(monkeypatch):
+    monkeypatch.setattr("firebase_admin.auth.verify_id_token", lambda _: {"uid": "user-123"})
+    uid = await get_current_user_uid(_make_request("valid-token"))
     assert uid == "user-123"
 
 
-def test_get_current_user_uid_invalid_header():
-    request = Request(scope={"type": "http", "headers": []})
-
-    with pytest.raises(Exception) as exc_info:
-        anyio.run(get_current_user_uid, request)
-
-    assert "Missing or invalid auth header" in str(exc_info.value)
+async def test_missing_auth_header_raises_401():
+    with pytest.raises(HTTPException) as exc_info:
+        await get_current_user_uid(_make_request(None))
+    assert exc_info.value.status_code == 401
 
 
-def test_get_current_user_uid_invalid_token(monkeypatch):
-    request = Request(scope={"type": "http", "headers": [(b"authorization", b"Bearer invalid")]})
+async def test_invalid_token_raises_401(monkeypatch):
+    def _fail(_):
+        raise ValueError("bad token")
 
-    def mock_verify_id_token(token):
-        raise Exception("Invalid token")
+    monkeypatch.setattr("firebase_admin.auth.verify_id_token", _fail)
+    with pytest.raises(HTTPException) as exc_info:
+        await get_current_user_uid(_make_request("bad-token"))
+    assert exc_info.value.status_code == 401
 
-    monkeypatch.setattr("firebase_admin.auth.verify_id_token", mock_verify_id_token)
 
-    with pytest.raises(Exception) as exc_info:
-        anyio.run(get_current_user_uid, request)
+async def test_disallowed_email_raises_403(monkeypatch):
+    monkeypatch.setattr("firebase.auth.ALLOWED_EMAIL", "allowed@example.com")
+    monkeypatch.setattr(
+        "firebase_admin.auth.verify_id_token",
+        lambda _: {"uid": "user-123", "email": "other@example.com"},
+    )
+    with pytest.raises(HTTPException) as exc_info:
+        await get_current_user_uid(_make_request("valid-token"))
+    assert exc_info.value.status_code == 403
 
-    assert "Token verification failed" in str(exc_info.value)
+
+async def test_allowed_email_passes(monkeypatch):
+    monkeypatch.setattr("firebase.auth.ALLOWED_EMAIL", "allowed@example.com")
+    monkeypatch.setattr(
+        "firebase_admin.auth.verify_id_token",
+        lambda _: {"uid": "user-123", "email": "allowed@example.com"},
+    )
+    uid = await get_current_user_uid(_make_request("valid-token"))
+    assert uid == "user-123"

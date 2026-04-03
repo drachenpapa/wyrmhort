@@ -1,8 +1,10 @@
 from dataclasses import dataclass
 from datetime import datetime
+from decimal import Decimal
+from typing import Any
 
 
-@dataclass
+@dataclass(slots=True)
 class Expense:
     """
     Domain model for an expense entry.
@@ -21,7 +23,7 @@ class Expense:
 
     id: str
     date: datetime
-    amount: float
+    amount: Decimal
     product: str
     item_type: str
     series: str
@@ -30,12 +32,12 @@ class Expense:
     marketplace: str | None
 
     @classmethod
-    def from_firestore(cls, data: dict, doc_id: str) -> "Expense":
+    def from_firestore(cls, data: dict[str, Any], doc_id: str) -> Expense:
         """Create an Expense instance from Firestore document data."""
         return cls(
             id=doc_id,
             date=datetime.fromisoformat(data["date"]),
-            amount=data["amount"],
+            amount=Decimal(str(data["amount"])),
             quantity=data["quantity"],
             product=data["product"],
             item_type=data["item_type"],
@@ -44,11 +46,11 @@ class Expense:
             marketplace=data.get("marketplace"),
         )
 
-    def to_firestore(self) -> dict:
+    def to_firestore(self) -> dict[str, Any]:
         """Convert Expense to Firestore-compatible dictionary."""
         return {
             "date": self.date.isoformat(),
-            "amount": self.amount,
+            "amount": float(self.amount),
             "quantity": self.quantity,
             "product": self.product,
             "item_type": self.item_type,

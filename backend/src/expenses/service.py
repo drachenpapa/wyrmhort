@@ -1,6 +1,3 @@
-from __future__ import annotations
-
-import dataclasses
 from datetime import datetime
 from typing import Final
 
@@ -13,13 +10,14 @@ from logger_config import setup_logger
 
 logger = setup_logger(__name__)
 
-ALLOWED_SORT_FIELDS: Final[set[str]] = {"date", "amount", "product", "item_type", "series", "seller", "marketplace"}
+ALLOWED_SORT_FIELDS: Final[frozenset[str]] = frozenset(
+    {"date", "amount", "product", "item_type", "series", "seller", "marketplace"}
+)
 
 
 def create_expense_service(db: Client, uid: str, expense: ExpenseRequest) -> str:
     """Create a new expense and return its ID."""
-    expense_obj = __convert(expense, request_id="")
-    return add_expense(db, uid, expense_obj)
+    return add_expense(db, uid, _to_domain(expense, expense_id=""))
 
 
 def read_expenses_service(
@@ -36,15 +34,13 @@ def read_expenses_service(
 ) -> list[ExpenseResponse]:
     """Retrieve expenses with optional filtering and sorting."""
     if sort.startswith("-"):
-        order_by = sort[1:]
-        ascending = False
+        order_by, ascending = sort[1:], False
     else:
-        order_by = sort
-        ascending = True
+        order_by, ascending = sort, True
+
     if order_by not in ALLOWED_SORT_FIELDS:
         logger.warning(f"Invalid sort field '{order_by}', defaulting to 'date'")
-        order_by = "date"
-        ascending = False
+        order_by, ascending = "date", False
 
     expenses = get_expenses(
         db,
@@ -59,13 +55,12 @@ def read_expenses_service(
         order_by=order_by,
         ascending=ascending,
     )
-    return [ExpenseResponse.model_validate(dataclasses.asdict(e)) for e in expenses]
+    return [ExpenseResponse.model_validate(e) for e in expenses]
 
 
 def update_expense_service(db: Client, uid: str, expense_id: str, expense: ExpenseRequest) -> None:
     """Update an existing expense."""
-    updated_expense = __convert(expense, request_id=expense_id)
-    update_expense(db, uid, expense_id, updated_expense)
+    update_expense(db, uid, expense_id, _to_domain(expense, expense_id=expense_id))
 
 
 def delete_expense_service(db: Client, uid: str, expense_id: str) -> None:
@@ -73,12 +68,12 @@ def delete_expense_service(db: Client, uid: str, expense_id: str) -> None:
     delete_expense(db, uid, expense_id)
 
 
-def __convert(expense: ExpenseRequest, request_id: str) -> Expense:
-    """Convert ExpenseRequest to Expense domain model."""
+def _to_domain(expense: ExpenseRequest, *, expense_id: str) -> Expense:
+    """Convert an ExpenseRequest schema into the Expense domain model."""
     return Expense(
-        id=request_id,
+        id=expense_id,
         date=expense.date,
-        amount=float(expense.amount),
+        amount=expense.amount,
         quantity=expense.quantity,
         marketplace=expense.marketplace,
         seller=expense.seller,
