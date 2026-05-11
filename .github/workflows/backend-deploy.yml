@@ -16,13 +16,13 @@ jobs:
       SERVICE_NAME: wyrmhort-backend
     steps:
       - name: Checkout codebase
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
       - name: Authenticate to Google Cloud
-        uses: google-github-actions/auth@v3
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
         with:
           credentials_json: '${{ secrets.GCP_SA_KEY }}'
       - name: Set up Google Cloud SDK
-        uses: google-github-actions/setup-gcloud@v3
+        uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3
         with:
           project_id: ${{ secrets.GCP_PROJECT_ID }}
       - name: Create .env file
@@ -53,7 +53,7 @@ jobs:
     needs: [deploy]
     steps:
       - name: Checkout codebase
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
       - name: Setup environment
         uses: ./.github/actions/backend-setup
       - name: Generate SBOM
@@ -62,7 +62,7 @@ jobs:
           uv export --no-hashes --format requirements-txt > requirements-sbom.txt
           uv run cyclonedx-py requirements requirements-sbom.txt --output-format json --output-file sbom.json
       - name: Upload SBOM artifact
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: sbom-${{ github.run_number }}
           path: backend/sbom.json
