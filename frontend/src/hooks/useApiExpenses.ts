@@ -32,24 +32,32 @@ export default function useApiExpenses(user: User | null, authMode: AuthMode) {
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
 
-    const fetchDemoExpenses = useCallback(() => {
+    const fetchDemoExpenses = useCallback(async () => {
         setLoading(true);
-        fetch('/demo-data.json')
-            .then(res => res.json())
-            .then((data) => setExpenses(data))
-            .catch(() => setExpenses([]))
-            .finally(() => setLoading(false));
-        setError(null);
+        try {
+            const res = await fetch('/demo-data.json');
+            const data = await res.json();
+            setExpenses(data);
+        } catch {
+            setExpenses([]);
+        } finally {
+            setError(null);
+            setLoading(false);
+        }
     }, []);
 
     useEffect(() => {
-        if (authMode === 'demo') {
-            fetchDemoExpenses();
-            return;
-        }
-        if (!user) return;
-        user.getIdToken().then(setToken);
-        setError(null);
+        const load = async () => {
+            if (authMode === 'demo') {
+                await fetchDemoExpenses();
+                return;
+            }
+            if (!user) return;
+            const idToken = await user.getIdToken();
+            setToken(idToken);
+            setError(null);
+        };
+        void load();
     }, [user, authMode, fetchDemoExpenses]);
 
     const getFreshToken = useCallback(async () => {
@@ -83,7 +91,7 @@ export default function useApiExpenses(user: User | null, authMode: AuthMode) {
 
     const fetchExpenses = useCallback(async (filters?: ExpenseFilters) => {
         if (authMode === 'demo') {
-            fetchDemoExpenses();
+            await fetchDemoExpenses();
             return;
         }
         const query = filters ? buildQueryParams(filters) : '';

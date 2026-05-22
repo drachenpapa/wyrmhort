@@ -1,10 +1,10 @@
 from datetime import datetime
-from typing import Annotated
+from typing import Annotated, Literal
 
 from fastapi import Depends, FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
 from google.cloud.firestore import Client
-from starlette.responses import JSONResponse
+from pydantic import BaseModel
 
 from expenses.schemas import (
     CreateExpenseResponse,
@@ -20,6 +20,13 @@ from expenses.service import (
 )
 from firebase.auth import get_current_user_uid
 from firebase.firestore import init_firestore
+
+
+class HealthResponse(BaseModel):
+    """Response model for the health check endpoint."""
+
+    status: Literal["healthy"]
+
 
 app = FastAPI(
     title="Wyrmhort Expense API",
@@ -56,20 +63,20 @@ DB = Annotated[Client, Depends(init_firestore)]
 CurrentUser = Annotated[str, Depends(get_current_user_uid)]
 
 
-@app.get("/health", tags=["health"])
-async def health_check() -> JSONResponse:
-    return JSONResponse(content={"status": "healthy"}, status_code=200)
+@app.get("/health", response_model=HealthResponse, tags=["health"])
+def health_check() -> HealthResponse:
+    return HealthResponse(status="healthy")
 
 
 @app.post("/api/expenses/", response_model=CreateExpenseResponse, status_code=201, tags=["expenses"])
-async def create_expense(expense: ExpenseRequest, db: DB, uid: CurrentUser) -> CreateExpenseResponse:
+def create_expense(expense: ExpenseRequest, db: DB, uid: CurrentUser) -> CreateExpenseResponse:
     """Add a new expense to the user's collection."""
     expense_id = create_expense_service(db, uid, expense)
     return CreateExpenseResponse(message="Expense added successfully", id=expense_id)
 
 
 @app.get("/api/expenses/", response_model=ExpensesListResponse, tags=["expenses"])
-async def read_expenses(
+def read_expenses(
     db: DB,
     uid: CurrentUser,
     product: str | None = None,
@@ -98,14 +105,14 @@ async def read_expenses(
 
 
 @app.put("/api/expenses/{expense_id}", response_model=MessageResponse, tags=["expenses"])
-async def update_expense(expense_id: str, expense: ExpenseRequest, db: DB, uid: CurrentUser) -> MessageResponse:
+def update_expense(expense_id: str, expense: ExpenseRequest, db: DB, uid: CurrentUser) -> MessageResponse:
     """Modify an existing expense."""
     update_expense_service(db, uid, expense_id, expense)
     return MessageResponse(message=f"Expense with ID {expense_id} updated.")
 
 
 @app.delete("/api/expenses/{expense_id}", response_model=MessageResponse, tags=["expenses"])
-async def delete_expense(expense_id: str, db: DB, uid: CurrentUser) -> MessageResponse:
+def delete_expense(expense_id: str, db: DB, uid: CurrentUser) -> MessageResponse:
     """Remove a specific expense entry."""
     delete_expense_service(db, uid, expense_id)
     return MessageResponse(message=f"Expense with ID {expense_id} deleted.")

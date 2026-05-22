@@ -1,6 +1,5 @@
 import {act, renderHook} from '@testing-library/react';
 import {signInWithPopup, signOut, User} from 'firebase/auth';
-import {vi} from 'vitest';
 
 import {useAuth} from '../useAuth';
 

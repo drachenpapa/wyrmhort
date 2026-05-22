@@ -1,10 +1,10 @@
 from dataclasses import dataclass
 from datetime import datetime
 from decimal import Decimal
-from typing import Any
+from typing import Any, Self
 
 
-@dataclass(slots=True)
+@dataclass(slots=True, frozen=True)
 class Expense:
     """
     Domain model for an expense entry.
@@ -32,7 +32,7 @@ class Expense:
     marketplace: str | None
 
     @classmethod
-    def from_firestore(cls, data: dict[str, Any], doc_id: str) -> Expense:
+    def from_firestore(cls, data: dict[str, Any], doc_id: str) -> Self:
         """Create an Expense instance from Firestore document data."""
         return cls(
             id=doc_id,

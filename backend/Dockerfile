@@ -10,6 +10,8 @@ RUN UV_NO_CACHE=1 UV_COMPILE_BYTECODE=1 uv sync --frozen --no-dev --no-install-p
 
 FROM python:3.14-slim
 
+RUN groupadd --system appgroup && useradd --system --gid appgroup --no-create-home appuser
+
 WORKDIR /app
 
 COPY --from=builder /app/.venv /app/.venv
@@ -18,6 +20,8 @@ COPY ./src /app
 
 ENV VIRTUAL_ENV=/app/.venv
 ENV PATH="/app/.venv/bin:$PATH"
+
+USER appuser
 
 EXPOSE 8080
 

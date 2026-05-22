@@ -1,4 +1,7 @@
 import logging
+import os
+
+_LOG_LEVEL: int = getattr(logging, os.environ.get("LOG_LEVEL", "INFO").upper(), logging.INFO)
 
 
 def setup_logger(name: str) -> logging.Logger:
@@ -12,5 +15,6 @@ def setup_logger(name: str) -> logging.Logger:
             )
         )
         logger.addHandler(handler)
-        logger.setLevel(logging.INFO)
+        logger.setLevel(_LOG_LEVEL)
+        logger.propagate = False
     return logger

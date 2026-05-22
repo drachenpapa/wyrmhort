@@ -1,4 +1,6 @@
+from datetime import datetime
 from pathlib import Path
+from typing import cast
 
 import firebase_admin
 from firebase_admin import credentials, firestore
@@ -18,16 +20,23 @@ def init_firestore() -> Client:
         cred = credentials.Certificate(str(key_path.resolve()))
         firebase_admin.initialize_app(cred)
         logger.info("Firebase app initialized.")
-    return firestore.client()
+    return cast(Client, firestore.client())
 
 
-def get_expenses(db: Client, uid: str, **filters) -> list[Expense]:
+def get_expenses(
+    db: Client,
+    uid: str,
+    product: str | None = None,
+    item_type: str | None = None,
+    series: str | None = None,
+    seller: str | None = None,
+    marketplace: str | None = None,
+    start_date: datetime | None = None,
+    end_date: datetime | None = None,
+    order_by: str = "date",
+    ascending: bool = False,
+) -> list[Expense]:
     try:
-        order_by: str = filters.pop("order_by", "date")
-        ascending: bool = filters.pop("ascending", False)
-        start_date = filters.pop("start_date", None)
-        end_date = filters.pop("end_date", None)
-
         expenses_ref = db.collection("users").document(uid).collection("expenses")
 
         if start_date:
@@ -35,12 +44,22 @@ def get_expenses(db: Client, uid: str, **filters) -> list[Expense]:
         if end_date:
             expenses_ref = expenses_ref.where(filter=FieldFilter("date", "<=", end_date.isoformat()))
 
-        for key, value in filters.items():
+        for field, value in [
+            ("product", product),
+            ("item_type", item_type),
+            ("series", series),
+            ("seller", seller),
+            ("marketplace", marketplace),
+        ]:
             if value is not None:
-                expenses_ref = expenses_ref.where(filter=FieldFilter(key, "==", value))
+                expenses_ref = expenses_ref.where(filter=FieldFilter(field, "==", value))
 
         expenses_ref = expenses_ref.order_by(order_by, direction="ASCENDING" if ascending else "DESCENDING")
-        return [Expense.from_firestore(doc.to_dict(), doc.id) for doc in expenses_ref.stream()]
+        return [
+            Expense.from_firestore(data, doc.id)
+            for doc in expenses_ref.stream()
+            if (data := doc.to_dict()) is not None
+        ]
     except Exception as e:
         logger.error(f"Failed to get expenses: {e}")
         raise
@@ -51,7 +70,7 @@ def add_expense(db: Client, uid: str, expense: Expense) -> str:
         doc_ref = db.collection("users").document(uid).collection("expenses").document()
         doc_ref.set(expense.to_firestore())
         logger.info(f"Expense added with ID: {doc_ref.id}")
-        return doc_ref.id
+        return str(doc_ref.id)
     except Exception as e:
         logger.error(f"Failed to add expense: {e}")
         raise

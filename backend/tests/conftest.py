@@ -1,5 +1,6 @@
 from datetime import datetime
 from decimal import Decimal
+from typing import Any
 from unittest.mock import MagicMock
 
 import pytest
@@ -11,8 +12,8 @@ from firebase.firestore import init_firestore
 
 
 @pytest.fixture
-def sample_expense_data() -> dict:
-    """Raw dict matching the JSON shape of an expense – used as API payload and fixture base."""
+def sample_expense_data() -> dict[str, Any]:
+    """Raw dict matching the JSON shape of an expense - used as API payload and fixture base."""
     return {
         "id": "test-id",
         "date": "2025-04-15T10:00:00",
@@ -27,7 +28,7 @@ def sample_expense_data() -> dict:
 
 
 @pytest.fixture
-def valid_expense_payload(sample_expense_data) -> dict:
+def valid_expense_payload(sample_expense_data: dict[str, Any]) -> dict[str, Any]:
     """A valid API request payload (no 'id' field)."""
     payload = {**sample_expense_data}
     payload.pop("id", None)
@@ -44,10 +45,10 @@ def valid_expense_payload(sample_expense_data) -> dict:
 
 
 @pytest.fixture
-def expense_factory(sample_expense_data):
+def expense_factory(sample_expense_data: dict[str, Any]):
     """Factory that builds typed Expense domain objects."""
 
-    def _factory(overrides: dict | None = None) -> Expense:
+    def _factory(overrides: dict[str, Any] | None = None) -> Expense:
         data = {**sample_expense_data, **(overrides or {})}
         return Expense(
             id=data["id"],

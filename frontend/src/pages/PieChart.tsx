@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import {type ChangeEvent, useEffect, useState} from 'react';
 import {useTranslation} from 'react-i18next';
 import {Cell, Pie, PieChart as RechartsPieChart, ResponsiveContainer, Tooltip} from 'recharts';
 
@@ -47,7 +47,7 @@ export default function PieChart() {
         }
     };
 
-    const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleFilterChange = (e: ChangeEvent<HTMLInputElement>) => {
         const {name, value} = e.target;
         setFilters(prev => ({...prev, [name]: value}));
     };

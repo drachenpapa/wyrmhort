@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import {type ChangeEvent, useCallback, useState} from 'react';
 import {useTranslation} from 'react-i18next';
 
 import type {AuthMode} from '../hooks/useAuth';
@@ -29,8 +29,10 @@ export default function ExpenseDialog({open, onClose, onSave, initialData = empt
     const {t} = useTranslation();
     const [form, setForm] = useState<Expense>(emptyExpense);
     const [saving, setSaving] = useState(false);
+    const [prevOpen, setPrevOpen] = useState(false);
 
-    useEffect(() => {
+    if (open !== prevOpen) {
+        setPrevOpen(open);
         if (open) {
             const data = initialData ?? emptyExpense;
             setForm({
@@ -38,9 +40,9 @@ export default function ExpenseDialog({open, onClose, onSave, initialData = empt
                 date: data.date ? new Date(data.date).toISOString().slice(0, 10) : new Date().toISOString().slice(0, 10)
             });
         }
-    }, [open, initialData]);
+    }
 
-    const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
         const {name, value} = e.target;
         setForm((prev: Expense) => {
             return {

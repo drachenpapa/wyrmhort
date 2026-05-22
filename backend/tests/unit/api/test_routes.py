@@ -1,7 +1,6 @@
 import pytest
-from fastapi.responses import JSONResponse
 
-from api.routes import create_expense, delete_expense, health_check, read_expenses, update_expense
+from api.routes import HealthResponse, create_expense, delete_expense, health_check, read_expenses, update_expense
 from expenses.schemas import (
     CreateExpenseResponse,
     ExpenseRequest,
@@ -25,56 +24,55 @@ def expense_request(sample_expense_data) -> ExpenseRequest:
     return ExpenseRequest(**sample_expense_data)
 
 
-async def test_health_check():
-    response = await health_check()
-    assert isinstance(response, JSONResponse)
-    assert response.status_code == 200
-    assert response.body == b'{"status":"healthy"}'
+def test_health_check():
+    response = health_check()
+    assert isinstance(response, HealthResponse)
+    assert response.status == "healthy"
 
 
 
-async def test_create_expense_returns_response(mock_db, expense_request, mock_services):
-    result = await create_expense(expense=expense_request, db=mock_db, uid="user-123")
+def test_create_expense_returns_response(mock_db, expense_request, mock_services):
+    result = create_expense(expense=expense_request, db=mock_db, uid="user-123")
     assert isinstance(result, CreateExpenseResponse)
     assert result.message == "Expense added successfully"
     assert result.id == "new-id"
 
 
-async def test_create_expense_calls_service(mock_db, expense_request, mock_services):
-    await create_expense(expense=expense_request, db=mock_db, uid="user-123")
+def test_create_expense_calls_service(mock_db, expense_request, mock_services):
+    create_expense(expense=expense_request, db=mock_db, uid="user-123")
     mock_services["create"].assert_called_once_with(mock_db, "user-123", expense_request)
 
 
-async def test_read_expenses_returns_response(mock_db, mock_services):
-    result = await read_expenses(db=mock_db, uid="user-123")
+def test_read_expenses_returns_response(mock_db, mock_services):
+    result = read_expenses(db=mock_db, uid="user-123")
     assert isinstance(result, ExpensesListResponse)
     assert result.expenses == []
 
 
-async def test_read_expenses_passes_filters_to_service(mock_db, mock_services):
-    await read_expenses(db=mock_db, uid="user-123", product="Pokémon TCG", item_type="Booster")
+def test_read_expenses_passes_filters_to_service(mock_db, mock_services):
+    read_expenses(db=mock_db, uid="user-123", product="Pokémon TCG", item_type="Booster")
     _, kwargs = mock_services["read"].call_args
     assert kwargs["product"] == "Pokémon TCG"
     assert kwargs["item_type"] == "Booster"
 
 
-async def test_update_expense_returns_response(mock_db, expense_request, mock_services):
-    result = await update_expense(expense_id="test-id", expense=expense_request, db=mock_db, uid="user-123")
+def test_update_expense_returns_response(mock_db, expense_request, mock_services):
+    result = update_expense(expense_id="test-id", expense=expense_request, db=mock_db, uid="user-123")
     assert isinstance(result, MessageResponse)
     assert "test-id" in result.message
 
 
-async def test_update_expense_calls_service(mock_db, expense_request, mock_services):
-    await update_expense(expense_id="test-id", expense=expense_request, db=mock_db, uid="user-123")
+def test_update_expense_calls_service(mock_db, expense_request, mock_services):
+    update_expense(expense_id="test-id", expense=expense_request, db=mock_db, uid="user-123")
     mock_services["update"].assert_called_once_with(mock_db, "user-123", "test-id", expense_request)
 
 
-async def test_delete_expense_returns_response(mock_db, mock_services):
-    result = await delete_expense(expense_id="test-id", db=mock_db, uid="user-123")
+def test_delete_expense_returns_response(mock_db, mock_services):
+    result = delete_expense(expense_id="test-id", db=mock_db, uid="user-123")
     assert isinstance(result, MessageResponse)
     assert "test-id" in result.message
 
 
-async def test_delete_expense_calls_service(mock_db, mock_services):
-    await delete_expense(expense_id="test-id", db=mock_db, uid="user-123")
+def test_delete_expense_calls_service(mock_db, mock_services):
+    delete_expense(expense_id="test-id", db=mock_db, uid="user-123")
     mock_services["delete"].assert_called_once_with(mock_db, "user-123", "test-id")
