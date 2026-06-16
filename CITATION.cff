@@ -1,5 +1,6 @@
 cff-version: 1.2.0
 message: If you use Wyrmhort in your research, please cite it using the following metadata.
+type: software
 authors:
   - family-names: Steinberg
     given-names: Henning
