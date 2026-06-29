@@ -44,13 +44,18 @@ export default function useApiExpenses(user: User | null, authMode: AuthMode) {
 
     useEffect(() => {
         if (authMode === 'demo') {
-            fetchDemoExpenses();
+            void fetch('/demo-data.json')
+                .then(res => res.json())
+                .then(data => setExpenses(data))
+                .catch(() => setExpenses([]));
             return;
         }
         if (!user) return;
-        user.getIdToken().then(setToken);
-        setError(null);
-    }, [user, authMode, fetchDemoExpenses]);
+        void user.getIdToken().then(t => {
+            setToken(t);
+            setError(null);
+        });
+    }, [user, authMode]);
 
     const getFreshToken = useCallback(async () => {
         if (!user) return null;

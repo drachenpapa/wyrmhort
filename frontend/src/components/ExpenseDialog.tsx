@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import {useTranslation} from 'react-i18next';
 
 import type {AuthMode} from '../hooks/useAuth';
@@ -25,20 +25,27 @@ const emptyExpense: Expense = {
     marketplace: undefined
 };
 
+function toFormData(data: Expense): Expense {
+    return {
+        ...data,
+        date: data.date ? new Date(data.date).toISOString().slice(0, 10) : new Date().toISOString().slice(0, 10),
+    };
+}
+
 export default function ExpenseDialog({open, onClose, onSave, initialData = emptyExpense, authMode}: Props) {
     const {t} = useTranslation();
-    const [form, setForm] = useState<Expense>(emptyExpense);
+    const [form, setForm] = useState<Expense>(() => toFormData(initialData));
     const [saving, setSaving] = useState(false);
+    const [prevOpen, setPrevOpen] = useState(open);
+    const [prevInitialData, setPrevInitialData] = useState(initialData);
 
-    useEffect(() => {
+    if (open !== prevOpen || initialData !== prevInitialData) {
+        setPrevOpen(open);
+        setPrevInitialData(initialData);
         if (open) {
-            const data = initialData ?? emptyExpense;
-            setForm({
-                ...data,
-                date: data.date ? new Date(data.date).toISOString().slice(0, 10) : new Date().toISOString().slice(0, 10)
-            });
+            setForm(toFormData(initialData ?? emptyExpense));
         }
-    }, [open, initialData]);
+    }
 
     const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         const {name, value} = e.target;
