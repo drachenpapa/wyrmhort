@@ -49,23 +49,26 @@ def test_read_returns_response_list(mock_db, mock_get, sample_expense_data):
 
 def test_read_passes_filters_to_firestore(mock_db, mock_get):
     read_expenses_service(mock_db, "uid-1", product="Pokémon TCG", seller="Louis")
-    _, kwargs = mock_get.call_args
-    assert kwargs["product"] == "Pokémon TCG"
-    assert kwargs["seller"] == "Louis"
+    args, _ = mock_get.call_args
+    query = args[2]
+    assert query.product == "Pokémon TCG"
+    assert query.seller == "Louis"
 
 
 def test_read_ascending_sort(mock_db, mock_get):
     read_expenses_service(mock_db, "uid-1", sort="date")
-    _, kwargs = mock_get.call_args
-    assert kwargs["order_by"] == "date"
-    assert kwargs["ascending"] is True
+    args, _ = mock_get.call_args
+    query = args[2]
+    assert query.order_by == "date"
+    assert query.ascending is True
 
 
 def test_read_invalid_sort_field_defaults_to_date(mock_db, mock_get):
     read_expenses_service(mock_db, "uid-1", sort="invalid_field")
-    _, kwargs = mock_get.call_args
-    assert kwargs["order_by"] == "date"
-    assert kwargs["ascending"] is False
+    args, _ = mock_get.call_args
+    query = args[2]
+    assert query.order_by == "date"
+    assert query.ascending is False
 
 
 

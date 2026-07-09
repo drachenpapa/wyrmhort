@@ -3,7 +3,7 @@ from typing import Final
 
 from google.cloud.firestore import Client
 
-from expenses.models import Expense
+from expenses.models import Expense, ExpenseQuery
 from expenses.schemas import ExpenseRequest, ExpenseResponse
 from firebase.firestore import add_expense, delete_expense, get_expenses, update_expense
 from logger_config import setup_logger
@@ -17,7 +17,8 @@ ALLOWED_SORT_FIELDS: Final[frozenset[str]] = frozenset(
 
 def create_expense_service(db: Client, uid: str, expense: ExpenseRequest) -> str:
     """Create a new expense and return its ID."""
-    return add_expense(db, uid, _to_domain(expense, expense_id=""))
+    expense_id: str = add_expense(db, uid, _to_domain(expense, expense_id=""))
+    return expense_id
 
 
 def read_expenses_service(
@@ -45,15 +46,17 @@ def read_expenses_service(
     expenses = get_expenses(
         db,
         uid,
-        product=product,
-        item_type=item_type,
-        series=series,
-        seller=seller,
-        marketplace=marketplace,
-        start_date=start_date,
-        end_date=end_date,
-        order_by=order_by,
-        ascending=ascending,
+        ExpenseQuery(
+            product=product,
+            item_type=item_type,
+            series=series,
+            seller=seller,
+            marketplace=marketplace,
+            start_date=start_date,
+            end_date=end_date,
+            order_by=order_by,
+            ascending=ascending,
+        ),
     )
     return [ExpenseResponse.model_validate(e) for e in expenses]
 

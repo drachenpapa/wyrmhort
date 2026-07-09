@@ -6,7 +6,7 @@ from api.routes import app
 load_dotenv()
 
 
-def main():
+def main() -> None:
     uvicorn.run(app, host="127.0.0.1", port=8080, reload=False)
 
 

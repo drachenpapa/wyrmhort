@@ -1,6 +1,7 @@
 from decimal import Decimal
 from unittest.mock import MagicMock
 
+from expenses.models import ExpenseQuery
 from firebase.firestore import add_expense, delete_expense, get_expenses, update_expense
 
 
@@ -25,7 +26,7 @@ def test_get_expenses_returns_expense_list(mock_db, sample_expense_data):
     doc = _make_doc(sample_expense_data)
     _make_expenses_ref(mock_db, [doc])
 
-    results = get_expenses(mock_db, "uid-1")
+    results = get_expenses(mock_db, "uid-1", ExpenseQuery())
 
     assert len(results) == 1
     assert results[0].product == sample_expense_data["product"]
@@ -34,12 +35,12 @@ def test_get_expenses_returns_expense_list(mock_db, sample_expense_data):
 
 def test_get_expenses_empty_collection(mock_db):
     _make_expenses_ref(mock_db, [])
-    assert get_expenses(mock_db, "uid-1") == []
+    assert get_expenses(mock_db, "uid-1", ExpenseQuery()) == []
 
 
 def test_get_expenses_applies_filter(mock_db, sample_expense_data):
     ref = _make_expenses_ref(mock_db, [_make_doc(sample_expense_data)])
-    get_expenses(mock_db, "uid-1", product="Pokémon TCG")
+    get_expenses(mock_db, "uid-1", ExpenseQuery(product="Pokémon TCG"))
     ref.where.assert_called()
 
 

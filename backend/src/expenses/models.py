@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime
 from decimal import Decimal
 from typing import Any
@@ -58,3 +58,18 @@ class Expense:
             "seller": self.seller,
             "marketplace": self.marketplace,
         }
+
+
+@dataclass(slots=True)
+class ExpenseQuery:
+    """Query parameters for filtering and sorting expenses fetched from Firestore."""
+
+    product: str | None = None
+    item_type: str | None = None
+    series: str | None = None
+    seller: str | None = None
+    marketplace: str | None = None
+    start_date: datetime | None = None
+    end_date: datetime | None = None
+    order_by: str = field(default="date")
+    ascending: bool = field(default=False)
