@@ -21,11 +21,17 @@ export default function App() {
     const allowedEmail = import.meta.env.VITE_ALLOWED_EMAIL;
     const isOwner = user?.email === allowedEmail;
     const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
+        const stored = localStorage.getItem('darkMode');
+        if (stored !== null) return stored === 'true';
         return window.matchMedia("(prefers-color-scheme: dark)").matches;
     });
 
     const toggleDarkMode = () => {
-        setIsDarkMode(prevMode => !prevMode);
+        setIsDarkMode(prevMode => {
+            const next = !prevMode;
+            localStorage.setItem('darkMode', String(next));
+            return next;
+        });
     };
 
     useEffect(() => {

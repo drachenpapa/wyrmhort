@@ -2,7 +2,7 @@ export interface ExpenseFilters {
     start_date?: string;
     end_date?: string;
     product?: string;
-    itemType?: string;
+    item_type?: string;
     series?: string;
     seller?: string;
     marketplace?: string;
