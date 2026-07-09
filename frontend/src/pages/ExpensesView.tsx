@@ -1,11 +1,12 @@
 import {ChevronDown, ChevronUp, Plus, RotateCcw} from 'lucide-react';
-import {useCallback, useEffect, useMemo, useState} from 'react';
+import {useEffect, useState} from 'react';
 import {useTranslation} from 'react-i18next';
 
 import ExpenseDialog from '../components/ExpenseDialog';
 import ExpenseTable from '../components/ExpenseTable';
 import useApiExpenses from '../hooks/useApiExpenses';
 import {useAuth} from '../hooks/useAuth';
+import {useExpenseFilters} from '../hooks/useExpenseFilters';
 import {logger} from '../logger';
 import {Expense} from '../types/Expense';
 import {createEmptyExpense} from '../utils/expenses';
@@ -28,55 +29,19 @@ export default function ExpensesView() {
     const [sortAsc, setSortAsc] = useState<boolean>(false);
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize, setPageSize] = useState(20);
-    const [filterDateFrom, setFilterDateFrom] = useState<string>("");
-    const [filterDateTo, setFilterDateTo] = useState<string>("");
-    const [filterProduct, setFilterProduct] = useState<string>("");
-    const [filterItemType, setFilterItemType] = useState<string>("");
-    const [filterSeries, setFilterSeries] = useState<string>("");
-    const [filterMarketplace, setFilterMarketplace] = useState<string>("");
-    const [filterSeller, setFilterSeller] = useState<string>("");
     const [showFilters, setShowFilters] = useState(false);
 
-    const expenseMatchesFilters = useCallback((exp: Expense, ignore: (keyof Expense)[] = []) => {
-        const date = exp.date.slice(0, 10);
-        const checks = [
-            (!filterDateFrom || ignore.includes('date') || date >= filterDateFrom),
-            (!filterDateTo || ignore.includes('date') || date <= filterDateTo),
-            (!filterProduct || ignore.includes('product') || (exp.product?.toLowerCase() === filterProduct.toLowerCase())),
-            (!filterItemType || ignore.includes('item_type') || (exp.item_type?.toLowerCase() === filterItemType.toLowerCase())),
-            (!filterSeries || ignore.includes('series') || (exp.series?.toLowerCase() === filterSeries.toLowerCase())),
-            (!filterMarketplace || ignore.includes('marketplace') || ((exp.marketplace || '').toLowerCase() === filterMarketplace.toLowerCase())),
-            (!filterSeller || ignore.includes('seller') || (exp.seller?.toLowerCase() === filterSeller.toLowerCase()))
-        ];
-        return checks.every(Boolean);
-    }, [filterDateFrom, filterDateTo, filterProduct, filterItemType, filterSeries, filterMarketplace, filterSeller]);
-
-    const getFilteredExpenses = useCallback((ignore: keyof Expense | null = null) => {
-        return expenses.filter(exp => expenseMatchesFilters(exp, ignore ? [ignore] : []));
-    }, [expenses, expenseMatchesFilters]);
-
-    const filteredExpenses = getFilteredExpenses();
-
-    const uniqueProducts = useMemo(() =>
-            Array.from(new Set(getFilteredExpenses('product').map(e => e.product).filter(Boolean))).sort((a, b) => a.localeCompare(b)),
-        [getFilteredExpenses]
-    );
-    const uniqueItemTypes = useMemo(() =>
-            Array.from(new Set(getFilteredExpenses('item_type').map(e => e.item_type).filter(Boolean))).sort((a, b) => a.localeCompare(b)),
-        [getFilteredExpenses]
-    );
-    const uniqueSeries = useMemo(() =>
-            Array.from(new Set(getFilteredExpenses('series').map(e => e.series).filter(Boolean))).sort((a, b) => a.localeCompare(b)),
-        [getFilteredExpenses]
-    );
-    const uniqueMarketplaces = useMemo(() =>
-            Array.from(new Set(getFilteredExpenses('marketplace').map(e => e.marketplace).filter((v): v is string => !!v))).sort((a, b) => a.localeCompare(b)),
-        [getFilteredExpenses]
-    );
-    const uniqueSellers = useMemo(() =>
-            Array.from(new Set(getFilteredExpenses('seller').map(e => e.seller).filter(Boolean))).sort((a, b) => a.localeCompare(b)),
-        [getFilteredExpenses]
-    );
+    const {
+        filters,
+        setFilter,
+        resetFilters,
+        filtered: filteredExpenses,
+        uniqueProducts,
+        uniqueItemTypes,
+        uniqueSeries,
+        uniqueMarketplaces,
+        uniqueSellers,
+    } = useExpenseFilters(expenses);
 
     const totalPages = Math.max(1, Math.ceil(filteredExpenses.length / pageSize));
     const validatedCurrentPage = Math.min(Math.max(currentPage, 1), totalPages);
@@ -166,43 +131,37 @@ export default function ExpensesView() {
                     e.preventDefault();
                 }}>
                     <div className="expense-filters-row1">
-                        <input type="date" value={filterDateFrom} onChange={e => setFilterDateFrom(e.target.value)}
+                        <input type="date" value={filters.dateFrom} onChange={e => setFilter('dateFrom', e.target.value)}
                                placeholder={t("start_date")} title={t("start_date")}/>
-                        <input type="date" value={filterDateTo} onChange={e => setFilterDateTo(e.target.value)}
+                        <input type="date" value={filters.dateTo} onChange={e => setFilter('dateTo', e.target.value)}
                                placeholder={t("end_date")} title={t("end_date")}/>
                         <button type="button" className="btn secondary expense-filters-reset" onClick={() => {
-                            setFilterDateFrom("");
-                            setFilterDateTo("");
-                            setFilterProduct("");
-                            setFilterItemType("");
-                            setFilterSeries("");
-                            setFilterMarketplace("");
-                            setFilterSeller("");
+                            resetFilters();
                             setCurrentPage(1);
                         }}><RotateCcw size={16}/>{t("reset_filters")}</button>
                     </div>
                     <div className="expense-filters-row2">
-                        <select value={filterProduct} onChange={e => setFilterProduct(e.target.value)}
+                        <select value={filters.product} onChange={e => setFilter('product', e.target.value)}
                                 title={t("product")}>
                             <option value="">{t("all_products")}</option>
                             {uniqueProducts.map(p => <option key={p} value={p}>{p}</option>)}
                         </select>
-                        <select value={filterItemType} onChange={e => setFilterItemType(e.target.value)}
+                        <select value={filters.itemType} onChange={e => setFilter('itemType', e.target.value)}
                                 title={t("item_type")}>
                             <option value="">{t("all_item_types")}</option>
-                            {uniqueItemTypes.map(t => <option key={t} value={t}>{t}</option>)}
+                            {uniqueItemTypes.map(it => <option key={it} value={it}>{it}</option>)}
                         </select>
-                        <select value={filterSeries} onChange={e => setFilterSeries(e.target.value)}
+                        <select value={filters.series} onChange={e => setFilter('series', e.target.value)}
                                 title={t("series")}>
                             <option value="">{t("all_series")}</option>
                             {uniqueSeries.map(s => <option key={s} value={s}>{s}</option>)}
                         </select>
-                        <select value={filterMarketplace} onChange={e => setFilterMarketplace(e.target.value)}
+                        <select value={filters.marketplace} onChange={e => setFilter('marketplace', e.target.value)}
                                 title={t("marketplace")}>
                             <option value="">{t("all_marketplaces")}</option>
                             {uniqueMarketplaces.map(s => <option key={s} value={s}>{s}</option>)}
                         </select>
-                        <select value={filterSeller} onChange={e => setFilterSeller(e.target.value)}
+                        <select value={filters.seller} onChange={e => setFilter('seller', e.target.value)}
                                 title={t("seller")}>
                             <option value="">{t("all_sellers")}</option>
                             {uniqueSellers.map(s => <option key={s} value={s}>{s}</option>)}

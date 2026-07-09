@@ -25,16 +25,6 @@ export default function ExpenseDialog({open, onClose, onSave, initialData = crea
     const {t} = useTranslation();
     const [form, setForm] = useState<Expense>(() => toFormData(initialData));
     const [saving, setSaving] = useState(false);
-    const [prevOpen, setPrevOpen] = useState(open);
-    const [prevInitialData, setPrevInitialData] = useState(initialData);
-
-    if (open !== prevOpen || initialData !== prevInitialData) {
-        setPrevOpen(open);
-        setPrevInitialData(initialData);
-        if (open) {
-            setForm(toFormData(initialData ?? createEmptyExpense()));
-        }
-    }
 
     const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         const {name, value} = e.target;
