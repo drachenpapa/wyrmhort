@@ -4,6 +4,7 @@ import {useTranslation} from 'react-i18next';
 import type {AuthMode} from '../hooks/useAuth';
 import {logger} from '../logger';
 import {Expense} from '../types/Expense';
+import {createEmptyExpense} from '../utils/expenses';
 
 type Props = {
     open: boolean;
@@ -13,18 +14,6 @@ type Props = {
     authMode: AuthMode;
 };
 
-const emptyExpense: Expense = {
-    id: "",
-    date: new Date().toISOString().slice(0, 10),
-    amount: 0,
-    product: '',
-    item_type: '',
-    series: '',
-    quantity: 1,
-    seller: '',
-    marketplace: undefined
-};
-
 function toFormData(data: Expense): Expense {
     return {
         ...data,
@@ -32,7 +21,7 @@ function toFormData(data: Expense): Expense {
     };
 }
 
-export default function ExpenseDialog({open, onClose, onSave, initialData = emptyExpense, authMode}: Props) {
+export default function ExpenseDialog({open, onClose, onSave, initialData = createEmptyExpense(), authMode}: Props) {
     const {t} = useTranslation();
     const [form, setForm] = useState<Expense>(() => toFormData(initialData));
     const [saving, setSaving] = useState(false);
@@ -43,7 +32,7 @@ export default function ExpenseDialog({open, onClose, onSave, initialData = empt
         setPrevOpen(open);
         setPrevInitialData(initialData);
         if (open) {
-            setForm(toFormData(initialData ?? emptyExpense));
+            setForm(toFormData(initialData ?? createEmptyExpense()));
         }
     }
 

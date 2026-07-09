@@ -8,18 +8,7 @@ import useApiExpenses from '../hooks/useApiExpenses';
 import {useAuth} from '../hooks/useAuth';
 import {logger} from '../logger';
 import {Expense} from '../types/Expense';
-
-const emptyExpense: Expense = {
-    id: '',
-    date: new Date().toISOString().slice(0, 10),
-    amount: 0,
-    product: '',
-    item_type: '',
-    series: '',
-    quantity: 1,
-    seller: '',
-    marketplace: undefined
-};
+import {createEmptyExpense} from '../utils/expenses';
 
 export default function ExpensesView() {
     const {user, authMode} = useAuth();
@@ -32,7 +21,6 @@ export default function ExpensesView() {
         deleteExpense,
         loading,
         error,
-        token
     } = useApiExpenses(user, authMode);
     const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
     const dialogOpen = editingExpense !== null;
@@ -95,12 +83,12 @@ export default function ExpensesView() {
     const paginatedExpenses = filteredExpenses.slice((validatedCurrentPage - 1) * pageSize, validatedCurrentPage * pageSize);
 
     useEffect(() => {
-        if ((user && token) || authMode === 'demo') {
+        if ((user && user.email) || authMode === 'demo') {
             fetchExpenses({sortKey, sortAsc}).catch((err) => {
                 logger.error('Error fetching expenses:', err);
             });
         }
-    }, [user, token, fetchExpenses, sortKey, sortAsc, authMode]);
+    }, [user, fetchExpenses, sortKey, sortAsc, authMode]);
 
     const handlePageSizeChange = (size: number) => {
         setPageSize(size);
@@ -139,7 +127,7 @@ export default function ExpensesView() {
     };
 
     const handleOpenDialog = () => {
-        setEditingExpense({...emptyExpense});
+        setEditingExpense(createEmptyExpense());
     };
 
     const handleCloseDialog = () => {

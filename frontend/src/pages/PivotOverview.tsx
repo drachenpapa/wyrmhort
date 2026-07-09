@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {useTranslation} from 'react-i18next';
 
+import DateRangeFilter from '../components/DateRangeFilter';
 import {LoadingSpinner} from '../components/LoadingSpinner';
 import useApiExpenses from '../hooks/useApiExpenses';
 import '../styles.css';
@@ -8,6 +9,7 @@ import {useAuth} from '../hooks/useAuth';
 import {logger} from '../logger';
 import {Expense} from '../types/Expense';
 import {ExpenseFilters} from '../types/ExpenseFilters';
+import {formatCurrency} from '../utils/expenses';
 
 interface GroupedExpenses {
     [product: string]: {
@@ -57,9 +59,7 @@ export default function PivotOverview() {
         }));
     };
 
-    const getFormattedAmount = (amount: number) => {
-        return amount.toLocaleString('de-DE', {style: 'currency', currency: 'EUR'});
-    }
+    const getFormattedAmount = formatCurrency;
 
     const calculateTotal = (items: Expense[]) =>
         items.reduce((sum, item) => sum + Number(item.amount), 0);
@@ -79,17 +79,12 @@ export default function PivotOverview() {
 
     return (
         <div className="pivot-overview">
-            <div className="filters">
-                <label>
-                    {t("start_date")}
-                    <input type="date" name="start_date" value={filters.start_date} onChange={handleFilterChange}/>
-                </label>
-                <label>
-                    {t("end_date")}
-                    <input type="date" name="end_date" value={filters.end_date} onChange={handleFilterChange}/>
-                </label>
-                <button className="btn primary" onClick={handleApplyFilters}>{t("apply_filters")}</button>
-            </div>
+            <DateRangeFilter
+                startDate={filters.start_date ?? ''}
+                endDate={filters.end_date ?? ''}
+                onChange={handleFilterChange}
+                onApply={handleApplyFilters}
+            />
             {loading && <LoadingSpinner/>}
             {error && <div className="error-message"><p>{t("error_loading_data")}</p></div>}
             {!loading && !error && expenses.length === 0 && (

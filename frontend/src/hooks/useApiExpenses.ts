@@ -28,7 +28,6 @@ const DEMO_MODE_INFO = 'Hi, you might have not noticed it, but you are in demo m
 
 export default function useApiExpenses(user: User | null, authMode: AuthMode) {
     const [expenses, setExpenses] = useState<Expense[]>([]);
-    const [token, setToken] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -48,14 +47,16 @@ export default function useApiExpenses(user: User | null, authMode: AuthMode) {
                 .then(res => res.json())
                 .then(data => setExpenses(data))
                 .catch(() => setExpenses([]));
-            return;
         }
-        if (!user) return;
-        void user.getIdToken().then(t => {
-            setToken(t);
-            setError(null);
-        });
     }, [user, authMode]);
+
+    const isDemo = (): boolean => {
+        if (authMode === 'demo') {
+            logger.warn(DEMO_MODE_INFO);
+            return true;
+        }
+        return false;
+    };
 
     const getFreshToken = useCallback(async () => {
         if (!user) return null;
@@ -119,10 +120,7 @@ export default function useApiExpenses(user: User | null, authMode: AuthMode) {
     }, [request, authMode, fetchDemoExpenses]);
 
     const addExpense = async (expense: Omit<Expense, 'id'>) => {
-        if (authMode === 'demo') {
-            console.log(DEMO_MODE_INFO);
-            return;
-        }
+        if (isDemo()) return;
 
         const newExpense = await request(async (token) => {
             const res = await fetch('/api/expenses/', {
@@ -146,10 +144,7 @@ export default function useApiExpenses(user: User | null, authMode: AuthMode) {
     };
 
     const updateExpense = async (id: string, updated: Partial<Expense>) => {
-        if (authMode === 'demo') {
-            console.log(DEMO_MODE_INFO);
-            return;
-        }
+        if (isDemo()) return;
 
         const success = await request(async (token) => {
             const res = await fetch(`/api/expenses/${id}`, {
@@ -174,10 +169,7 @@ export default function useApiExpenses(user: User | null, authMode: AuthMode) {
     };
 
     const deleteExpense = async (id: string) => {
-        if (authMode === 'demo') {
-            console.log(DEMO_MODE_INFO);
-            return;
-        }
+        if (isDemo()) return;
 
         const success = await request(async (token) => {
             const res = await fetch(`/api/expenses/${id}`, {
@@ -197,5 +189,5 @@ export default function useApiExpenses(user: User | null, authMode: AuthMode) {
         }
     };
 
-    return {expenses, fetchExpenses, addExpense, updateExpense, deleteExpense, loading, error, token};
+    return {expenses, fetchExpenses, addExpense, updateExpense, deleteExpense, loading, error};
 }

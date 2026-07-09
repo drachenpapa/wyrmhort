@@ -5,6 +5,7 @@ import {useTranslation} from 'react-i18next';
 import type {AuthMode} from '../hooks/useAuth';
 import {logger} from '../logger';
 import {Expense} from '../types/Expense';
+import {formatCurrency} from '../utils/expenses';
 
 import {LoadingSpinner} from './LoadingSpinner';
 import Pagination from './Pagination';
@@ -133,10 +134,7 @@ export default function ExpenseTable({
                                         month: '2-digit',
                                         year: 'numeric'
                                     })}</td>
-                                    <td>{Number(exp.amount).toLocaleString('de-DE', {
-                                        style: 'currency',
-                                        currency: 'EUR'
-                                    })}</td>
+                                    <td>{formatCurrency(Number(exp.amount))}</td>
                                     <td>{exp.product}</td>
                                     <td>{exp.item_type}</td>
                                     <td>{exp.series}</td>

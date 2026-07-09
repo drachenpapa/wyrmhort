@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {useTranslation} from 'react-i18next';
 import {Cell, Pie, PieChart as RechartsPieChart, ResponsiveContainer, Tooltip} from 'recharts';
 
+import DateRangeFilter from '../components/DateRangeFilter';
 import {LoadingSpinner} from '../components/LoadingSpinner';
 import useApiExpenses from '../hooks/useApiExpenses';
 import {useAuth} from '../hooks/useAuth';
@@ -9,6 +10,7 @@ import {logger} from '../logger';
 import '../styles.css';
 import {Expense} from '../types/Expense';
 import {ExpenseFilters} from '../types/ExpenseFilters';
+import {formatCurrency} from '../utils/expenses';
 
 interface PieChartData {
     name: string;
@@ -95,17 +97,12 @@ export default function PieChart() {
 
     return (
         <div className="pivot-overview">
-            <div className="filters">
-                <label>
-                    {t("start_date")}
-                    <input type="date" name="start_date" value={filters.start_date} onChange={handleFilterChange}/>
-                </label>
-                <label>
-                    {t("end_date")}
-                    <input type="date" name="end_date" value={filters.end_date} onChange={handleFilterChange}/>
-                </label>
-                <button className="btn primary" onClick={handleApplyFilters}>{t("apply_filters")}</button>
-            </div>
+            <DateRangeFilter
+                startDate={filters.start_date ?? ''}
+                endDate={filters.end_date ?? ''}
+                onChange={handleFilterChange}
+                onApply={handleApplyFilters}
+            />
 
             {loading && <LoadingSpinner/>}
             {error && <div className="error-message"><p>{t("error_loading_data")}</p></div>}
@@ -122,7 +119,7 @@ export default function PieChart() {
                             </button>
                         )}
                         <div className="pivot-grand-total">
-                            {t("grand_total")}: {grandTotal.toLocaleString('de-DE', {style: 'currency', currency: 'EUR'})}
+                            {t("grand_total")}: {formatCurrency(grandTotal)}
                         </div>
                     </div>
 
@@ -133,7 +130,7 @@ export default function PieChart() {
                                 cx="50%"
                                 cy="50%"
                                 labelLine={false}
-                                label={({name, value}) => `${name}: ${value.toLocaleString('de-DE', {style: 'currency', currency: 'EUR'})}`}
+                                label={({name, value}) => `${name}: ${formatCurrency(value)}`}
                                 outerRadius={150}
                                 fill="#8884d8"
                                 dataKey="value"
@@ -146,12 +143,9 @@ export default function PieChart() {
                             </Pie>
                             <Tooltip
                                 formatter={(value: unknown) => {
-                                    const numValue = typeof value === 'number' ? value : Number(value);
-                                    return numValue.toLocaleString('de-DE', {
-                                        style: 'currency',
-                                        currency: 'EUR'
-                                    });
-                                }}
+                                        const numValue = typeof value === 'number' ? value : Number(value);
+                                        return formatCurrency(numValue);
+                                    }}
                             />
                         </RechartsPieChart>
                     </ResponsiveContainer>
