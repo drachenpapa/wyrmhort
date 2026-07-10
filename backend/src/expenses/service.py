@@ -11,7 +11,7 @@ from logger_config import setup_logger
 logger = setup_logger(__name__)
 
 ALLOWED_SORT_FIELDS: Final[frozenset[str]] = frozenset(
-    {"date", "amount", "product", "item_type", "series", "seller", "marketplace"}
+    {"date", "amount", "product", "item_type", "series", "seller", "marketplace", "quantity"}
 )
 
 

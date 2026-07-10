@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import cast
 
 import firebase_admin
 from firebase_admin import credentials, firestore
@@ -19,7 +20,7 @@ def init_firestore() -> Client:
         cred = credentials.Certificate(str(key_path.resolve()))
         firebase_admin.initialize_app(cred)
         logger.info("Firebase app initialized.")
-    return firestore.client()
+    return cast(Client, firestore.client())
 
 
 def get_expenses(db: Client, uid: str, query: ExpenseQuery) -> list[Expense]:
