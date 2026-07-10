@@ -5,8 +5,8 @@ import {useExpenseFilters} from '../useExpenseFilters';
 
 const EXPENSES: Expense[] = [
     {id: '1', date: '2024-01-15', amount: 10, product: 'Lego', item_type: 'Set', series: 'City', quantity: 1, seller: 'Amazon', marketplace: 'online'},
-    {id: '2', date: '2024-02-20', amount: 20, product: 'Playmobil', item_type: 'Figure', series: 'Western', quantity: 2, seller: 'eBay'},
-    {id: '3', date: '2024-03-10', amount: 30, product: 'Lego', item_type: 'Set', series: 'Technic', quantity: 1, seller: 'Amazon'},
+    {id: '2', date: '2024-02-20', amount: 20, product: 'Playmobil', item_type: 'Figure', series: 'Western', quantity: 2, seller: 'eBay', marketplace: null},
+    {id: '3', date: '2024-03-10', amount: 30, product: 'Lego', item_type: 'Set', series: 'Technic', quantity: 1, seller: 'Amazon', marketplace: null},
 ];
 
 describe('useExpenseFilters', () => {

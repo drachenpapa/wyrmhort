@@ -14,6 +14,6 @@ export function createEmptyExpense(): Expense {
         series: '',
         quantity: 1,
         seller: '',
-        marketplace: undefined,
+        marketplace: null,
     };
 }

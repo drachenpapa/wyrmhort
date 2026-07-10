@@ -4,8 +4,8 @@ import {vi} from 'vitest';
 import ExpensesView from '../ExpensesView';
 
 const EXPENSES = [
-    {id: '1', date: '2024-01-15T00:00:00Z', amount: 10, product: 'Lego', item_type: 'Set', series: 'City', quantity: 1, seller: 'Amazon'},
-    {id: '2', date: '2024-02-20T00:00:00Z', amount: 20, product: 'Playmobil', item_type: 'Figure', series: 'Western', quantity: 2, seller: 'eBay'},
+    {id: '1', date: '2024-01-15T00:00:00Z', amount: 10, product: 'Lego', item_type: 'Set', series: 'City', quantity: 1, seller: 'Amazon', marketplace: null},
+    {id: '2', date: '2024-02-20T00:00:00Z', amount: 20, product: 'Playmobil', item_type: 'Figure', series: 'Western', quantity: 2, seller: 'eBay', marketplace: null},
 ];
 
 const mockFetchExpenses = vi.fn().mockResolvedValue(undefined);

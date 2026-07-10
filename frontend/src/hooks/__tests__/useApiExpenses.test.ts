@@ -18,6 +18,7 @@ const EXPENSE_INPUT = {
     series: 'City',
     quantity: 1,
     seller: 'Amazon',
+    marketplace: null,
 };
 
 const EXPENSE = {id: '1', ...EXPENSE_INPUT};

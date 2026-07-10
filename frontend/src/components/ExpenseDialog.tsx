@@ -36,8 +36,8 @@ export default function ExpenseDialog({open, onClose, onSave, initialData = crea
         });
     }, []);
 
-    const cleanOptionalFields = (value?: string): string | undefined =>
-        value?.trim() === '' ? undefined : value?.trim();
+    const cleanOptionalFields = (value: string | null | undefined): string | null =>
+        !value || value.trim() === '' ? null : value.trim();
 
     const handleSubmit = useCallback(async () => {
         setSaving(true);
@@ -84,7 +84,7 @@ export default function ExpenseDialog({open, onClose, onSave, initialData = crea
                                 type={field === 'date' ? 'date' : field === 'amount' || field === 'quantity' ? 'number' : 'text'}
                                 id={field}
                                 name={field}
-                                value={form[field as keyof Expense]}
+                                value={form[field as keyof Expense] ?? ''}
                                 onChange={handleChange}
                                 className="input-full-width"
                                 min={field === 'amount' || field === 'quantity' ? 0 : undefined}

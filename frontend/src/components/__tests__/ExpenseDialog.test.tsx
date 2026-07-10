@@ -14,6 +14,7 @@ const VALID_EXPENSE: Expense = {
     series: 'City',
     quantity: 2,
     seller: 'Amazon',
+    marketplace: null,
 };
 
 const defaultProps = {

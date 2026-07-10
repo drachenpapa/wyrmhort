@@ -7,5 +7,5 @@ export type Expense = {
     series: string;
     quantity: number;
     seller: string;
-    marketplace?: string;
+    marketplace: string | null;
 };
