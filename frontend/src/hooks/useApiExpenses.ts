@@ -1,5 +1,5 @@
 import {User} from 'firebase/auth';
-import {useCallback, useEffect, useState} from 'react';
+import {useCallback, useState} from 'react';
 
 import {logger} from '../logger';
 import {Expense} from '../types/Expense';
@@ -30,25 +30,6 @@ export default function useApiExpenses(user: User | null, authMode: AuthMode) {
     const [expenses, setExpenses] = useState<Expense[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
-
-    const fetchDemoExpenses = useCallback(() => {
-        setLoading(true);
-        fetch('/demo-data.json')
-            .then(res => res.json())
-            .then((data) => setExpenses(data))
-            .catch(() => setExpenses([]))
-            .finally(() => setLoading(false));
-        setError(null);
-    }, []);
-
-    useEffect(() => {
-        if (authMode === 'demo') {
-            void fetch('/demo-data.json')
-                .then(res => res.json())
-                .then(data => setExpenses(data))
-                .catch(() => setExpenses([]));
-        }
-    }, [user, authMode]);
 
     const isDemo = (): boolean => {
         if (authMode === 'demo') {
@@ -89,7 +70,17 @@ export default function useApiExpenses(user: User | null, authMode: AuthMode) {
 
     const fetchExpenses = useCallback(async (filters?: ExpenseFilters) => {
         if (authMode === 'demo') {
-            fetchDemoExpenses();
+            setLoading(true);
+            setError(null);
+            try {
+                const res = await fetch('/demo-data.json');
+                const data = await (res.json() as Promise<Expense[]>);
+                setExpenses(data);
+            } catch {
+                setExpenses([]);
+            } finally {
+                setLoading(false);
+            }
             return;
         }
         const query = filters ? buildQueryParams(filters) : '';
@@ -117,7 +108,7 @@ export default function useApiExpenses(user: User | null, authMode: AuthMode) {
                 setExpenses([]);
             }
         }
-    }, [request, authMode, fetchDemoExpenses]);
+    }, [request, authMode]);
 
     const addExpense = async (expense: Omit<Expense, 'id'>) => {
         if (isDemo()) return;

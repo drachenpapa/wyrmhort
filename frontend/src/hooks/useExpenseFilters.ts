@@ -22,6 +22,11 @@ const EMPTY_FILTERS: ExpenseFilterState = {
     seller: '',
 };
 
+// Client-side filtering is intentional for this view: instant UX without a network round-trip.
+// The full expense list is already loaded (sorted server-side). Data volume is bounded by the
+// single-user design, so filtering in memory is both fast and sufficient.
+// PivotOverview and PieChart use server-side date-range filtering instead, because those views
+// benefit from reducing the payload before aggregation.
 export function useExpenseFilters(expenses: Expense[]) {
     const [filters, setFilters] = useState<ExpenseFilterState>(EMPTY_FILTERS);
 

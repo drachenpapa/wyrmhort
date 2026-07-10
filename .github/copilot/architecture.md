@@ -265,8 +265,10 @@ Firebase Authentication handles identity; Firestore handles persistence. The bac
 ### No server-side pagination
 All filtering and sorting are applied in Firestore queries (server-side); the result set is returned in full and paginated client-side in the React state. This is appropriate given the expected data volume for a single hobby user.
 
-### Client-side filtering in `ExpensesView`
-`ExpensesView` performs additional in-memory filtering on the already-fetched expenses array. The backend also supports server-side filtering via query parameters, but `ExpensesView` does not use them — it sends only `sortKey`/`sortAsc` to the backend. The other filters (`product`, `item_type`, etc.) are applied client-side. `PivotOverview` and `PieChart` use server-side date range filtering instead.
+### Client-side vs. server-side filtering split (intentional)
+`ExpensesView` fetches the full expense list (sorted server-side) and applies category/text filters client-side via `useExpenseFilters`. This gives instant filter UX without network round-trips, and is appropriate because the total dataset is bounded by the single-user design.
+`PivotOverview` and `PieChart` apply only date-range filters server-side, reducing the payload before aggregation. They do not support additional filter dimensions.
+This asymmetry is intentional and documented; see `hooks/useExpenseFilters.ts`.
 
 ### Demo mode
 `useAuth` supports an `'demo'` auth mode stored in `localStorage`. In demo mode, `useApiExpenses` loads `public/demo-data.json` instead of calling the API. Write operations are silently blocked. This allows unauthenticated visitors to explore the UI.

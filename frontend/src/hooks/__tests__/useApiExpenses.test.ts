@@ -1,4 +1,4 @@
-import {act, renderHook, waitFor} from '@testing-library/react';
+import {act, renderHook} from '@testing-library/react';
 import {User} from 'firebase/auth';
 import {vi} from 'vitest';
 
@@ -33,20 +33,21 @@ describe('useApiExpenses', () => {
     });
 
     describe('demo mode', () => {
-        it('loads demo expenses from /demo-data.json on mount', async () => {
+        it('loads demo expenses from /demo-data.json when fetchExpenses is called', async () => {
             mockFetchOnce({json: () => Promise.resolve([EXPENSE])});
 
             const {result} = renderHook(() => useApiExpenses(null, 'demo'));
 
-            await waitFor(() => {
+                await act(async () => {
+                    await result.current.fetchExpenses();
+            });
+
                 expect(result.current.expenses).toEqual([EXPENSE]);
             });
-        });
 
         it('does not call non-demo API endpoints for write operations', async () => {
-            mockFetchOnce({json: () => Promise.resolve([])});
             const {result} = renderHook(() => useApiExpenses(null, 'demo'));
-            await waitFor(() => expect(result.current.expenses).toEqual([]));
+            expect(result.current.expenses).toEqual([]);
 
             await act(async () => {
                 await result.current.addExpense(EXPENSE_INPUT);

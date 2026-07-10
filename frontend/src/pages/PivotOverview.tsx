@@ -1,10 +1,10 @@
+import './PivotOverview.css';
 import React, {useEffect, useState} from 'react';
 import {useTranslation} from 'react-i18next';
 
 import DateRangeFilter from '../components/DateRangeFilter';
 import {LoadingSpinner} from '../components/LoadingSpinner';
 import useApiExpenses from '../hooks/useApiExpenses';
-import '../styles.css';
 import {useAuth} from '../hooks/useAuth';
 import {logger} from '../logger';
 import {Expense} from '../types/Expense';

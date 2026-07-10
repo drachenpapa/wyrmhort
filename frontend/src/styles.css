@@ -183,62 +183,12 @@ button:disabled,
     margin-left: 4px;
 }
 
-.dialog-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-}
-
-.dialog {
-    background: #fff;
-    padding: 1.5rem;
-    border-radius: 8px;
-    width: 100%;
-    max-width: 500px;
-}
-
-.dialog h3 {
-    margin-top: 0;
-}
-
-.dialog form .field {
-    margin-bottom: 1rem;
-}
-
-.dialog form .field label {
-    display: block;
-    margin-bottom: 0.25rem;
-}
-
-.dialog form .field input {
-    width: 100%;
-    padding: 0.5rem;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-}
-
-.dialog-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 0.5rem;
-}
-
-.input-full-width {
-    width: 100%;
-}
-
 .expense-filters {
     display: flex;
     gap: 8px;
     flex-wrap: wrap;
     margin-bottom: 16px;
 }
-
-.expense-filters-row1 {
     display: flex;
     gap: 8px;
     align-items: center;
@@ -491,88 +441,6 @@ button:disabled,
     border-radius: 4px;
 }
 
-.form-field {
-    margin-bottom: 1rem;
-}
-
-.form-hint {
-    font-size: 0.85rem;
-    color: var(--text-muted);
-    margin-top: -0.5rem;
-    margin-bottom: 1rem;
-}
-
-.pivot-overview {
-    width: 100%;
-    font-size: 14px;
-}
-
-.pivot-group {
-    border-bottom: 1px solid #ddd;
-    margin-bottom: 8px;
-}
-
-.pivot-group-header {
-    display: flex;
-    align-items: center;
-    padding: 8px 4px;
-    cursor: pointer;
-    user-select: none;
-}
-
-.pivot-group-series {
-    display: flex;
-    align-items: center;
-    padding: 8px 4px;
-    user-select: none;
-}
-
-.pivot-toggle {
-    width: 20px;
-    text-align: center;
-    font-weight: bold;
-}
-
-.pivot-title {
-    flex: 1;
-    margin-left: 8px;
-    font-weight: 600;
-}
-
-.pivot-total {
-    margin-left: auto;
-    font-weight: 500;
-}
-
-.pivot-subgroup {
-    overflow: hidden;
-    max-height: 0;
-    transition: max-height 0.3s ease, padding 0.3s ease;
-    padding: 0 0;
-}
-
-.pivot-subgroup.open {
-    max-height: 1000px;
-    padding: 8px 0 8px 28px;
-}
-
-.pivot-item {
-    display: flex;
-    justify-content: space-between;
-    padding: 2px 0;
-}
-
-.pivot-item-amount {
-    margin-left: auto;
-}
-
-.pivot-grand-total {
-    margin-top: 20px;
-    font-weight: bold;
-    font-size: 16px;
-    text-align: right;
-}
-
 .diagonal-flag-emoji {
     position: relative;
     display: inline-block;
@@ -628,27 +496,11 @@ button:disabled,
     color: var(--primary);
 }
 
-.btn-spinner {
-    display: inline-block;
-    width: 1rem;
-    height: 1rem;
-    border: 2px solid #fff;
-    border-top: 2px solid transparent;
-    border-radius: 50%;
-    animation: btn-spin 0.8s linear infinite;
-}
-
 @keyframes spin {
     0% {
         transform: rotate(0deg);
     }
     100% {
-        transform: rotate(360deg);
-    }
-}
-
-@keyframes btn-spin {
-    to {
         transform: rotate(360deg);
     }
 }
@@ -722,46 +574,4 @@ body.dark .dark-mode-icon-btn {
 
 body.dark .dark-mode-icon-btn:hover {
     color: var(--primary);
-}
-
-body.dark .dialog {
-    background-color: var(--bg-dark);
-    color: var(--text-dark);
-}
-
-body.dark .pivot-title, body.dark .pivot-total, body.dark .pivot-grand-total {
-    color: var(--text-dark);
-}
-
-.piechart-container {
-    padding: 1rem;
-}
-
-.piechart-controls {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    margin-bottom: 1.5rem;
-    gap: 1rem;
-    min-height: 40px;
-}
-
-.piechart-controls .pivot-grand-total {
-    margin: 0;
-}
-
-.piechart-total {
-    text-align: center;
-    font-size: 1.25rem;
-    font-weight: bold;
-    margin-top: 2rem;
-    padding: 1rem;
-    background-color: var(--bg-table-head);
-    border-radius: 8px;
-    color: var(--text-light);
-}
-
-body.dark .piechart-total {
-    background-color: var(--bg-dark);
-    color: var(--text-dark);
 }

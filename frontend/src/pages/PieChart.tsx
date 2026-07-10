@@ -1,3 +1,4 @@
+import './PieChart.css';
 import React, {useEffect, useState} from 'react';
 import {useTranslation} from 'react-i18next';
 import {Cell, Pie, PieChart as RechartsPieChart, ResponsiveContainer, Tooltip} from 'recharts';
@@ -7,7 +8,6 @@ import {LoadingSpinner} from '../components/LoadingSpinner';
 import useApiExpenses from '../hooks/useApiExpenses';
 import {useAuth} from '../hooks/useAuth';
 import {logger} from '../logger';
-import '../styles.css';
 import {Expense} from '../types/Expense';
 import {ExpenseFilters} from '../types/ExpenseFilters';
 import {formatCurrency} from '../utils/expenses';
