@@ -8,7 +8,7 @@ The project is intentionally scoped to one user. There is no multi-tenancy, no p
 
 **Tech stack:**
 - Backend: Python 3.14, FastAPI, Uvicorn, Pydantic, Firebase Admin SDK
-- Frontend: TypeScript, React 19, Vite, MUI, Recharts, i18next
+- Frontend: TypeScript, React 19, Vite, Recharts, i18next
 - Platform: Google Cloud Run (backend), Firebase Hosting (frontend)
 - Auth/DB: Firebase Authentication, Firestore
 
@@ -68,15 +68,17 @@ Authentication flow:
 
 | Path | Responsibility |
 |------|----------------|
-| `main.tsx` | React app entry point, wraps in `BrowserRouter` and i18n init. |
-| `App.tsx` | Root component: auth guard, routing, dark mode toggle state, demo mode banner. |
+| `main.tsx` | React app entry point, wraps in `BrowserRouter`, `AuthProvider`, and i18n init. |
+| `App.tsx` | Root component: auth guard, routing, dark mode toggle state, demo mode banner. Lazy-loads `PivotOverview` and `PieChart` via `React.lazy`. |
 | `firebase.ts` | Initialises the Firebase client app; exports `auth` and `provider`. |
-| `hooks/useAuth.ts` | Manages Firebase auth state (`onAuthStateChanged`), login, logout, and demo mode. |
+| `hooks/useAuth.tsx` | Auth context: `AuthProvider` component (owns all auth state) and `useAuth()` hook (reads from context). Manages Firebase auth state (`onAuthStateChanged`), login, logout, and demo mode. Single instance via React Context. |
 | `hooks/useApiExpenses.ts` | Fetches a fresh ID token before each request; performs all CRUD API calls; manages `expenses`, `loading`, and `error` state. Handles demo mode by loading `public/demo-data.json` instead. |
 | `pages/ExpensesView.tsx` | Main expense table view: filter state, pagination state, sort state, dialog open/close. |
-| `pages/PivotOverview.tsx` | Grouped hierarchical summary (product → item type → series) with date range filter. |
-| `pages/PieChart.tsx` | Pie chart by product (drill-down to item type) with date range filter. |
-| `components/` | Presentational components: `ExpenseTable`, `ExpenseDialog`, `Pagination`, `SortIndicator`, `LoadingSpinner`, `DarkModeToggle`, `LanguageSwitch`, `Footer`, `Tabs`. |
+| `pages/PivotOverview.tsx` | Grouped hierarchical summary (product → item type → series) with date range filter (pending/applied filter state prevents double-fetch). |
+| `pages/PieChart.tsx` | Pie chart by product (drill-down to item type) with date range filter (pending/applied filter state prevents double-fetch). |
+| `hooks/useExpenseFilters.ts` | Encapsulates all 7 filter states, filter logic, and unique-value computations for `ExpensesView`. |
+| `utils/expenses.ts` | `createEmptyExpense()` factory and `formatCurrency()` utility shared across components. |
+| `components/DateRangeFilter.tsx` | Shared date-range filter UI used by `PivotOverview` and `PieChart`. |
 | `types/` | Shared TypeScript types: `Expense`, `ExpenseFilters`. |
 | `locales/de/`, `locales/en/` | i18n translation files. German is the default language. |
 | `logger.ts` | Thin wrapper around `console.*`; suppresses `info`/`debug` in production (`import.meta.env.DEV`). |
@@ -88,7 +90,7 @@ Authentication flow:
 ### Backend
 
 - **Docker / Cloud Run**: `uvicorn api.routes:app --host 0.0.0.0 --port 8080` (defined in `Dockerfile` CMD).
-- **Local development**: `uv run wyrmhort` (calls `wyrmhort.py:main()`, which starts Uvicorn with `reload=True` on `127.0.0.1:8080`). Note: `reload=True` is development-only; the Docker image never uses this entry point.
+- **Local development**: `uv run wyrmhort` (calls `wyrmhort.py:main()`, which starts Uvicorn with `reload=False` on `127.0.0.1:8080`). The Docker image never uses this entry point.
 - **Health check**: `GET /health` — no authentication required.
 
 ### Frontend
@@ -197,7 +199,7 @@ A `.env` file exists in `frontend/` for local development (not committed).
 
 - **Validation errors**: Pydantic raises `422 Unprocessable Entity` automatically for invalid request bodies.
 - **Authentication errors**: `firebase/auth.py` raises `HTTPException(401)` for missing/invalid tokens and `HTTPException(403)` for disallowed email. The original exception is suppressed (`raise ... from None`) to avoid leaking token details.
-- **Firestore errors**: Each CRUD function in `firebase/firestore.py` wraps its body in `try/except Exception`, logs the error, and re-raises. The exception propagates to FastAPI's default 500 handler. No custom 500 response is defined.
+- **Firestore errors**: Each CRUD function in `firebase/firestore.py` wraps its body in `try/except GoogleAPIError`, logs the error, and re-raises. The exception propagates to FastAPI's default 500 handler. No custom 500 response is defined.
 - **Invalid sort field**: `service.py` logs a warning and silently falls back to `date` descending sort.
 
 ### Frontend
@@ -235,16 +237,20 @@ Key patterns:
 ### Frontend (`frontend/src/`)
 
 ```
-hooks/__tests__/useAuth.test.ts        # login, logout, auth state, unsubscribe
-components/__tests__/Pagination.test.tsx  # UI interactions
+hooks/__tests__/useAuth.test.tsx            # login, logout, auth state, unsubscribe
+hooks/__tests__/useApiExpenses.test.ts      # demo mode, CRUD happy paths, error state
+hooks/__tests__/useExpenseFilters.test.ts   # filter logic, reset, unique value computation
+components/__tests__/ExpenseDialog.test.tsx # form state, submit, disabled logic
+components/__tests__/Pagination.test.tsx    # UI interactions
 components/__tests__/SortIndicator.test.tsx
 components/__tests__/LoadingSpinner.test.tsx
-test/setup.ts                          # @testing-library/jest-dom matchers
+pages/__tests__/ExpensesView.test.tsx       # filter toggle, dialog open/close, reset
+test/setup.ts                              # @testing-library/jest-dom matchers, logger/i18n mocks
 ```
 
 Runner: Vitest with jsdom. Firebase modules are mocked via `vi.mock('firebase/auth', ...)`.
 
-**Coverage gap**: `useApiExpenses`, `ExpensesView`, `ExpenseDialog`, `PivotOverview`, and `PieChart` have no tests.
+**Remaining coverage gap**: `PivotOverview` and `PieChart` have no automated tests.
 
 ---
 
@@ -275,21 +281,13 @@ All GitHub Actions and Docker base images are pinned to SHA digests, not tags. T
 
 ## 12. Known Architectural Limitations / Technical Debt
 
-- **`get_expenses()` uses `**kwargs`**: The Firestore repository function accepts arbitrary keyword arguments. `order_by`, `ascending`, `start_date`, and `end_date` are extracted from this dict by name. This breaks type safety and makes the interface implicit. A typed filter object would be preferable.
-
-- **`ExpenseFilters.itemType` naming inconsistency**: The `ExpenseFilters` TypeScript interface uses `itemType` (camelCase), but the API expects `item_type` (snake_case). The `buildQueryParams` function skips `sortKey` and `sortAsc` but does not translate `itemType` → `item_type`, meaning item type filtering from the `ExpenseFilters` path is silently broken.
-
-- **`ExpensesView` is large**: The component manages filter state (7 fields), pagination state (3 fields), sort state (2 fields), dialog state, and derived values (`uniqueProducts`, etc.) in a single component (~255 lines).
-
-- **Duplicate `emptyExpense` constant**: Defined identically in both `ExpensesView.tsx` and `ExpenseDialog.tsx`.
-
-- **Duplicated date-range filter UI**: `PivotOverview` and `PieChart` both contain identical date range filter markup and handler logic.
-
-- **Frontend test coverage gap**: The core hook (`useApiExpenses`) and the main views (`ExpensesView`, `PivotOverview`, `PieChart`, `ExpenseDialog`) have no automated tests.
-
-- **`reload=True` in `wyrmhort.py`**: The package entry point starts Uvicorn with `reload=True`. The Docker image bypasses this, but the function is misleading as a standalone entry point.
-
 - **Firebase credentials path is file-relative**: `firebase/firestore.py` resolves the service account key path relative to its own location (`Path(__file__).parents[2] / "secrets" / "firebase-key.json"`). This works in the current Docker layout but is fragile if the module moves.
+
+- **No server-side sorting for `quantity` on index**: Firestore requires a composite index for ordering by a non-default field combined with filters. Sorting by `quantity` works but may require an index to be created manually if combined filter queries are used.
+
+- **`ExpensesView` still manages pagination and sort state inline**: Filter state was extracted to `useExpenseFilters`, but pagination (3 fields) and sort (2 fields) remain in the component (~160 lines). This is acceptable for current size.
+
+- **`PivotOverview` and `PieChart` each hold their own `useApiExpenses` instance**: The chart pages each maintain independent expense state. They share no data with `ExpensesView`. This is intentional (different filter contexts) but means three separate API subscriptions when all tabs are visited.
 
 ---
 

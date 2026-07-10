@@ -27,17 +27,16 @@ export default function PivotOverview() {
     const {expenses, fetchExpenses, loading, error} = useApiExpenses(user, authMode);
     const {t} = useTranslation();
     const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({});
-    const [filters, setFilters] = useState<ExpenseFilters>({
-        start_date: '', end_date: ''
-    });
+    const [pendingFilters, setPendingFilters] = useState<ExpenseFilters>({start_date: '', end_date: ''});
+    const [appliedFilters, setAppliedFilters] = useState<ExpenseFilters>({start_date: '', end_date: ''});
 
     useEffect(() => {
         if ((user && user.email) || authMode === 'demo') {
-            fetchExpenses(filters).catch((err) => {
+            fetchExpenses(appliedFilters).catch((err) => {
                 logger.error('Error fetching expenses:', err);
             });
         }
-    }, [user, authMode, fetchExpenses, filters]);
+    }, [user, authMode, fetchExpenses, appliedFilters]);
 
     const grouped = expenses.reduce<GroupedExpenses>((acc, expense) => {
         const product = safeKey(expense.product || t("unknown"));
@@ -68,20 +67,18 @@ export default function PivotOverview() {
 
     const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const {name, value} = e.target;
-        setFilters(prev => ({...prev, [name]: value}));
+        setPendingFilters(prev => ({...prev, [name]: value}));
     };
 
     const handleApplyFilters = () => {
-        fetchExpenses(filters).catch((err) => {
-            logger.error('Error fetching expenses with filters:', err);
-        });
+        setAppliedFilters(pendingFilters);
     };
 
     return (
         <div className="pivot-overview">
             <DateRangeFilter
-                startDate={filters.start_date ?? ''}
-                endDate={filters.end_date ?? ''}
+                startDate={pendingFilters.start_date ?? ''}
+                endDate={pendingFilters.end_date ?? ''}
                 onChange={handleFilterChange}
                 onApply={handleApplyFilters}
             />

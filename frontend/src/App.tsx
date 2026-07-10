@@ -1,18 +1,20 @@
 import {AlertTriangle, LogOut} from 'lucide-react';
-import {useEffect, useState} from "react";
+import {lazy, Suspense, useEffect, useState} from "react";
 import {useTranslation} from 'react-i18next';
 import {Navigate, Route, Routes} from 'react-router-dom';
 
 import DarkModeToggle from './components/DarkModeToggle';
 import Footer from './components/Footer';
 import LanguageSwitch from "./components/LanguageSwitch";
+import {LoadingSpinner} from './components/LoadingSpinner';
 import Tabs from './components/Tabs';
 import {useAuth} from './hooks/useAuth';
 import {logger} from './logger';
 import ExpensesView from './pages/ExpensesView';
 import Login from './pages/Login';
-import PieChart from './pages/PieChart';
-import PivotOverview from './pages/PivotOverview';
+
+const PieChart = lazy(() => import('./pages/PieChart'));
+const PivotOverview = lazy(() => import('./pages/PivotOverview'));
 
 
 export default function App() {
@@ -75,8 +77,16 @@ export default function App() {
                         <Routes>
                             <Route path="/" element={<Navigate to="/expenses" replace/>}/>
                             <Route path="/expenses" element={<ExpensesView/>}/>
-                            <Route path="/pivot" element={<PivotOverview/>}/>
-                            <Route path="/pie" element={<PieChart/>}/>
+                            <Route path="/pivot" element={
+                                <Suspense fallback={<LoadingSpinner/>}>
+                                    <PivotOverview/>
+                                </Suspense>
+                            }/>
+                            <Route path="/pie" element={
+                                <Suspense fallback={<LoadingSpinner/>}>
+                                    <PieChart/>
+                                </Suspense>
+                            }/>
                         </Routes>
                         <DarkModeToggle isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode}/>
                     </>

@@ -29,17 +29,16 @@ export default function PieChart() {
     const {expenses, fetchExpenses, loading, error} = useApiExpenses(user, authMode);
     const {t} = useTranslation();
     const [selectedProduct, setSelectedProduct] = useState<string | null>(null);
-    const [filters, setFilters] = useState<ExpenseFilters>({
-        start_date: '', end_date: ''
-    });
+    const [pendingFilters, setPendingFilters] = useState<ExpenseFilters>({start_date: '', end_date: ''});
+    const [appliedFilters, setAppliedFilters] = useState<ExpenseFilters>({start_date: '', end_date: ''});
 
     useEffect(() => {
         if ((user && user.email) || authMode === 'demo') {
-            fetchExpenses(filters).catch((err) => {
+            fetchExpenses(appliedFilters).catch((err) => {
                 logger.error('Error fetching expenses:', err);
             });
         }
-    }, [user, authMode, fetchExpenses, filters]);
+    }, [user, authMode, fetchExpenses, appliedFilters]);
 
     const onPieClick = (data: PieChartData) => {
         if (selectedProduct === data.name) {
@@ -51,14 +50,12 @@ export default function PieChart() {
 
     const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const {name, value} = e.target;
-        setFilters(prev => ({...prev, [name]: value}));
+        setPendingFilters(prev => ({...prev, [name]: value}));
     };
 
     const handleApplyFilters = () => {
         setSelectedProduct(null);
-        fetchExpenses(filters).catch((err) => {
-            logger.error('Error fetching expenses with filters:', err);
-        });
+        setAppliedFilters(pendingFilters);
     };
 
     const handleBackToProducts = () => {
@@ -98,8 +95,8 @@ export default function PieChart() {
     return (
         <div className="pivot-overview">
             <DateRangeFilter
-                startDate={filters.start_date ?? ''}
-                endDate={filters.end_date ?? ''}
+                startDate={pendingFilters.start_date ?? ''}
+                endDate={pendingFilters.end_date ?? ''}
                 onChange={handleFilterChange}
                 onApply={handleApplyFilters}
             />
