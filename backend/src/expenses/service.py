@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, time as dt_time
 from typing import Final
 
 from google.cloud.firestore import Client
@@ -42,6 +42,11 @@ def read_expenses_service(
     if order_by not in ALLOWED_SORT_FIELDS:
         logger.warning(f"Invalid sort field '{order_by}', defaulting to 'date'")
         order_by, ascending = "date", False
+
+    # If end_date is at midnight (date-only query from the UI), extend to end of day
+    # so that expenses on that calendar day are included regardless of time component.
+    if end_date is not None and end_date.time() == dt_time(0, 0, 0):
+        end_date = end_date.replace(hour=23, minute=59, second=59, microsecond=999999)
 
     expenses = get_expenses(
         db,

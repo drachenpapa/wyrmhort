@@ -53,6 +53,7 @@ def test_add_expense_returns_doc_id(mock_db, expense_factory):
 
     assert result == "generated-id"
     mock_doc_ref.set.assert_called_once()
+    assert mock_doc_ref.set.call_args.args[0]["amount"] == "4.99"
 
 
 def test_add_expense_without_marketplace(mock_db, expense_factory):
@@ -67,6 +68,7 @@ def test_update_expense_calls_firestore_update(mock_db, expense_factory):
     update_expense(mock_db, "uid-1", "expense-id", expense_factory())
 
     mock_doc_ref.update.assert_called_once()
+    assert mock_doc_ref.update.call_args.args[0]["amount"] == "4.99"
 
 
 def test_delete_expense_calls_firestore_delete(mock_db):

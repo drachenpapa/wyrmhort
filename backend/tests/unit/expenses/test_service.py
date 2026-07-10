@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import pytest
 
 from expenses.schemas import ExpenseRequest, ExpenseResponse
@@ -61,6 +63,13 @@ def test_read_ascending_sort(mock_db, mock_get):
     query = args[2]
     assert query.order_by == "date"
     assert query.ascending is True
+
+
+def test_read_extends_date_only_end_date_to_end_of_day(mock_db, mock_get):
+    read_expenses_service(mock_db, "uid-1", end_date=datetime(2025, 4, 15))
+    args, _ = mock_get.call_args
+    query = args[2]
+    assert query.end_date == datetime(2025, 4, 15, 23, 59, 59, 999999)
 
 
 def test_read_invalid_sort_field_defaults_to_date(mock_db, mock_get):

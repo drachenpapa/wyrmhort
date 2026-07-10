@@ -36,7 +36,7 @@ ci = [
 ]
 
 [project.scripts]
-wyrmhort = "src.wyrmhort:main"
+wyrmhort = "wyrmhort:main"
 
 [build-system]
 requires = ["hatchling"]

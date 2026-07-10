@@ -50,7 +50,7 @@ class Expense:
         """Convert Expense to Firestore-compatible dictionary."""
         return {
             "date": self.date.isoformat(),
-            "amount": float(self.amount),
+            "amount": str(self.amount),
             "quantity": self.quantity,
             "product": self.product,
             "item_type": self.item_type,
