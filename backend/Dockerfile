@@ -13,7 +13,6 @@ FROM python:3.14-slim@sha256:b877e50bd90de10af8d82c57a022fc2e0dc731c5320d762a279
 WORKDIR /app
 
 COPY --from=builder /app/.venv /app/.venv
-COPY ./secrets /secrets
 COPY ./src /app
 
 ENV VIRTUAL_ENV=/app/.venv

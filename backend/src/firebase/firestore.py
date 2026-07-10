@@ -1,3 +1,6 @@
+import base64
+import json
+import os
 from pathlib import Path
 from typing import cast
 
@@ -16,8 +19,13 @@ def init_firestore() -> Client:
     try:
         firebase_admin.get_app()
     except ValueError:
-        key_path = Path(__file__).parents[2] / "secrets" / "firebase-key.json"
-        cred = credentials.Certificate(str(key_path.resolve()))
+        creds_b64 = os.environ.get("FIREBASE_CREDENTIALS_B64")
+        if creds_b64:
+            cred_dict = json.loads(base64.b64decode(creds_b64).decode())
+            cred = credentials.Certificate(cred_dict)
+        else:
+            key_path = Path(__file__).parents[2] / "secrets" / "firebase-key.json"
+            cred = credentials.Certificate(str(key_path.resolve()))
         firebase_admin.initialize_app(cred)
         logger.info("Firebase app initialized.")
     return cast(Client, firestore.client())
