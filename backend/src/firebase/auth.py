@@ -1,7 +1,7 @@
 import os
 
 from fastapi import HTTPException, Request, status
-from firebase_admin import auth
+from firebase_admin import auth, exceptions as firebase_exceptions
 
 from logger_config import setup_logger
 
@@ -21,9 +21,12 @@ async def get_current_user_uid(request: Request) -> str:
         decoded_token = auth.verify_id_token(id_token)
         uid: str = decoded_token["uid"]
         email: str | None = decoded_token.get("email")
-    except Exception as e:
-        logger.error(f"Token verification failed: {e}")
+    except firebase_exceptions.FirebaseError as e:
+        logger.warning(f"Token verification failed: {e}")
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token verification failed") from e
+    except Exception as e:
+        logger.error(f"Unexpected error during token verification: {e}")
+        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="Auth service unavailable") from e
 
     if ALLOWED_EMAIL and email != ALLOWED_EMAIL:
         logger.warning(f"Access denied for email: {email}")

@@ -1,8 +1,10 @@
+import os
 from datetime import datetime
 from typing import Annotated
 
-from fastapi import Depends, FastAPI, Query
+from fastapi import Depends, FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
+from google.api_core.exceptions import NotFound
 from google.cloud.firestore import Client
 from starlette.responses import JSONResponse
 
@@ -21,12 +23,14 @@ from expenses.service import (
 from firebase.auth import get_current_user_uid
 from firebase.firestore import init_firestore
 
+_ENVIRONMENT = os.environ.get("ENVIRONMENT", "development")
+
 app = FastAPI(
     title="Wyrmhort Expense API",
     version="0.1.0",
     description="Personal expense tracking API for hobby collectibles",
-    docs_url="/docs",
-    redoc_url="/redoc",
+    docs_url=None if _ENVIRONMENT == "production" else "/docs",
+    redoc_url=None if _ENVIRONMENT == "production" else "/redoc",
     openapi_tags=[
         {
             "name": "health",
@@ -100,7 +104,10 @@ async def read_expenses(
 @app.put("/api/expenses/{expense_id}", response_model=MessageResponse, tags=["expenses"])
 async def update_expense(expense_id: str, expense: ExpenseRequest, db: DB, uid: CurrentUser) -> MessageResponse:
     """Modify an existing expense."""
-    update_expense_service(db, uid, expense_id, expense)
+    try:
+        update_expense_service(db, uid, expense_id, expense)
+    except NotFound:
+        raise HTTPException(status_code=404, detail=f"Expense {expense_id} not found")
     return MessageResponse(message=f"Expense with ID {expense_id} updated.")
 
 

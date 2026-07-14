@@ -50,6 +50,16 @@ def test_update_expense_returns_200(valid_expense_payload):
     assert "updated" in response.json()["message"]
 
 
+def test_update_nonexistent_expense_returns_404(valid_expense_payload, mock_db):
+    from google.api_core.exceptions import NotFound
+
+    mock_doc_ref = mock_db.collection.return_value.document.return_value.collection.return_value.document.return_value
+    mock_doc_ref.update.side_effect = NotFound("Expense not found")
+
+    response = client.put("/api/expenses/nonexistent-id", json=valid_expense_payload)
+    assert response.status_code == 404
+
+
 def test_delete_expense_returns_200(valid_expense_payload):
     create_resp = client.post("/api/expenses/", json=valid_expense_payload)
     expense_id = create_resp.json()["id"]

@@ -33,7 +33,7 @@ jobs:
             --source ./backend \
             --region $REGION \
             --allow-unauthenticated \
-            --set-env-vars "FIREBASE_CREDENTIALS_B64=${{ secrets.FIREBASE_CREDENTIALS_B64 }}" \
+            --set-env-vars "FIREBASE_CREDENTIALS_B64=${{ secrets.FIREBASE_CREDENTIALS_B64 }},ENVIRONMENT=production" \
             --quiet
       - name: Health check
         run: |

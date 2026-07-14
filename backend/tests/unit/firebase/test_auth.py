@@ -23,13 +23,25 @@ async def test_missing_auth_header_raises_401():
 
 
 async def test_invalid_token_raises_401(monkeypatch):
+    from firebase_admin import exceptions as firebase_exceptions
+
     def _fail(_):
-        raise ValueError("bad token")
+        raise firebase_exceptions.FirebaseError("INVALID_ARGUMENT", "bad token")
 
     monkeypatch.setattr("firebase_admin.auth.verify_id_token", _fail)
     with pytest.raises(HTTPException) as exc_info:
         await get_current_user_uid(_make_request("bad-token"))
     assert exc_info.value.status_code == 401
+
+
+async def test_unexpected_error_during_verification_raises_503(monkeypatch):
+    def _fail(_):
+        raise RuntimeError("network error")
+
+    monkeypatch.setattr("firebase_admin.auth.verify_id_token", _fail)
+    with pytest.raises(HTTPException) as exc_info:
+        await get_current_user_uid(_make_request("any-token"))
+    assert exc_info.value.status_code == 503
 
 
 async def test_disallowed_email_raises_403(monkeypatch):
