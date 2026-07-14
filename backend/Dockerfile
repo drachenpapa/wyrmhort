@@ -18,6 +18,9 @@ COPY ./src /app
 ENV VIRTUAL_ENV=/app/.venv
 ENV PATH="/app/.venv/bin:$PATH"
 
+RUN useradd --no-create-home --system appuser
+USER appuser
+
 EXPOSE 8080
 
 CMD ["uvicorn", "api.routes:app", "--host", "0.0.0.0", "--port", "8080"]
