@@ -189,6 +189,8 @@ button:disabled,
     flex-wrap: wrap;
     margin-bottom: 16px;
 }
+
+.expense-filters-row1 {
     display: flex;
     gap: 8px;
     align-items: center;

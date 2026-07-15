@@ -100,13 +100,7 @@ export default function useApiExpenses(user: User | null, authMode: AuthMode) {
         });
 
         if (data) {
-            if (Array.isArray(data)) {
-                setExpenses(data);
-            } else if (data.expenses) {
-                setExpenses(data.expenses);
-            } else {
-                setExpenses([]);
-            }
+            setExpenses(data.expenses ?? []);
         }
     }, [request, authMode]);
 

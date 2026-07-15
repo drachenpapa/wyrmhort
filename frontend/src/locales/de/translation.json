@@ -13,6 +13,7 @@
   "delete": "Löschen",
   "demo_mode_active": "Demo-Modus aktiv: Änderungen werden nicht gespeichert!",
   "edit": "Bearbeiten",
+  "edit_expense": "Bearbeiten",
   "end_date": "Enddatum",
   "error_deleting_expense": "Fehler beim Löschen der Ausgabe",
   "error_loading_data": "Fehler beim Laden der Daten",

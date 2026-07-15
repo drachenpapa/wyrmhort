@@ -13,6 +13,7 @@
   "delete": "Delete",
   "demo_mode_active": "Demo mode active: Changes will not be saved!",
   "edit": "Edit",
+  "edit_expense": "Edit expense",
   "end_date": "End date",
   "error_deleting_expense": "Error deleting expense",
   "error_loading_data": "Error while loading data",

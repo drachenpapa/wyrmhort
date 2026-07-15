@@ -59,8 +59,8 @@ describe('useApiExpenses', () => {
     });
 
     describe('authenticated mode', () => {
-        it('fetchExpenses sets expenses from an array response', async () => {
-            mockFetchOnce({ok: true, json: () => Promise.resolve([EXPENSE])});
+        it('fetchExpenses sets expenses from an envelope response', async () => {
+            mockFetchOnce({ok: true, json: () => Promise.resolve({expenses: [EXPENSE]})});
 
             const {result} = renderHook(() => useApiExpenses(mockUser, 'firebase'));
             await act(async () => {
@@ -71,15 +71,15 @@ describe('useApiExpenses', () => {
             expect(result.current.error).toBeNull();
         });
 
-        it('fetchExpenses sets expenses from an envelope response', async () => {
-            mockFetchOnce({ok: true, json: () => Promise.resolve({expenses: [EXPENSE]})});
+        it('fetchExpenses sets expenses to empty array when expenses key is missing', async () => {
+            mockFetchOnce({ok: true, json: () => Promise.resolve({})});
 
             const {result} = renderHook(() => useApiExpenses(mockUser, 'firebase'));
             await act(async () => {
                 await result.current.fetchExpenses();
             });
 
-            expect(result.current.expenses).toEqual([EXPENSE]);
+            expect(result.current.expenses).toEqual([]);
         });
 
         it('sets error state when fetch returns a non-ok response', async () => {
@@ -94,7 +94,7 @@ describe('useApiExpenses', () => {
         });
 
         it('addExpense prepends the new expense to the list', async () => {
-            mockFetchOnce({ok: true, json: () => Promise.resolve([EXPENSE])});
+            mockFetchOnce({ok: true, json: () => Promise.resolve({expenses: [EXPENSE]})});
             mockFetchOnce({ok: true, json: () => Promise.resolve({id: 'new-id'})});
 
             const {result} = renderHook(() => useApiExpenses(mockUser, 'firebase'));
@@ -111,7 +111,7 @@ describe('useApiExpenses', () => {
         });
 
         it('deleteExpense removes the expense from the list', async () => {
-            mockFetchOnce({ok: true, json: () => Promise.resolve([EXPENSE])});
+            mockFetchOnce({ok: true, json: () => Promise.resolve({expenses: [EXPENSE]})});
             mockFetchOnce({ok: true});
 
             const {result} = renderHook(() => useApiExpenses(mockUser, 'firebase'));
@@ -126,7 +126,7 @@ describe('useApiExpenses', () => {
         });
 
         it('updateExpense updates the matching expense in the list', async () => {
-            mockFetchOnce({ok: true, json: () => Promise.resolve([EXPENSE])});
+            mockFetchOnce({ok: true, json: () => Promise.resolve({expenses: [EXPENSE]})});
             mockFetchOnce({ok: true, json: () => Promise.resolve(undefined)});
 
             const {result} = renderHook(() => useApiExpenses(mockUser, 'firebase'));

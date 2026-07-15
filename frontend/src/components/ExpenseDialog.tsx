@@ -63,7 +63,7 @@ export default function ExpenseDialog({open, onClose, onSave, initialData = crea
     return (
         <div className="dialog-overlay">
             <div className="dialog">
-                <h3>{t("add_expense")}</h3>
+                <h3>{t(initialData?.id ? "edit_expense" : "add_expense")}</h3>
                 <form onSubmit={(e) => e.preventDefault()}>
                     {[
                         'date',

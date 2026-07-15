@@ -50,7 +50,7 @@ export default function ExpenseTable({
                                      }: Props) {
     const {t} = useTranslation();
     const [deleteError, setDeleteError] = useState<string | null>(null);
-    const [deleting, setDeleting] = useState(false);
+    const [deleting, setDeleting] = useState<string | null>(null);
 
     const handleEditClick = useCallback((expense: Expense) => {
         onEdit(expense);
@@ -59,26 +59,22 @@ export default function ExpenseTable({
     const handleDeleteClick = useCallback(async (id: string) => {
         try {
             setDeleteError(null);
-            setDeleting(true);
+            setDeleting(id);
             await onDelete(id);
         } catch (error) {
             logger.error('Error deleting expense:', error);
             setDeleteError(t("error_deleting_expense"));
         } finally {
-            setDeleting(false);
+            setDeleting(null);
         }
     }, [onDelete, t]);
 
     return (
         <div className="container">
             {deleteError && <p className="error-message">{deleteError}</p>}
-            <div className="expenses-data-container" style={{position: 'relative'}}>
-                <div style={{
-                    pointerEvents: deleting ? 'none' : undefined,
-                    opacity: deleting ? 0.5 : 1
-                }}>
-                    <table className="expense-table">
-                        <thead>
+            <div className="expenses-data-container">
+                <table className="expense-table">
+                    <thead>
                         <tr>
                             <th onClick={() => onSortChange("date")}>
                                 {t("date")} <SortIndicator active={sortKey === "date"} asc={sortAsc}/>
@@ -128,7 +124,7 @@ export default function ExpenseTable({
                             </tr>
                         ) : (
                             expenses.map((exp) => (
-                                <tr key={exp.id}>
+                                <tr key={exp.id} style={{opacity: deleting === exp.id ? 0.5 : 1}}>
                                     <td>{new Date(exp.date).toLocaleDateString('de-DE', {
                                         day: '2-digit',
                                         month: '2-digit',
@@ -148,7 +144,7 @@ export default function ExpenseTable({
                                         </button>
                                         <button className="icon-btn" title={t("delete")}
                                                 onClick={() => handleDeleteClick(exp.id)}
-                                                disabled={authMode === 'demo'}>
+                                                disabled={authMode === 'demo' || deleting !== null}>
                                             <Trash2 size={16}/>
                                         </button>
                                     </td>
@@ -156,23 +152,6 @@ export default function ExpenseTable({
                             )))}
                         </tbody>
                     </table>
-                </div>
-                {deleting && (
-                    <div style={{
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        width: '100%',
-                        height: '100%',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        background: 'rgba(255,255,255,0.5)',
-                        zIndex: 2
-                    }}>
-                        <LoadingSpinner/>
-                    </div>
-                )}
             </div>
 
             <Pagination
