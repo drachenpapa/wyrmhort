@@ -140,7 +140,7 @@ Expenses are stored per-user:
 ```
 users/{uid}/expenses/{expense_id}
   date:        string (ISO 8601)
-  amount:      float
+  amount:      string  (Decimal serialised as string to preserve precision)
   product:     string
   item_type:   string
   series:      string
