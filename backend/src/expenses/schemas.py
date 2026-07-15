@@ -71,9 +71,3 @@ class MessageResponse(BaseModel):
     """Generic operation-success response."""
 
     message: str
-
-
-class CreateExpenseResponse(MessageResponse):
-    """Response returned after a successful expense creation."""
-
-    id: str

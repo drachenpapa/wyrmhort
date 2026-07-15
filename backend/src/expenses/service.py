@@ -15,10 +15,11 @@ ALLOWED_SORT_FIELDS: Final[frozenset[str]] = frozenset(
 )
 
 
-def create_expense_service(db: Client, uid: str, expense: ExpenseRequest) -> str:
-    """Create a new expense and return its ID."""
-    expense_id: str = add_expense(db, uid, _to_domain(expense, expense_id=""))
-    return expense_id
+def create_expense_service(db: Client, uid: str, expense: ExpenseRequest) -> ExpenseResponse:
+    """Create a new expense and return the full created resource."""
+    domain = _to_domain(expense, expense_id="")
+    expense_id = add_expense(db, uid, domain)
+    return ExpenseResponse.model_validate(_to_domain(expense, expense_id=expense_id))
 
 
 def read_expenses_service(

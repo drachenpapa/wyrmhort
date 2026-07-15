@@ -24,7 +24,7 @@ jobs:
       - name: Setup environment
         uses: ./.github/actions/frontend-setup
       - name: ESLint
-        run: npm run lint
+        run: npx eslint src --max-warnings 0
 
   test:
     name: Tests

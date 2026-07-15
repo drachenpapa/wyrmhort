@@ -9,8 +9,8 @@ from google.cloud.firestore import Client
 from starlette.responses import JSONResponse
 
 from expenses.schemas import (
-    CreateExpenseResponse,
     ExpenseRequest,
+    ExpenseResponse,
     ExpensesListResponse,
     MessageResponse,
 )
@@ -65,11 +65,10 @@ async def health_check() -> JSONResponse:
     return JSONResponse(content={"status": "healthy"}, status_code=200)
 
 
-@app.post("/api/expenses/", response_model=CreateExpenseResponse, status_code=201, tags=["expenses"])
-async def create_expense(expense: ExpenseRequest, db: DB, uid: CurrentUser) -> CreateExpenseResponse:
+@app.post("/api/expenses/", response_model=ExpenseResponse, status_code=201, tags=["expenses"])
+async def create_expense(expense: ExpenseRequest, db: DB, uid: CurrentUser) -> ExpenseResponse:
     """Add a new expense to the user's collection."""
-    expense_id = create_expense_service(db, uid, expense)
-    return CreateExpenseResponse(message="Expense added successfully", id=expense_id)
+    return create_expense_service(db, uid, expense)
 
 
 @app.get("/api/expenses/", response_model=ExpensesListResponse, tags=["expenses"])

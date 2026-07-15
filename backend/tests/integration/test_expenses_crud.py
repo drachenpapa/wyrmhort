@@ -17,7 +17,7 @@ def test_create_expense_returns_201(valid_expense_payload):
     assert response.status_code == 201
     data = response.json()
     assert "id" in data
-    assert data["message"] == "Expense added successfully"
+    assert data["product"] == valid_expense_payload["product"]
 
 
 def test_create_expense_invalid_amount_returns_422(valid_expense_payload):

@@ -95,7 +95,8 @@ describe('useApiExpenses', () => {
 
         it('addExpense prepends the new expense to the list', async () => {
             mockFetchOnce({ok: true, json: () => Promise.resolve({expenses: [EXPENSE]})});
-            mockFetchOnce({ok: true, json: () => Promise.resolve({id: 'new-id'})});
+            const newExpense = {...EXPENSE_INPUT, id: 'new-id', product: 'New Product'};
+            mockFetchOnce({ok: true, json: () => Promise.resolve(newExpense)});
 
             const {result} = renderHook(() => useApiExpenses(mockUser, 'firebase'));
             await act(async () => {

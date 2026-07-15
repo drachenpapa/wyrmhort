@@ -1,10 +1,13 @@
+from datetime import datetime
+from decimal import Decimal
+
 import pytest
 from fastapi.responses import JSONResponse
 
 from api.routes import create_expense, delete_expense, health_check, read_expenses, update_expense
 from expenses.schemas import (
-    CreateExpenseResponse,
     ExpenseRequest,
+    ExpenseResponse,
     ExpensesListResponse,
     MessageResponse,
 )
@@ -12,8 +15,19 @@ from expenses.schemas import (
 
 @pytest.fixture
 def mock_services(mocker, expense_factory):
+    created = ExpenseResponse(
+        id="new-id",
+        date=datetime(2025, 4, 15, 10, 0, 0),
+        amount=Decimal("9.99"),
+        product="Test Product",
+        item_type="Booster",
+        series="Test Series",
+        quantity=2,
+        seller="Test Seller",
+        marketplace="Test Market",
+    )
     return {
-        "create": mocker.patch("api.routes.create_expense_service", return_value="new-id"),
+        "create": mocker.patch("api.routes.create_expense_service", return_value=created),
         "read": mocker.patch("api.routes.read_expenses_service", return_value=[]),
         "update": mocker.patch("api.routes.update_expense_service"),
         "delete": mocker.patch("api.routes.delete_expense_service"),
@@ -35,8 +49,7 @@ async def test_health_check():
 
 async def test_create_expense_returns_response(mock_db, expense_request, mock_services):
     result = await create_expense(expense=expense_request, db=mock_db, uid="user-123")
-    assert isinstance(result, CreateExpenseResponse)
-    assert result.message == "Expense added successfully"
+    assert isinstance(result, ExpenseResponse)
     assert result.id == "new-id"
 
 

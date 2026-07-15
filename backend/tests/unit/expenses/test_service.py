@@ -36,9 +36,10 @@ def mock_delete(mocker):
     return mocker.patch("expenses.service.delete_expense")
 
 
-def test_create_returns_expense_id(mock_db, expense_request, mock_add):
+def test_create_returns_expense_response(mock_db, expense_request, mock_add):
     result = create_expense_service(mock_db, "uid-1", expense_request)
-    assert result == "mock-id"
+    assert isinstance(result, ExpenseResponse)
+    assert result.id == "mock-id"
     mock_add.assert_called_once()
 
 

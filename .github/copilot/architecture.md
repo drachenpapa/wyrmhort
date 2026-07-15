@@ -172,7 +172,7 @@ users/{uid}/expenses/{expense_id}
 |--------|-----------------|
 | `backend/src/.env` (loaded by `python-dotenv`) | `ALLOWED_EMAIL` for local development |
 | Environment variable `ALLOWED_EMAIL` | Email address allowed to access the API (set as GitHub Actions secret in CI, injected into Cloud Run) |
-| `backend/secrets/firebase-key.json` | Firebase service account credentials. Path is resolved relative to `firebase/firestore.py` at runtime: `Path(__file__).parents[2] / "secrets" / "firebase-key.json"`. In the Docker image this resolves to `/secrets/firebase-key.json`. |
+| Environment variable `FIREBASE_CREDENTIALS` | Firebase service account credentials JSON, injected at runtime via Cloud Run secret. The `firebase/firestore.py` module reads this env var directly. |
 
 ### Frontend
 
@@ -250,8 +250,6 @@ test/setup.ts                              # @testing-library/jest-dom matchers,
 
 Runner: Vitest with jsdom. Firebase modules are mocked via `vi.mock('firebase/auth', ...)`.
 
-**Remaining coverage gap**: `PivotOverview` and `PieChart` have no automated tests.
-
 ---
 
 ## 11. Important Architectural Decisions
@@ -283,13 +281,11 @@ All GitHub Actions and Docker base images are pinned to SHA digests, not tags. T
 
 ## 12. Known Architectural Limitations / Technical Debt
 
-- **Firebase credentials path is file-relative**: `firebase/firestore.py` resolves the service account key path relative to its own location (`Path(__file__).parents[2] / "secrets" / "firebase-key.json"`). This works in the current Docker layout but is fragile if the module moves.
-
 - **No server-side sorting for `quantity` on index**: Firestore requires a composite index for ordering by a non-default field combined with filters. Sorting by `quantity` works but may require an index to be created manually if combined filter queries are used.
 
 - **`ExpensesView` still manages pagination and sort state inline**: Filter state was extracted to `useExpenseFilters`, but pagination (3 fields) and sort (2 fields) remain in the component (~160 lines). This is acceptable for current size.
 
-- **`PivotOverview` and `PieChart` each hold their own `useApiExpenses` instance**: The chart pages each maintain independent expense state. They share no data with `ExpensesView`. This is intentional (different filter contexts) but means three separate API subscriptions when all tabs are visited.
+- **`PivotOverview` and `PieChart` each hold their own `useApiExpenses` instance**: The chart pages each maintain independent expense state. They share no data with `ExpensesView`. This is **intentional**: `PivotOverview` and `PieChart` apply server-side date-range filtering, resulting in a different dataset than `ExpensesView`'s full fetch. Sharing a single context would require complex multi-fetch orchestration without meaningful benefit at current scale. Each view is self-contained and independently testable.
 
 ---
 

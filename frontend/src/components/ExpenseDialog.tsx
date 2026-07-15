@@ -15,6 +15,11 @@ type Props = {
     authMode: AuthMode;
 };
 
+const FORM_FIELDS = [
+    'date', 'amount', 'product', 'item_type', 'series', 'quantity', 'seller', 'marketplace',
+] as const;
+type FormField = typeof FORM_FIELDS[number];
+
 function toFormData(data: Expense): Expense {
     return {
         ...data,
@@ -65,16 +70,7 @@ export default function ExpenseDialog({open, onClose, onSave, initialData = crea
             <div className="dialog">
                 <h3>{t(initialData?.id ? "edit_expense" : "add_expense")}</h3>
                 <form onSubmit={(e) => e.preventDefault()}>
-                    {[
-                        'date',
-                        'amount',
-                        'product',
-                        'item_type',
-                        'series',
-                        'quantity',
-                        'seller',
-                        'marketplace'
-                    ].map((field) => (
+                    {FORM_FIELDS.map((field: FormField) => (
                         <div key={field} className="form-field">
                             <label htmlFor={field}>
                                 {field === 'amount'
@@ -85,7 +81,7 @@ export default function ExpenseDialog({open, onClose, onSave, initialData = crea
                                 type={field === 'date' ? 'date' : field === 'amount' || field === 'quantity' ? 'number' : 'text'}
                                 id={field}
                                 name={field}
-                                value={form[field as keyof Expense] ?? ''}
+                                value={form[field] ?? ''}
                                 onChange={handleChange}
                                 className="input-full-width"
                                 min={field === 'amount' || field === 'quantity' ? 0 : undefined}

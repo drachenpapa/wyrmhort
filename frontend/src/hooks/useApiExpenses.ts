@@ -31,13 +31,13 @@ export default function useApiExpenses(user: User | null, authMode: AuthMode) {
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
 
-    const isDemo = (): boolean => {
+    const isDemo = useCallback((): boolean => {
         if (authMode === 'demo') {
             logger.warn(DEMO_MODE_INFO);
             return true;
         }
         return false;
-    };
+    }, [authMode]);
 
     const getFreshToken = useCallback(async () => {
         if (!user) return null;
@@ -124,7 +124,7 @@ export default function useApiExpenses(user: User | null, authMode: AuthMode) {
         });
 
         if (newExpense) {
-            setExpenses((prev) => [{...expense, id: newExpense.id}, ...prev]);
+            setExpenses((prev) => [newExpense as Expense, ...prev]);
         }
     };
 
