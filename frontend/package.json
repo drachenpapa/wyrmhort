@@ -41,7 +41,7 @@
   },
   "overrides": {
     "//": "Security patches for transitive dependencies flagged by pip-audit / npm audit. @babel/core pins a safe version pulled in by recharts; protobufjs pins a version without the prototype-pollution vulnerability.",
-    "@babel/core": "7.29.7",
+    "@babel/core": "8.0.1",
     "protobufjs": "8.7.1"
   }
 }
