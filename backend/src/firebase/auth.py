@@ -1,7 +1,8 @@
 import os
 
 from fastapi import HTTPException, Request, status
-from firebase_admin import auth, exceptions as firebase_exceptions
+from firebase_admin import auth
+from firebase_admin import exceptions as firebase_exceptions
 
 from logger_config import setup_logger
 

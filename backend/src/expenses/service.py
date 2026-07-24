@@ -1,4 +1,5 @@
-from datetime import datetime, time as dt_time
+from datetime import datetime
+from datetime import time as dt_time
 from typing import Final
 
 from google.cloud.firestore import Client

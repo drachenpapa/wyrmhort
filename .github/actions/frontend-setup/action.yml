@@ -16,4 +16,6 @@ runs:
     - name: Install dependencies
       shell: bash
       working-directory: frontend
-      run: npm ci
+      run: |
+        rm -rf node_modules package-lock.json
+        npm install

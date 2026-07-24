@@ -106,7 +106,7 @@ async def update_expense(expense_id: str, expense: ExpenseRequest, db: DB, uid: 
     try:
         update_expense_service(db, uid, expense_id, expense)
     except NotFound:
-        raise HTTPException(status_code=404, detail=f"Expense {expense_id} not found")
+        raise HTTPException(status_code=404, detail=f"Expense {expense_id} not found") from None
     return MessageResponse(message=f"Expense with ID {expense_id} updated.")
 
 
