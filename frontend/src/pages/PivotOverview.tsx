@@ -1,14 +1,14 @@
 import './PivotOverview.css';
-import React, {useEffect, useState} from 'react';
+import {useEffect, useState} from 'react';
 import {useTranslation} from 'react-i18next';
 
 import DateRangeFilter from '../components/DateRangeFilter';
 import {LoadingSpinner} from '../components/LoadingSpinner';
 import useApiExpenses from '../hooks/useApiExpenses';
 import {useAuth} from '../hooks/useAuth';
+import {useDateRangeFilter} from '../hooks/useDateRangeFilter';
 import {logger} from '../logger';
 import {Expense} from '../types/Expense';
-import {ExpenseFilters} from '../types/ExpenseFilters';
 import {formatCurrency} from '../utils/expenses';
 
 interface GroupedExpenses {
@@ -27,8 +27,7 @@ export default function PivotOverview() {
     const {expenses, fetchExpenses, loading, error} = useApiExpenses(user, authMode);
     const {t} = useTranslation();
     const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({});
-    const [pendingFilters, setPendingFilters] = useState<ExpenseFilters>({start_date: '', end_date: ''});
-    const [appliedFilters, setAppliedFilters] = useState<ExpenseFilters>({start_date: '', end_date: ''});
+    const {pendingFilters, appliedFilters, handleFilterChange, handleApplyFilters} = useDateRangeFilter();
 
     useEffect(() => {
         if ((user && user.email) || authMode === 'demo') {
@@ -58,21 +57,10 @@ export default function PivotOverview() {
         }));
     };
 
-    const getFormattedAmount = formatCurrency;
-
     const calculateTotal = (items: Expense[]) =>
-        items.reduce((sum, item) => sum + Number(item.amount), 0);
+        items.reduce((sum, item) => sum + item.amount, 0);
 
-    const grandTotal = expenses.reduce((sum, item) => sum + Number(item.amount), 0);
-
-    const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const {name, value} = e.target;
-        setPendingFilters(prev => ({...prev, [name]: value}));
-    };
-
-    const handleApplyFilters = () => {
-        setAppliedFilters(pendingFilters);
-    };
+    const grandTotal = expenses.reduce((sum, item) => sum + item.amount, 0);
 
     return (
         <div className="pivot-overview">
@@ -92,14 +80,14 @@ export default function PivotOverview() {
                     const productKey = safeKey(`product-${product}`);
                     const productTotal = Object.values(itemTypes)
                         .flatMap((series) => Object.values(series).flat())
-                        .reduce((sum, item) => sum + Number(item.amount), 0);
+                        .reduce((sum, item) => sum + item.amount, 0);
 
                     return (
                         <div key={productKey} className="pivot-group">
                             <div className="pivot-group-header" onClick={() => toggle(productKey)}>
                                 <span className="pivot-toggle">{openGroups[productKey] ? "-" : "+"}</span>
                                 <span className="pivot-title">{product}</span>
-                                <span className="pivot-total">{getFormattedAmount(productTotal)}</span>
+                                <span className="pivot-total">{formatCurrency(productTotal)}</span>
                             </div>
 
                             <div className={`pivot-subgroup ${openGroups[productKey] ? "open" : ""}`}>
@@ -107,7 +95,7 @@ export default function PivotOverview() {
                                     const itemTypeKey = safeKey(`${productKey}-itemType-${itemType}`);
                                     const itemTypeTotal = Object.values(series)
                                         .flat()
-                                        .reduce((sum, item) => sum + Number(item.amount), 0);
+                                        .reduce((sum, item) => sum + item.amount, 0);
 
                                     return (
                                         <div key={itemTypeKey} className="pivot-group">
@@ -115,7 +103,7 @@ export default function PivotOverview() {
                                                 <span
                                                     className="pivot-toggle">{openGroups[itemTypeKey] ? "-" : "+"}</span>
                                                 <span className="pivot-title">{itemType}</span>
-                                                <span className="pivot-total">{getFormattedAmount(itemTypeTotal)}</span>
+                                                <span className="pivot-total">{formatCurrency(itemTypeTotal)}</span>
                                             </div>
 
                                             <div className={`pivot-subgroup ${openGroups[itemTypeKey] ? "open" : ""}`}>
@@ -128,7 +116,7 @@ export default function PivotOverview() {
                                                             <div className="pivot-group-series">
                                                                 <span className="pivot-title">{series}</span>
                                                                 <span
-                                                                    className="pivot-total">{getFormattedAmount(seriesTotal)}</span>
+                                                                    className="pivot-total">{formatCurrency(seriesTotal)}</span>
                                                             </div>
                                                         </div>
                                                     );
@@ -143,7 +131,7 @@ export default function PivotOverview() {
                 }))}
 
             <div className="pivot-grand-total">
-                {t("grand_total")}: {getFormattedAmount(grandTotal)}
+                {t("grand_total")}: {formatCurrency(grandTotal)}
             </div>
         </div>
     );

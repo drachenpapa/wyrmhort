@@ -7,17 +7,20 @@ import {ExpenseFilters} from '../types/ExpenseFilters';
 
 import {AuthMode} from './useAuth';
 
-function buildQueryParams(filters: ExpenseFilters = {}) {
+function buildQueryParams(filters: ExpenseFilters = {}, sortKey?: string, sortAsc?: boolean) {
     const params = new URLSearchParams();
-    Object.entries(filters).forEach(([key, value]) => {
-        if (value !== undefined && value !== null && value !== '') {
-            if (key === 'sortKey' || key === 'sortAsc') return;
-            params.append(key, value.toString());
-        }
-    });
+    const {start_date, end_date, product, item_type, series, seller, marketplace} = filters;
 
-    if (filters.sortKey) {
-        const sort = filters.sortAsc ? filters.sortKey : `-${filters.sortKey}`;
+    if (start_date) params.append('start_date', start_date);
+    if (end_date) params.append('end_date', end_date);
+    if (product) params.append('product', product);
+    if (item_type) params.append('item_type', item_type);
+    if (series) params.append('series', series);
+    if (seller) params.append('seller', seller);
+    if (marketplace) params.append('marketplace', marketplace);
+
+    if (sortKey) {
+        const sort = sortAsc ? sortKey : `-${sortKey}`;
         params.append('sort', sort);
     }
 
@@ -68,7 +71,7 @@ export default function useApiExpenses(user: User | null, authMode: AuthMode) {
         }
     }, [getFreshToken]);
 
-    const fetchExpenses = useCallback(async (filters?: ExpenseFilters) => {
+    const fetchExpenses = useCallback(async (filters?: ExpenseFilters, sortKey?: string, sortAsc?: boolean) => {
         if (authMode === 'demo') {
             setLoading(true);
             setError(null);
@@ -83,7 +86,7 @@ export default function useApiExpenses(user: User | null, authMode: AuthMode) {
             }
             return;
         }
-        const query = filters ? buildQueryParams(filters) : '';
+        const query = buildQueryParams(filters, sortKey, sortAsc);
         const url = query ? `/api/expenses/?${query}` : '/api/expenses/';
 
         const data = await request(async (token) => {
@@ -128,7 +131,7 @@ export default function useApiExpenses(user: User | null, authMode: AuthMode) {
         }
     };
 
-    const updateExpense = async (id: string, updated: Partial<Expense>) => {
+    const updateExpense = async (id: string, updated: Omit<Expense, 'id'>) => {
         if (isDemo()) return;
 
         const success = await request(async (token) => {

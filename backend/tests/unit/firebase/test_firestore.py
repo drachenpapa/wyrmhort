@@ -1,6 +1,8 @@
 from decimal import Decimal
 from unittest.mock import MagicMock
 
+import pytest
+
 from expenses.models import ExpenseQuery
 from firebase.firestore import add_expense, delete_expense, get_expenses, update_expense
 
@@ -73,8 +75,31 @@ def test_update_expense_calls_firestore_update(mock_db, expense_factory):
 
 def test_delete_expense_calls_firestore_delete(mock_db):
     mock_doc_ref = MagicMock()
+    mock_doc_ref.get.return_value.exists = True
     mock_db.collection.return_value.document.return_value.collection.return_value.document.return_value = mock_doc_ref
 
     delete_expense(mock_db, "uid-1", "expense-id")
 
     mock_doc_ref.delete.assert_called_once()
+
+
+def test_delete_nonexistent_expense_raises_not_found(mock_db):
+    from google.api_core.exceptions import NotFound
+
+    mock_doc_ref = MagicMock()
+    mock_doc_ref.get.return_value.exists = False
+    mock_db.collection.return_value.document.return_value.collection.return_value.document.return_value = mock_doc_ref
+
+    with pytest.raises(NotFound):
+        delete_expense(mock_db, "uid-1", "nonexistent-id")
+
+
+def test_get_expenses_skips_malformed_document(mock_db, sample_expense_data):
+    good_doc = _make_doc(sample_expense_data)
+    bad_doc = _make_doc({"date": "not-a-valid-date", "amount": "5.00"})
+    _make_expenses_ref(mock_db, [good_doc, bad_doc])
+
+    results = get_expenses(mock_db, "uid-1", ExpenseQuery())
+
+    assert len(results) == 1
+    assert results[0].product == sample_expense_data["product"]

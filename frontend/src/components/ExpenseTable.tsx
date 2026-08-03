@@ -52,10 +52,6 @@ export default function ExpenseTable({
     const [deleteError, setDeleteError] = useState<string | null>(null);
     const [deleting, setDeleting] = useState<string | null>(null);
 
-    const handleEditClick = useCallback((expense: Expense) => {
-        onEdit(expense);
-    }, [onEdit]);
-
     const handleDeleteClick = useCallback(async (id: string) => {
         try {
             setDeleteError(null);
@@ -130,7 +126,7 @@ export default function ExpenseTable({
                                         month: '2-digit',
                                         year: 'numeric'
                                     })}</td>
-                                    <td>{formatCurrency(Number(exp.amount))}</td>
+                                   <td>{formatCurrency(exp.amount)}</td>
                                     <td>{exp.product}</td>
                                     <td>{exp.item_type}</td>
                                     <td>{exp.series}</td>
@@ -139,7 +135,7 @@ export default function ExpenseTable({
                                     <td>{exp.marketplace}</td>
                                     <td>
                                         <button className="icon-btn" title={t("edit")}
-                                                onClick={() => handleEditClick(exp)}>
+                                                onClick={() => onEdit(exp)}>
                                             <Pencil size={16}/>
                                         </button>
                                         <button className="icon-btn" title={t("delete")}

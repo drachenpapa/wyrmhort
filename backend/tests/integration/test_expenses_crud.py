@@ -66,3 +66,11 @@ def test_delete_expense_returns_200(valid_expense_payload):
     response = client.delete(f"/api/expenses/{expense_id}")
     assert response.status_code == 200
     assert "deleted" in response.json()["message"]
+
+
+def test_delete_nonexistent_expense_returns_404(mock_db):
+    mock_doc_ref = mock_db.collection.return_value.document.return_value.collection.return_value.document.return_value
+    mock_doc_ref.get.return_value.exists = False
+
+    response = client.delete("/api/expenses/nonexistent-id")
+    assert response.status_code == 404

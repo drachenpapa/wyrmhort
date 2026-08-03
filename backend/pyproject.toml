@@ -69,12 +69,8 @@ explicit_package_bases = true
 ignore_missing_imports = true
 pretty = true
 show_error_codes = true
-strict = false
-warn_unused_ignores = true
-
-[[tool.mypy.overrides]]
-module = ["expenses.*"]
 strict = true
+warn_unused_ignores = true
 
 [tool.pytest.ini_options]
 minversion = "6.0"

@@ -134,8 +134,9 @@ describe('useApiExpenses', () => {
             await act(async () => {
                 await result.current.fetchExpenses();
             });
+            const updated = {...EXPENSE_INPUT, amount: 99};
             await act(async () => {
-                await result.current.updateExpense('1', {amount: 99});
+                await result.current.updateExpense('1', updated);
             });
 
             expect(result.current.expenses[0].amount).toBe(99);

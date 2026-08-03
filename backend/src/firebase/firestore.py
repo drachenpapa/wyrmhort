@@ -6,7 +6,7 @@ from typing import cast
 
 import firebase_admin
 from firebase_admin import credentials, firestore
-from google.api_core.exceptions import GoogleAPIError
+from google.api_core.exceptions import GoogleAPIError, NotFound
 from google.cloud.firestore import Client, FieldFilter
 
 from expenses.models import Expense, ExpenseQuery
@@ -52,7 +52,13 @@ def get_expenses(db: Client, uid: str, query: ExpenseQuery) -> list[Expense]:
 
         direction = "ASCENDING" if query.ascending else "DESCENDING"
         expenses_ref = expenses_ref.order_by(query.order_by, direction=direction)
-        return [Expense.from_firestore(doc.to_dict(), doc.id) for doc in expenses_ref.stream()]
+        expenses = []
+        for doc in expenses_ref.stream():
+            try:
+                expenses.append(Expense.from_firestore(doc.to_dict(), doc.id))
+            except (KeyError, ValueError) as e:
+                logger.warning(f"Skipping malformed expense document {doc.id}: {e}")
+        return expenses
     except GoogleAPIError as e:
         logger.error(f"Failed to get expenses: {e}")
         raise
@@ -83,6 +89,8 @@ def update_expense(db: Client, uid: str, expense_id: str, updated_expense: Expen
 def delete_expense(db: Client, uid: str, expense_id: str) -> None:
     try:
         doc_ref = db.collection("users").document(uid).collection("expenses").document(expense_id)
+        if not doc_ref.get().exists:
+            raise NotFound(f"Expense {expense_id} not found")  # type: ignore[no-untyped-call]
         doc_ref.delete()
         logger.info(f"Expense with ID: {expense_id} deleted.")
     except GoogleAPIError as e:

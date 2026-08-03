@@ -1,5 +1,5 @@
 import './PieChart.css';
-import React, {useEffect, useState} from 'react';
+import {useEffect, useState} from 'react';
 import {useTranslation} from 'react-i18next';
 import {Cell, Pie, PieChart as RechartsPieChart, ResponsiveContainer, Tooltip} from 'recharts';
 
@@ -7,9 +7,9 @@ import DateRangeFilter from '../components/DateRangeFilter';
 import {LoadingSpinner} from '../components/LoadingSpinner';
 import useApiExpenses from '../hooks/useApiExpenses';
 import {useAuth} from '../hooks/useAuth';
+import {useDateRangeFilter} from '../hooks/useDateRangeFilter';
 import {logger} from '../logger';
 import {Expense} from '../types/Expense';
-import {ExpenseFilters} from '../types/ExpenseFilters';
 import {formatCurrency} from '../utils/expenses';
 
 interface PieChartData {
@@ -29,8 +29,9 @@ export default function PieChart() {
     const {expenses, fetchExpenses, loading, error} = useApiExpenses(user, authMode);
     const {t} = useTranslation();
     const [selectedProduct, setSelectedProduct] = useState<string | null>(null);
-    const [pendingFilters, setPendingFilters] = useState<ExpenseFilters>({start_date: '', end_date: ''});
-    const [appliedFilters, setAppliedFilters] = useState<ExpenseFilters>({start_date: '', end_date: ''});
+    const {pendingFilters, appliedFilters, handleFilterChange, handleApplyFilters} = useDateRangeFilter(
+        () => setSelectedProduct(null)
+    );
 
     useEffect(() => {
         if ((user && user.email) || authMode === 'demo') {
@@ -48,16 +49,6 @@ export default function PieChart() {
         }
     };
 
-    const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const {name, value} = e.target;
-        setPendingFilters(prev => ({...prev, [name]: value}));
-    };
-
-    const handleApplyFilters = () => {
-        setSelectedProduct(null);
-        setAppliedFilters(pendingFilters);
-    };
-
     const handleBackToProducts = () => {
         setSelectedProduct(null);
     };
@@ -70,12 +61,12 @@ export default function PieChart() {
                 .filter((expense: Expense) => (expense.product || t("unknown")) === selectedProduct)
                 .forEach((expense: Expense) => {
                     const key = expense.item_type || t("unknown");
-                    dataMap.set(key, (dataMap.get(key) || 0) + Number(expense.amount));
+                    dataMap.set(key, (dataMap.get(key) || 0) + expense.amount);
                 });
         } else {
             expenses.forEach((expense: Expense) => {
                 const key = expense.product || t("unknown");
-                dataMap.set(key, (dataMap.get(key) || 0) + Number(expense.amount));
+                dataMap.set(key, (dataMap.get(key) || 0) + expense.amount);
             });
         }
 

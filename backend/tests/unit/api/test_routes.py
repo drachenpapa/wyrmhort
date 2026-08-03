@@ -18,7 +18,7 @@ def mock_services(mocker, expense_factory):
     created = ExpenseResponse(
         id="new-id",
         date=datetime(2025, 4, 15, 10, 0, 0),
-        amount=Decimal("9.99"),
+        amount=9.99,
         product="Test Product",
         item_type="Booster",
         series="Test Series",
@@ -91,3 +91,13 @@ async def test_delete_expense_returns_response(mock_db, mock_services):
 async def test_delete_expense_calls_service(mock_db, mock_services):
     await delete_expense(expense_id="test-id", db=mock_db, uid="user-123")
     mock_services["delete"].assert_called_once_with(mock_db, "user-123", "test-id")
+
+
+async def test_delete_nonexistent_expense_raises_404(mock_db, mock_services):
+    from fastapi import HTTPException
+    from google.api_core.exceptions import NotFound
+
+    mock_services["delete"].side_effect = NotFound("not found")
+    with pytest.raises(HTTPException) as exc_info:
+        await delete_expense(expense_id="nonexistent-id", db=mock_db, uid="user-123")
+    assert exc_info.value.status_code == 404

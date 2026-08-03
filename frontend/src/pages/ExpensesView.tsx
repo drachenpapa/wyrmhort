@@ -49,7 +49,7 @@ export default function ExpensesView() {
 
     useEffect(() => {
         if ((user && user.email) || authMode === 'demo') {
-            fetchExpenses({sortKey, sortAsc}).catch((err) => {
+            fetchExpenses(undefined, sortKey, sortAsc).catch((err) => {
                 logger.error('Error fetching expenses:', err);
             });
         }
@@ -110,10 +110,6 @@ export default function ExpensesView() {
             logger.error('Error deleting expense:', err);
         }
     };
-
-    if (loading) {
-        return <div>{t('loading')}</div>;
-    }
 
     return (
         <div className="container">

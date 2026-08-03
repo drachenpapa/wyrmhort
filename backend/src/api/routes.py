@@ -113,5 +113,8 @@ async def update_expense(expense_id: str, expense: ExpenseRequest, db: DB, uid: 
 @app.delete("/api/expenses/{expense_id}", response_model=MessageResponse, tags=["expenses"])
 async def delete_expense(expense_id: str, db: DB, uid: CurrentUser) -> MessageResponse:
     """Remove a specific expense entry."""
-    delete_expense_service(db, uid, expense_id)
+    try:
+        delete_expense_service(db, uid, expense_id)
+    except NotFound:
+        raise HTTPException(status_code=404, detail=f"Expense {expense_id} not found") from None
     return MessageResponse(message=f"Expense with ID {expense_id} deleted.")

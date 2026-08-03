@@ -1,8 +1,10 @@
-import React from 'react';
+import {useState} from 'react';
 
 import i18n from '../i18n';
 
-const DiagonalFlagEmoji: React.FC<{ left: 'de' | 'en'; right: 'de' | 'en' }> = ({left, right}) => {
+type DiagonalFlagEmojiProps = { left: 'de' | 'en'; right: 'de' | 'en' };
+
+function DiagonalFlagEmoji({left, right}: DiagonalFlagEmojiProps) {
     const EMOJIS = {de: '🇩🇪', en: '🇬🇧'};
     return (
         <span className="diagonal-flag-emoji">
@@ -10,12 +12,12 @@ const DiagonalFlagEmoji: React.FC<{ left: 'de' | 'en'; right: 'de' | 'en' }> = (
             <span className="flag-right">{EMOJIS[right]}</span>
         </span>
     );
-};
+}
 
 const getNextLang = (current: string) => (current === 'de' ? 'en' : 'de');
 
-const LanguageSwitch: React.FC = () => {
-    const [lang, setLang] = React.useState(i18n.language || 'de');
+export default function LanguageSwitch() {
+    const [lang, setLang] = useState(i18n.language || 'de');
 
     const handleSwitch = () => {
         const nextLang = getNextLang(lang);
@@ -37,6 +39,4 @@ const LanguageSwitch: React.FC = () => {
             <DiagonalFlagEmoji left={left} right={right}/>
         </button>
     );
-};
-
-export default LanguageSwitch;
+}
