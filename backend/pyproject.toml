@@ -74,7 +74,7 @@ warn_unused_ignores = true
 
 [tool.pytest.ini_options]
 minversion = "6.0"
-addopts = "-ra -q --cov=src"
+addopts = "-ra -q --cov=src --cov-fail-under=85"
 pythonpath = ["src"]
 testpaths = ["tests"]
 asyncio_mode = "auto"

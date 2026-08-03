@@ -111,7 +111,8 @@ wyrmhort/
 - ✅ No separate Prettier config exists; rely on ESLint for style enforcement.
 - ✅ All JSX files use the `.tsx` extension.
 - ✅ Props are destructured in the function signature.
-- ⚠️ Some components use `React.FC` type annotation (`LanguageSwitch`, `SortIndicator`); others use plain function declarations. **Prefer plain function declarations** (`export default function`) for page and component files. Use `React.FC` only when passing generic props to a functional component typed with `React.FC<Props>` adds value.
+- ✅ **Plain function declarations** (`export default function`) are used consistently for all components. `React.FC` is not used.
+- ✅ `React.memo` is used where memoisation is valuable (e.g., `SortIndicator`). Prefer the named-function-then-export pattern: `function Foo(…) { … } export default memo(Foo)` — this preserves the component name in DevTools and stack traces.
 
 ---
 

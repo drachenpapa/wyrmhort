@@ -77,9 +77,10 @@ Authentication flow:
 | `pages/PivotOverview.tsx` | Grouped hierarchical summary (product → item type → series) with date range filter (pending/applied filter state prevents double-fetch). |
 | `pages/PieChart.tsx` | Pie chart by product (drill-down to item type) with date range filter (pending/applied filter state prevents double-fetch). |
 | `hooks/useExpenseFilters.ts` | Encapsulates all 7 filter states, filter logic, and unique-value computations for `ExpensesView`. |
+| `hooks/useDateRangeFilter.ts` | Two-phase date-range filter state (pending while typing / applied after confirmation) shared by `PivotOverview` and `PieChart`. Accepts an optional `onApply` callback. |
 | `utils/expenses.ts` | `createEmptyExpense()` factory and `formatCurrency()` utility shared across components. |
 | `components/DateRangeFilter.tsx` | Shared date-range filter UI used by `PivotOverview` and `PieChart`. |
-| `types/` | Shared TypeScript types: `Expense`, `ExpenseFilters`. |
+| `types/` | Shared TypeScript types: `Expense` and `ExpenseFilters` (API filter fields only; sort parameters are passed separately to `fetchExpenses`). |
 | `locales/de/`, `locales/en/` | i18n translation files. German is the default language. |
 | `logger.ts` | Thin wrapper around `console.*`; suppresses `info`/`debug` in production (`import.meta.env.DEV`). |
 
@@ -240,11 +241,14 @@ Key patterns:
 hooks/__tests__/useAuth.test.tsx            # login, logout, auth state, unsubscribe
 hooks/__tests__/useApiExpenses.test.ts      # demo mode, CRUD happy paths, error state
 hooks/__tests__/useExpenseFilters.test.ts   # filter logic, reset, unique value computation
+hooks/__tests__/useDateRangeFilter.test.ts  # pending/applied state, onApply callback
 components/__tests__/ExpenseDialog.test.tsx # form state, submit, disabled logic
 components/__tests__/Pagination.test.tsx    # UI interactions
 components/__tests__/SortIndicator.test.tsx
 components/__tests__/LoadingSpinner.test.tsx
 pages/__tests__/ExpensesView.test.tsx       # filter toggle, dialog open/close, reset
+pages/__tests__/PieChart.test.tsx           # chart render, drill-down interaction, filter apply
+pages/__tests__/PivotOverview.test.tsx      # chart render, group toggle, filter apply
 test/setup.ts                              # @testing-library/jest-dom matchers, logger/i18n mocks
 ```
 

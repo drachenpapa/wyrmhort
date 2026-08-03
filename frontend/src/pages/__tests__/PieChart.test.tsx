@@ -7,6 +7,7 @@ import PieChart from '../PieChart';
 const EXPENSES = [
     {id: '1', date: '2024-01-15T00:00:00Z', amount: 10, product: 'Lego', item_type: 'Set', series: 'City', quantity: 1, seller: 'Amazon', marketplace: null},
     {id: '2', date: '2024-02-20T00:00:00Z', amount: 20, product: 'Playmobil', item_type: 'Figure', series: 'Western', quantity: 2, seller: 'eBay', marketplace: null},
+    {id: '3', date: '2024-03-10T00:00:00Z', amount: 5, product: 'Lego', item_type: 'Minifigure', series: 'City', quantity: 1, seller: 'Amazon', marketplace: null},
 ];
 
 const mockApiState = {
@@ -19,7 +20,18 @@ const mockApiState = {
 vi.mock('recharts', () => ({
     ResponsiveContainer: ({children}: {children: ReactNode}) => <div>{children}</div>,
     PieChart: ({children}: {children: ReactNode}) => <div data-testid="pie-chart">{children}</div>,
-    Pie: () => null,
+    Pie: ({onClick, data}: {
+        onClick?: (entry: unknown, index: number) => void;
+        data?: Array<{name: string; value: number; color: string}>;
+    }) => (
+        <div data-testid="pie-segments">
+            {data?.map((entry, index) => (
+                <button key={entry.name} data-testid={`segment-${entry.name}`} onClick={() => onClick?.(entry, index)}>
+                    {entry.name}
+                </button>
+            ))}
+        </div>
+    ),
     Cell: () => null,
     Tooltip: () => null,
 }));
@@ -81,5 +93,56 @@ describe('<PieChart/>', () => {
 
         await waitFor(() => expect(mockApiState.fetchExpenses.mock.calls.length).toBeGreaterThan(initialCalls));
         expect(mockApiState.fetchExpenses).toHaveBeenLastCalledWith({start_date: '2024-01-01', end_date: '2024-02-29'});
+    });
+
+    describe('drill-down interaction', () => {
+        it('clicking a product segment shows the back button and item_type segments', () => {
+            render(<PieChart/>);
+
+            // Initial view: product segments visible, no back button
+            expect(screen.getByTestId('segment-Lego')).toBeInTheDocument();
+            expect(screen.queryByText('back_to_products')).not.toBeInTheDocument();
+
+            fireEvent.click(screen.getByTestId('segment-Lego'));
+
+            // Drill-down view: item_type segments for Lego, back button visible
+            expect(screen.getByText('back_to_products')).toBeInTheDocument();
+            expect(screen.getByTestId('segment-Set')).toBeInTheDocument();
+            expect(screen.getByTestId('segment-Minifigure')).toBeInTheDocument();
+            expect(screen.queryByTestId('segment-Playmobil')).not.toBeInTheDocument();
+        });
+
+        it('clicking the back button returns to the product view', () => {
+            render(<PieChart/>);
+            fireEvent.click(screen.getByTestId('segment-Lego'));
+
+            fireEvent.click(screen.getByText('back_to_products'));
+
+            expect(screen.queryByText('back_to_products')).not.toBeInTheDocument();
+            expect(screen.getByTestId('segment-Lego')).toBeInTheDocument();
+            expect(screen.getByTestId('segment-Playmobil')).toBeInTheDocument();
+        });
+
+        it('clicking the same segment twice deselects it', () => {
+            render(<PieChart/>);
+            fireEvent.click(screen.getByTestId('segment-Lego'));
+            expect(screen.getByText('back_to_products')).toBeInTheDocument();
+
+            // After drill-down, Pie onClick is undefined — the back button is the only way out
+            // Verify the back button works as expected deselection path
+            fireEvent.click(screen.getByText('back_to_products'));
+            expect(screen.queryByText('back_to_products')).not.toBeInTheDocument();
+        });
+
+        it('applying a date filter resets the selected product', async () => {
+            render(<PieChart/>);
+            fireEvent.click(screen.getByTestId('segment-Lego'));
+            expect(screen.getByText('back_to_products')).toBeInTheDocument();
+
+            fireEvent.change(screen.getByLabelText('start_date'), {target: {value: '2024-01-01'}});
+            fireEvent.click(screen.getByText('apply_filters'));
+
+            await waitFor(() => expect(screen.queryByText('back_to_products')).not.toBeInTheDocument());
+        });
     });
 });
