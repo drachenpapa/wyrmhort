@@ -52,7 +52,7 @@ class ExpenseResponse(BaseModel):
 
     id: str
     date: datetime
-    amount: float
+    amount: Decimal
     product: str
     item_type: str
     series: str

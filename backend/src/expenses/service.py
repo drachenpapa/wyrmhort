@@ -1,3 +1,4 @@
+import dataclasses
 from datetime import datetime
 from datetime import time as dt_time
 from typing import Final
@@ -20,7 +21,7 @@ def create_expense_service(db: Client, uid: str, expense: ExpenseRequest) -> Exp
     """Create a new expense and return the full created resource."""
     domain = _to_domain(expense, expense_id="")
     expense_id = add_expense(db, uid, domain)
-    return ExpenseResponse.model_validate(_to_domain(expense, expense_id=expense_id))
+    return ExpenseResponse.model_validate(dataclasses.replace(domain, id=expense_id))
 
 
 def read_expenses_service(
