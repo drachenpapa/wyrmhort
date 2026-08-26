@@ -108,7 +108,7 @@ jobs:
       - name: Setup environment
         uses: ./.github/actions/backend-setup
       - name: Run integration tests
-        run: uv run pytest tests/integration --maxfail=1 -q
+        run: uv run pytest tests/integration --maxfail=1 -q --no-cov
 
   docker-build:
     name: Build Docker image
