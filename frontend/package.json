@@ -13,7 +13,7 @@
   "dependencies": {
     "firebase": "12.18.0",
     "i18next": "26.4.0",
-    "lucide-react": "1.37.0",
+    "lucide-react": "1.39.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-i18next": "17.0.12",
