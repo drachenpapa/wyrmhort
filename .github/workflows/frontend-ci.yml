@@ -3,9 +3,9 @@ name: Frontend CI
 on:
   push:
     branches: ["main"]
-    paths: ["frontend/**"]
+    paths: ["frontend/**", ".github/actions/frontend-setup/**", ".github/workflows/frontend-ci.yml"]
   pull_request:
-    paths: ["frontend/**"]
+    paths: ["frontend/**", ".github/actions/frontend-setup/**", ".github/workflows/frontend-ci.yml"]
 
 defaults:
   run:
