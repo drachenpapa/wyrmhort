@@ -16,7 +16,7 @@
   "dependencies": {
     "firebase": "13.0.0",
     "i18next": "26.4.3",
-    "lucide-react": "1.54.0",
+    "lucide-react": "1.55.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-i18next": "17.0.16",
