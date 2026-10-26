@@ -1,15 +1,13 @@
 import {useState} from 'react';
 
+import 'flag-icons/css/flag-icons.min.css';
 import i18n from '../i18n';
 
-type DiagonalFlagEmojiProps = { left: 'de' | 'en'; right: 'de' | 'en' };
-
-function DiagonalFlagEmoji({left, right}: DiagonalFlagEmojiProps) {
-    const EMOJIS = {de: '🇩🇪', en: '🇬🇧'};
+function LanguageFlags({left, right}: {left: 'de' | 'gb'; right: 'de' | 'gb'}) {
     return (
-        <span className="diagonal-flag-emoji">
-            <span className="flag-left">{EMOJIS[left]}</span>
-            <span className="flag-right">{EMOJIS[right]}</span>
+        <span className="language-switch-flags" aria-hidden="true">
+            <span className={`fi fi-${left} flag-left`}/>
+            <span className={`fi fi-${right} flag-right`}/>
         </span>
     );
 }
@@ -26,8 +24,8 @@ export default function LanguageSwitch() {
         document.documentElement.lang = nextLang;
     };
 
-    const left = lang === 'de' ? 'de' : 'en';
-    const right = lang === 'de' ? 'en' : 'de';
+    const left = lang === 'de' ? 'de' : 'gb';
+    const right = lang === 'de' ? 'gb' : 'de';
 
     return (
         <button
@@ -36,7 +34,7 @@ export default function LanguageSwitch() {
             className="language-switch-btn"
             aria-label={lang === 'de' ? 'Switch to English' : 'Wechsel zu Deutsch'}
         >
-            <DiagonalFlagEmoji left={left} right={right}/>
+            <LanguageFlags left={left} right={right}/>
         </button>
     );
 }

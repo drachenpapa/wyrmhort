@@ -290,7 +290,6 @@ button:disabled,
 }
 
 .language-switch-btn {
-    font-size: 2rem;
     background: none;
     border: none;
     cursor: pointer;
@@ -443,34 +442,29 @@ button:disabled,
     border-radius: 4px;
 }
 
-.diagonal-flag-emoji {
+.language-switch-flags {
     position: relative;
     display: inline-block;
-    width: 2em;
-    height: 2em;
-    font-size: 2rem;
+    width: 2.5rem;
+    height: 2rem;
     vertical-align: middle;
 }
 
-.diagonal-flag-emoji .flag-left,
-.diagonal-flag-emoji .flag-right {
+.language-switch-flags .fi {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 2em;
-    height: 2em;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    user-select: none;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    line-height: 2rem;
+    background-size: 100% 100%;
     pointer-events: none;
 }
 
-.diagonal-flag-emoji .flag-left {
+.language-switch-flags .flag-left {
     clip-path: polygon(0 0, 100% 0, 0 100%);
 }
 
-.diagonal-flag-emoji .flag-right {
+.language-switch-flags .flag-right {
     clip-path: polygon(100% 0, 100% 100%, 0 100%);
 }
 

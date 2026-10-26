@@ -4,6 +4,7 @@ import {useCallback, useState} from 'react';
 import {logger} from '../logger';
 import {Expense} from '../types/Expense';
 import {ExpenseFilters} from '../types/ExpenseFilters';
+import {normalizeExpense} from '../utils/expenses';
 
 import {AuthMode} from './useAuth';
 
@@ -77,10 +78,10 @@ export default function useApiExpenses(user: User | null, authMode: AuthMode) {
             setError(null);
             try {
                 const res = await fetch('/demo-data.json');
-                const data = await (res.json() as Promise<Expense[]>);
-                setExpenses(data);
-            } catch {
-                setExpenses([]);
+                setExpenses(await res.json() as Expense[]);
+            } catch (err) {
+                logger.error('Failed to load demo expenses', err);
+                setError(err instanceof Error ? err.message : 'Failed to load demo expenses');
             } finally {
                 setLoading(false);
             }
@@ -99,11 +100,19 @@ export default function useApiExpenses(user: User | null, authMode: AuthMode) {
                 logger.error('Failed to fetch expenses', {url, status: res.status});
                 throw new Error('Failed to fetch expenses');
             }
-            return res.json();
+            const data: unknown = await res.json();
+            if (typeof data !== 'object' || data === null || !('expenses' in data)) {
+                throw new Error('Invalid expenses response');
+            }
+            const expenseList = data.expenses;
+            if (!Array.isArray(expenseList)) {
+                throw new Error('Invalid expenses response');
+            }
+            return expenseList.map(normalizeExpense);
         });
 
         if (data) {
-            setExpenses(data.expenses ?? []);
+            setExpenses(data);
         }
     }, [request, authMode]);
 
@@ -123,11 +132,11 @@ export default function useApiExpenses(user: User | null, authMode: AuthMode) {
                 logger.error('Failed to add expense', {expense});
                 throw new Error('Failed to add expense');
             }
-            return res.json();
+            return normalizeExpense(await res.json());
         });
 
         if (newExpense) {
-            setExpenses((prev) => [newExpense as Expense, ...prev]);
+            setExpenses((prev) => [newExpense, ...prev]);
         }
     };
 

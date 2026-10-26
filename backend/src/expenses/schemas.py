@@ -3,7 +3,7 @@ from datetime import datetime
 from decimal import Decimal
 from typing import Annotated
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_serializer, field_validator
 
 AUTOCORRECTIONS: dict[str, str] = {
     r"pokemon": "Pokémon",
@@ -59,6 +59,10 @@ class ExpenseResponse(BaseModel):
     quantity: int
     seller: str
     marketplace: str | None
+
+    @field_serializer("amount", when_used="json")
+    def serialize_amount(self, amount: Decimal) -> float:
+        return float(amount)
 
 
 class ExpensesListResponse(BaseModel):

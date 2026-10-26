@@ -56,11 +56,21 @@ describe('useApiExpenses', () => {
             const calls = (globalThis.fetch as ReturnType<typeof vi.fn>).mock.calls as [string][];
             expect(calls.every(([url]) => url === '/demo-data.json')).toBe(true);
         });
+
+        it('loads numeric demo amounts as numbers', async () => {
+            mockFetchOnce({json: () => Promise.resolve([EXPENSE])});
+            const {result} = renderHook(() => useApiExpenses(null, 'demo'));
+            await act(async () => {
+                await result.current.fetchExpenses();
+            });
+
+            expect(result.current.expenses[0].amount).toBe(42);
+        });
     });
 
     describe('authenticated mode', () => {
         it('fetchExpenses sets expenses from an envelope response', async () => {
-            mockFetchOnce({ok: true, json: () => Promise.resolve({expenses: [EXPENSE]})});
+            mockFetchOnce({ok: true, json: () => Promise.resolve({expenses: [{...EXPENSE, amount: '42'}]})});
 
             const {result} = renderHook(() => useApiExpenses(mockUser, 'firebase'));
             await act(async () => {
@@ -71,7 +81,7 @@ describe('useApiExpenses', () => {
             expect(result.current.error).toBeNull();
         });
 
-        it('fetchExpenses sets expenses to empty array when expenses key is missing', async () => {
+        it('sets error state when the expenses field is missing', async () => {
             mockFetchOnce({ok: true, json: () => Promise.resolve({})});
 
             const {result} = renderHook(() => useApiExpenses(mockUser, 'firebase'));
@@ -79,7 +89,18 @@ describe('useApiExpenses', () => {
                 await result.current.fetchExpenses();
             });
 
-            expect(result.current.expenses).toEqual([]);
+            expect(result.current.error).toBe('Invalid expenses response');
+        });
+
+        it('sets an error for non-numeric API amounts', async () => {
+            mockFetchOnce({ok: true, json: () => Promise.resolve({expenses: [{...EXPENSE, amount: 'not-a-number'}]})});
+
+            const {result} = renderHook(() => useApiExpenses(mockUser, 'firebase'));
+            await act(async () => {
+                await result.current.fetchExpenses();
+            });
+
+            expect(result.current.error).toBe('Invalid expense: amount must be a positive finite number');
         });
 
         it('sets error state when fetch returns a non-ok response', async () => {

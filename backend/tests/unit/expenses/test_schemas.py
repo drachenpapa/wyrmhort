@@ -1,7 +1,10 @@
+import json
+from decimal import Decimal
+
 import pytest
 from pydantic import ValidationError
 
-from expenses.schemas import ExpenseRequest
+from expenses.schemas import ExpenseRequest, ExpenseResponse
 
 
 def test_valid_expense_accepted(sample_expense_data):
@@ -59,3 +62,22 @@ def test_invalid_field_raises(sample_expense_data, field, value):
     sample_expense_data[field] = value
     with pytest.raises(ValidationError):
         ExpenseRequest(**sample_expense_data)
+
+
+def test_expense_response_serializes_amount_as_json_number():
+    response = ExpenseResponse(
+        id="expense-1",
+        date="2024-01-15T00:00:00Z",
+        amount=Decimal("19.99"),
+        product="Lego",
+        item_type="Set",
+        series="City",
+        quantity=1,
+        seller="Amazon",
+        marketplace=None,
+    )
+
+    amount = json.loads(response.model_dump_json())["amount"]
+
+    assert amount == 19.99
+    assert isinstance(amount, float)
