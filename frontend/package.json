@@ -48,7 +48,7 @@
     "vitest": "5.0.5"
   },
   "overrides": {
-    "@grpc/grpc-js": "1.14.6",
+    "@grpc/grpc-js": "1.14.7",
     "protobufjs": "8.8.1"
   }
 }
