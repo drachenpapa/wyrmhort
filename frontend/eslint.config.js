@@ -2,7 +2,8 @@ import js from '@eslint/js'
 import globals from 'globals'
 import reactHooks from 'eslint-plugin-react-hooks'
 import reactRefresh from 'eslint-plugin-react-refresh'
-import importX from 'eslint-plugin-import-x'
+import importOrder from 'eslint-plugin-import-x/rules/order'
+import importNoDuplicates from 'eslint-plugin-import-x/rules/no-duplicates'
 import babelParser from '@babel/eslint-parser'
 
 export default [
@@ -27,7 +28,12 @@ export default [
         plugins: {
             'react-hooks': reactHooks,
             'react-refresh': reactRefresh,
-            'import-x': importX,
+            'import-x': {
+                rules: {
+                    order: importOrder,
+                    'no-duplicates': importNoDuplicates,
+                },
+            },
         },
         rules: {
             ...reactHooks.configs.recommended.rules,
