@@ -49,7 +49,7 @@
   },
   "overrides": {
     "@grpc/grpc-js": "1.14.7",
-    "minimatch": "11.0.3",
+    "minimatch": "11.0.4",
     "protobufjs": "8.8.1"
   }
 }
