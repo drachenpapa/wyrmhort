@@ -14,7 +14,7 @@
     "test": "vitest run --coverage"
   },
   "dependencies": {
-    "firebase": "13.3.0",
+    "firebase": "13.4.0",
     "flag-icons": "7.6.0",
     "i18next": "27.1.5",
     "lucide-react": "1.73.0",
